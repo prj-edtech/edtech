@@ -1,6 +1,7 @@
 // api\src\services\boards.service.ts
 
 import prisma from "../config/db";
+import { buildBoardJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
 
 // Create Board
@@ -8,19 +9,29 @@ export const createBoard = async (data: {
   sortKey: string;
   displayName: string;
   createdBy: string;
-  boardJson: any;
 }) => {
+  const timestamp = new Date().toISOString();
+
+  const boardJson = buildBoardJson({
+    sortKey: data.sortKey,
+    displayName: data.displayName,
+    isActive: true,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    createdBy: data.createdBy,
+    updatedBy: data.createdBy,
+  });
+
   const board = await prisma.board.create({
     data: {
       sortKey: data.sortKey,
       displayName: data.displayName,
       createdBy: data.createdBy,
       updatedBy: data.createdBy,
-      boardJson: data.boardJson,
+      boardJson,
     },
   });
 
-  // Audit log
   await createAuditLog({
     entityType: "BOARD",
     entityId: board.id,
@@ -53,19 +64,33 @@ export const updateBoard = async (
     displayName?: string;
     isActive?: boolean;
     updatedBy: string;
-    boardJson?: any;
   }
 ) => {
   const previousState = await prisma.board.findUnique({ where: { id } });
   if (!previousState) throw new Error("Board not found");
 
+  const updatedAt = new Date().toISOString();
+
+  const newBoardJson = buildBoardJson({
+    sortKey: previousState.sortKey,
+    displayName: data.displayName || previousState.displayName,
+    isActive:
+      data.isActive !== undefined ? data.isActive : previousState.isActive,
+    createdAt: previousState.createdAt.toISOString(),
+    updatedAt,
+    createdBy: previousState.createdBy,
+    updatedBy: data.updatedBy,
+  });
+
   const updatedBoard = await prisma.board.update({
     where: { id },
     data: {
-      displayName: data.displayName,
-      isActive: data.isActive,
+      displayName: data.displayName || previousState.displayName,
+      isActive:
+        data.isActive !== undefined ? data.isActive : previousState.isActive,
       updatedBy: data.updatedBy,
-      boardJson: data.boardJson,
+      updatedAt: new Date(),
+      boardJson: newBoardJson,
     },
   });
 
@@ -88,11 +113,25 @@ export const deleteBoard = async (id: string, performedBy: string) => {
   const board = await prisma.board.findUnique({ where: { id } });
   if (!board) throw new Error("Board not found");
 
+  const updatedAt = new Date().toISOString();
+
+  const newBoardJson = buildBoardJson({
+    sortKey: board.sortKey,
+    displayName: board.displayName,
+    isActive: false,
+    createdAt: board.createdAt.toISOString(),
+    updatedAt,
+    createdBy: board.createdBy,
+    updatedBy: performedBy,
+  });
+
   const deletedBoard = await prisma.board.update({
     where: { id },
     data: {
       isActive: false,
       updatedBy: performedBy,
+      updatedAt: new Date(),
+      boardJson: newBoardJson,
     },
   });
 

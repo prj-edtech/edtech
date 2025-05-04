@@ -30,12 +30,11 @@ export const getBoardByIdController = async (req: Request, res: Response) => {
 // POST /api/boards
 export const createBoardController = async (req: Request, res: Response) => {
   try {
-    const { sortKey, displayName, createdBy, boardJson } = req.body;
+    const { sortKey, displayName, createdBy } = req.body;
     const board = await boardServices.createBoard({
       sortKey,
       displayName,
       createdBy,
-      boardJson,
     });
     res.status(201).json({ success: true, data: board });
   } catch (error: any) {
@@ -47,12 +46,11 @@ export const createBoardController = async (req: Request, res: Response) => {
 export const updateBoardController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { displayName, isActive, updatedBy, boardJson } = req.body;
+    const { displayName, isActive, updatedBy } = req.body;
     const board = await boardServices.updateBoard(id, {
       displayName,
       isActive,
       updatedBy,
-      boardJson,
     });
     res.status(200).json({ success: true, data: board });
   } catch (error: any) {
