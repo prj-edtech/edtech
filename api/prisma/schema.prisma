@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User Table — lightweight, maps to Auth0 users
 model User {
   id        String   @id @default(cuid())
   auth0Id   String   @unique
@@ -22,36 +15,31 @@ model User {
   picture   String?
   createdAt DateTime @default(now())
 
-  auditLogs AuditLog[] // relation to logs they performed
+  auditLogs AuditLog[]
 }
 
-// Board Table
 model Board {
   id           String   @id @default(cuid())
   partitionKey String   @default("Board")
-  sortKey      String // e.g., "CBSE"
+  sortKey      String
   displayName  String
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  createdBy    String // auth0 user id
+  createdBy    String
   updatedBy    String
 
-  boardJson Json // production-critical JSON
-
-  auditLogs AuditLog[] // logs related to this board
+  boardJson Json
 }
 
-// Audit Log Table
 model AuditLog {
   id          String   @id @default(cuid())
-  action      String // e.g., "CREATE_BOARD"
-  performedBy String // auth0 user id
-  targetId    String? // target entity id (boardId etc.)
-  targetType  String? // "Board", "User", etc.
-  metadata    Json? // optional extra data
-  createdAt   DateTime @default(now())
+  entityType  String
+  entityId    String
+  action      String
+  performedBy String
+  performedAt DateTime @default(now())
+  details     Json?
 
-  user  User?  @relation(fields: [performedBy], references: [auth0Id])
-  board Board? @relation(fields: [targetId], references: [id])
+  user User? @relation(fields: [performedBy], references: [auth0Id])
 }
