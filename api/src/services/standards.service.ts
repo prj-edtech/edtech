@@ -1,6 +1,5 @@
 import { JsonValue } from "@prisma/client/runtime/library";
 import prisma from "../config/db";
-import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
 
 // Utility to validate Roman numerals (I to XII)
@@ -142,9 +141,32 @@ export const updateStandard = async (
     },
   });
 
+  // Audit log entry for UPDATE action
+  await createAuditLog({
+    entityType: "STANDARD",
+    entityId: updatedStandard.id,
+    action: "UPDATE",
+    performedBy: data.updatedBy,
+    details: updatedJson, // we log the full updated JSON payload for traceability
+  });
+
   return updatedStandard;
 };
 
 export const deactivateStandard = async (id: string, performedBy: string) => {
-  return await updateStandard(id, { isActive: false, updatedBy: performedBy });
+  const updatedStandard = await updateStandard(id, {
+    isActive: false,
+    updatedBy: performedBy,
+  });
+
+  // Log as DEACTIVATE instead of UPDATE
+  await createAuditLog({
+    entityType: "STANDARD",
+    entityId: updatedStandard.id,
+    action: "DEACTIVATE",
+    performedBy,
+    details: updatedStandard.standardJson,
+  });
+
+  return updatedStandard;
 };
