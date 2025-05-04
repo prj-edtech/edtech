@@ -24,3 +24,27 @@ export const buildBoardJson = (params: {
     },
   ];
 };
+
+export const generateSubjectJson = (
+  partitionKey: string,
+  sortKey: string,
+  createdBy: string,
+  updatedBy: string
+) => {
+  const now = new Date().toISOString();
+
+  return [
+    {
+      partitionKey,
+      sortKey,
+      attributes: {
+        displayName: sortKey,
+      },
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy,
+      updatedBy,
+    },
+  ];
+};

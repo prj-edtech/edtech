@@ -33,6 +33,7 @@ model Board {
 
   // Relationship to standards (one-to-many)
   standards Standard[]
+  subjects  Subject[]
 }
 
 model Standard {
@@ -47,8 +48,9 @@ model Standard {
 
   standardJson Json
 
-  boardId String
-  board   Board  @relation(fields: [boardId], references: [id])
+  boardId  String
+  board    Board     @relation(fields: [boardId], references: [id])
+  subjects Subject[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
@@ -65,4 +67,26 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   user User? @relation(fields: [performedBy], references: [auth0Id])
+}
+
+model Subject {
+  id           String   @id @default(cuid())
+  partitionKey String // e.g. "Subject#CBSE#X"
+  sortKey      String // e.g. "Mathematics"
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  subjectJson Json // strict production JSON for downstream systems
+
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+
+  standardId String
+  standard   Standard @relation(fields: [standardId], references: [id])
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
 }

@@ -45,18 +45,20 @@ export const createStandard = async (data: {
 
   const timestamp = new Date().toISOString();
 
-  const standardJson = {
-    partitionKey,
-    sortKey: data.sortKey,
-    attributes: {
-      displayName: data.sortKey,
+  const standardJson = [
+    {
+      partitionKey,
+      sortKey: data.sortKey,
+      attributes: {
+        displayName: data.sortKey,
+      },
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      createdBy: data.createdBy,
+      updatedBy: data.createdBy,
     },
-    isActive: true,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-    createdBy: data.createdBy,
-    updatedBy: data.createdBy,
-  };
+  ];
 
   const newStandard = await prisma.standard.create({
     data: {
