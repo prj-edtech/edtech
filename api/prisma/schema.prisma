@@ -21,7 +21,7 @@ model User {
 model Board {
   id           String   @id @default(cuid())
   partitionKey String   @default("Board")
-  sortKey      String
+  sortKey      String // e.g., "CBSE"
   displayName  String
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
@@ -30,6 +30,28 @@ model Board {
   updatedBy    String
 
   boardJson Json
+
+  // Relationship to standards (one-to-many)
+  standards Standard[]
+}
+
+model Standard {
+  id           String   @id @default(cuid())
+  partitionKey String
+  sortKey      String // e.g., "X", "XI", "XII"
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  standardJson Json
+
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
 }
 
 model AuditLog {
@@ -40,8 +62,7 @@ model AuditLog {
   performedBy String
   performedAt DateTime @default(now())
   details     Json?
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   user User? @relation(fields: [performedBy], references: [auth0Id])
 }
