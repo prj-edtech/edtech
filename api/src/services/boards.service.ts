@@ -1,6 +1,7 @@
+// api\src\services\boards.service.ts
+
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
-import { base62Encode } from "../utils/base62";
 
 // Create Board
 export const createBoard = async (data: {
