@@ -1,4 +1,5 @@
 import prisma from "../config/db";
+import { createAuditLog } from "./auditTrail.service";
 
 // Get all users
 export const getAllUsers = async () => {
@@ -19,14 +20,45 @@ export const createUser = async (data: {
   name: string;
   picture?: string;
 }) => {
-  return await prisma.user.create({
+  const user = await prisma.user.create({
     data,
   });
+
+  // Log creation event
+  await createAuditLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    action: "CREATED",
+    performedBy: user.auth0Id, // since it's their own creation, could be system user if via webhook
+    details: {
+      newState: user,
+      notes: "New user created via Auth0 webhook.",
+    },
+  });
+
+  return user;
 };
 
 // Delete user by id
 export const deleteUserById = async (id: string) => {
-  return await prisma.user.delete({
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error("User not found");
+
+  await prisma.user.delete({
     where: { id },
   });
+
+  // Log deletion event
+  await createAuditLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    action: "DELETED",
+    performedBy: user.auth0Id,
+    details: {
+      previousState: user,
+      notes: `User ${user.name} deleted.`,
+    },
+  });
+
+  return user;
 };

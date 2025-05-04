@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "AuditLog" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "targetId" TEXT,
+ADD COLUMN     "targetType" TEXT;

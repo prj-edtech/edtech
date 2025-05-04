@@ -41,5 +41,7 @@ model AuditLog {
   performedAt DateTime @default(now())
   details     Json?
 
+  createdAt DateTime @default(now())
+
   user User? @relation(fields: [performedBy], references: [auth0Id])
 }

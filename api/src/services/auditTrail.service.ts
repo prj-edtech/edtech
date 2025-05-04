@@ -18,9 +18,9 @@ export const createAuditLog = async (data: {
       id: auditId,
       action: data.action,
       performedBy: data.performedBy,
-      targetId: data.entityId,
-      targetType: data.entityType,
-      metadata: data.details,
+      entityId: data.entityId,
+      entityType: data.entityType,
+      details: data.details,
     },
   });
 };
