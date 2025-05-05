@@ -1,15 +1,19 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/_components/Navbar.tsx";
 import { Button } from "@/components/ui/button";
 import Footer from "@/_components/Footer";
 
 const Home = () => {
   const { user, isAuthenticated, logout, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
 
-  console.log(user); // <- check the console for custom claims here
-
-  const roles = user && user["https://edtechadmin.dev/roles"];
-  console.log("Roles: ", roles);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <>

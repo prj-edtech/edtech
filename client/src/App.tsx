@@ -1,16 +1,41 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
+import Boards from "./_components/Admin/Boards/FetchAllBoards";
+// import AdminBoards from "./pages/AdminBoards";
+// import AdminStandards from "./pages/AdminStandards";
+// import AdminAuditLogs from "./pages/AdminAuditLogs";
 
 function App() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        {isAuthenticated && <Route path="/dashboard" element={<Dashboard />} />}
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
+          }
+        />
+        <Route path="/admin/boards" element={<Boards />} />
+        {/* 
+        Future admin routes — no need to wrap in isAuthenticated. 
+        Each of these pages should internally check roles 
+        */}
+        {/* 
+        <Route path="/admin/standards" element={<AdminStandards />} />
+        <Route path="/admin/audit-logs" element={<AdminAuditLogs />} />
+        */}
       </Routes>
     </Router>
   );

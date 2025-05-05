@@ -7,7 +7,7 @@ const ReviewerDashboard = () => {
       <h1>Welcome Reviewer</h1>
       <button
         onClick={() => logout()}
-        className="px-6 py-2 bg-purple-500 text-white rounded cursor-pointer"
+        className="px-6 py-2 bg-green-500 text-white rounded cursor-pointer"
       >
         Logout
       </button>
