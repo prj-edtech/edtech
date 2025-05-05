@@ -6,8 +6,8 @@ export const fetchStandards = async () => {
 };
 
 export const createStandard = (payload: {
+  boardId: string;
   sortKey: string;
-  displayName: string;
   createdBy: string;
 }) => {
   return axios.post(`${apiURL}/standards`, payload);
@@ -27,7 +27,7 @@ export const softDeleteStandard = (
   id: string,
   payload: { performedBy: string }
 ) => {
-  return axios.patch(`${apiURL}/standards/${id}`, payload);
+  return axios.patch(`${apiURL}/standards/${id}/deactivate`, payload);
 };
 
 export const removeStandard = (id: string) => {

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   fetchStandards,
   createStandard,
@@ -32,7 +30,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface Standard {
   id: string;
@@ -41,6 +40,7 @@ interface Standard {
   isActive: boolean;
   createdBy: string;
   board?: {
+    id: string;
     sortKey: string;
     displayName: string;
   };
@@ -48,15 +48,13 @@ interface Standard {
 
 const FetchAllStandards = () => {
   const [data, setData] = useState<Standard[]>([]);
+  const { user } = useAuth0();
+
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [formState, setFormState] = useState({
-    id: "",
+    boardId: "",
     sortKey: "",
-    displayName: "",
-    createdBy: "admin@system.com",
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     getStandards();
@@ -68,39 +66,22 @@ const FetchAllStandards = () => {
   };
 
   const handleAddStandard = async () => {
+    if (!formState.sortKey || !formState.boardId) {
+      toast("Please fill all fields.");
+      return;
+    }
     try {
       await createStandard({
         sortKey: formState.sortKey,
-        displayName: formState.displayName,
-        createdBy: formState.createdBy,
+        boardId: formState.boardId,
+        createdBy: user?.sub!,
       });
-      toast({ description: "Standard created successfully." });
+      toast("Standard created successfully.");
       getStandards();
       setOpenAddDialog(false);
       resetForm();
     } catch (error) {
-      toast({
-        description: "Failed to create standard.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleEditStandard = async () => {
-    try {
-      await setActiveStandard(formState.id, {
-        isActive: true,
-        updatedBy: formState.createdBy,
-      });
-      toast({ description: "Standard activated successfully." });
-      getStandards();
-      setOpenEditDialog(false);
-      resetForm();
-    } catch (error) {
-      toast({
-        description: "Failed to edit standard.",
-        variant: "destructive",
-      });
+      toast("Failed to create standard.");
     }
   };
 
@@ -108,51 +89,31 @@ const FetchAllStandards = () => {
     try {
       await setActiveStandard(id, {
         isActive: !currentStatus,
-        updatedBy: "admin@system.com",
+        updatedBy: user?.sub!,
       });
-      toast({
-        description: `Standard ${
-          !currentStatus ? "activated" : "deactivated"
-        } successfully.`,
-      });
+      toast(
+        `Standard ${!currentStatus ? "activated" : "deactivated"} successfully.`
+      );
       getStandards();
     } catch (error) {
-      toast({
-        description: "Failed to update standard.",
-        variant: "destructive",
-      });
+      toast("Failed to update standard status.");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await softDeleteStandard(id, { performedBy: "admin@system.com" });
-      toast({ description: "Standard deleted successfully." });
+      await softDeleteStandard(id, { performedBy: user?.sub! });
+      toast("Standard deleted successfully.");
       getStandards();
     } catch (error) {
-      toast({
-        description: "Failed to delete standard.",
-        variant: "destructive",
-      });
+      toast("Failed to delete standard.");
     }
-  };
-
-  const openEditDialogWithData = (standard: Standard) => {
-    setFormState({
-      id: standard.id,
-      sortKey: standard.sortKey,
-      displayName: standard.board?.displayName || "",
-      createdBy: "admin@system.com",
-    });
-    setOpenEditDialog(true);
   };
 
   const resetForm = () => {
     setFormState({
-      id: "",
+      boardId: "",
       sortKey: "",
-      displayName: "",
-      createdBy: "admin@system.com",
     });
   };
 
@@ -183,20 +144,17 @@ const FetchAllStandards = () => {
                     onChange={(e) =>
                       setFormState({ ...formState, sortKey: e.target.value })
                     }
-                    placeholder="Sort Key"
+                    placeholder="E.g. XI"
                   />
                 </div>
                 <div>
-                  <Label>Display Name</Label>
+                  <Label>Board ID</Label>
                   <Input
-                    value={formState.displayName}
+                    value={formState.boardId}
                     onChange={(e) =>
-                      setFormState({
-                        ...formState,
-                        displayName: e.target.value,
-                      })
+                      setFormState({ ...formState, boardId: e.target.value })
                     }
-                    placeholder="Display Name"
+                    placeholder="Board ID"
                   />
                 </div>
                 <Button onClick={handleAddStandard} className="w-full">
@@ -237,11 +195,6 @@ const FetchAllStandards = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem
-                        onClick={() => openEditDialogWithData(standard)}
-                      >
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
                         onClick={() =>
                           handleToggleActive(standard.id, standard.isActive)
                         }
@@ -260,28 +213,6 @@ const FetchAllStandards = () => {
             ))}
           </TableBody>
         </Table>
-
-        {/* Edit Dialog */}
-        <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Standard (Activate)</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Sort Key</Label>
-                <Input value={formState.sortKey} disabled />
-              </div>
-              <div>
-                <Label>Display Name</Label>
-                <Input value={formState.displayName} disabled />
-              </div>
-              <Button onClick={handleEditStandard} className="w-full">
-                Activate Standard
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

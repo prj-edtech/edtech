@@ -116,6 +116,30 @@ model Section {
 
   subjectId String
   subject   Subject @relation(fields: [subjectId], references: [id])
+  Topic     Topic[]
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
+}
+
+model Topic {
+  id           String   @id @default(cuid()) // internal database PK
+  partitionKey String // e.g. "Topic#CBSE#XII"
+  sortKey      String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>"
+  topicId      String   @unique // Base62 UUID (22-char, your external identifier)
+  sectionId    String // FK to Section
+  priority     Int // numeric ordering within section
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  topicJson Json // strict production JSON structure
+
+  // Relations
+  section Section @relation(fields: [sectionId], references: [id])
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
