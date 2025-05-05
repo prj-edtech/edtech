@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  auth0Id   String   @unique
+  email     String
+  name      String
+  picture   String?
+  createdAt DateTime @default(now())
+
+  auditLogs AuditLog[]
+}
+
+model Board {
+  id           String   @id @default(cuid())
+  partitionKey String   @default("Board")
+  sortKey      String // e.g., "CBSE"
+  displayName  String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  boardJson Json
+
+  // Relationship to standards (one-to-many)
+  standards Standard[]
+  subjects  Subject[]
+  Section   Section[]
+}
+
+model Standard {
+  id           String   @id @default(cuid())
+  partitionKey String
+  sortKey      String // e.g., "X", "XI", "XII"
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  standardJson Json
+
+  boardId  String
+  board    Board     @relation(fields: [boardId], references: [id])
+  subjects Subject[]
+  Section  Section[]
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  entityType  String
+  entityId    String
+  action      String
+  performedBy String
+  performedAt DateTime @default(now())
+  details     Json?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [performedBy], references: [auth0Id])
+}
+
+model Subject {
+  id           String   @id @default(cuid())
+  partitionKey String // e.g. "Subject#CBSE#X"
+  sortKey      String // e.g. "Mathematics"
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  subjectJson Json // strict production JSON for downstream systems
+
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+
+  standardId String
+  standard   Standard  @relation(fields: [standardId], references: [id])
+  Section    Section[]
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+}
+
+model Section {
+  id           String   @id @default(cuid())
+  partitionKey String // e.g. "Section#CBSE#X"
+  sortKey      String // e.g. "Mathematics#<Base62UUID>"
+  priority     Int? // optional numeric ordering (nullable as per SOW flexibility)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  sectionJson Json // strict production JSON structure for downstream systems
+
+  // Relations
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+
+  standardId String
+  standard   Standard @relation(fields: [standardId], references: [id])
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  Topic     Topic[]
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
+}
+
+model Topic {
+  id           String   @id @default(cuid()) // internal database PK
+  partitionKey String // e.g. "Topic#CBSE#XII"
+  sortKey      String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>"
+  topicId      String   @unique // Base62 UUID (22-char, your external identifier)
+  sectionId    String // FK to Section
+  priority     Int // numeric ordering within section
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  topicJson Json // strict production JSON structure
+
+  // Relations
+  section Section @relation(fields: [sectionId], references: [id])
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
+}
