@@ -1,5 +1,21 @@
 // src/utils/jsonBuilders.ts
 
+import { base62Encode } from "./base62";
+
+export interface BuildSectionJsonParams {
+  boardSortKey: string; // e.g. "CBSE"
+  standardSortKey: string; // e.g. "XII"
+  subjectSortKey: string; // e.g. "Mathematics"
+  sectionId: string; // Base62 UUID
+  priority: number;
+  displayName: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string;
+  updatedBy: string;
+}
+
 export const buildBoardJson = (params: {
   sortKey: string;
   displayName: string;
@@ -48,3 +64,34 @@ export const generateSubjectJson = (
     },
   ];
 };
+
+export function buildSectionJson(params: BuildSectionJsonParams) {
+  const {
+    boardSortKey,
+    standardSortKey,
+    subjectSortKey,
+    sectionId,
+    priority,
+    displayName,
+    isActive,
+    createdAt,
+    updatedAt,
+    createdBy,
+    updatedBy,
+  } = params;
+
+  return {
+    partitionKey: `Section#${boardSortKey}#${standardSortKey}`,
+    sortKey: `${subjectSortKey}#${sectionId}`,
+    sectionId,
+    priority,
+    attributes: {
+      displayName,
+    },
+    isActive,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
+    createdBy,
+    updatedBy,
+  };
+}

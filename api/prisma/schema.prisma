@@ -34,6 +34,7 @@ model Board {
   // Relationship to standards (one-to-many)
   standards Standard[]
   subjects  Subject[]
+  Section   Section[]
 }
 
 model Standard {
@@ -51,6 +52,7 @@ model Standard {
   boardId  String
   board    Board     @relation(fields: [boardId], references: [id])
   subjects Subject[]
+  Section  Section[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
@@ -85,8 +87,37 @@ model Subject {
   board   Board  @relation(fields: [boardId], references: [id])
 
   standardId String
-  standard   Standard @relation(fields: [standardId], references: [id])
+  standard   Standard  @relation(fields: [standardId], references: [id])
+  Section    Section[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
+}
+
+model Section {
+  id           String   @id @default(cuid())
+  partitionKey String // e.g. "Section#CBSE#X"
+  sortKey      String // e.g. "Mathematics#<Base62UUID>"
+  priority     Int? // optional numeric ordering (nullable as per SOW flexibility)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  sectionJson Json // strict production JSON structure for downstream systems
+
+  // Relations
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id])
+
+  standardId String
+  standard   Standard @relation(fields: [standardId], references: [id])
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
 }
