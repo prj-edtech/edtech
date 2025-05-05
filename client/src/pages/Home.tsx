@@ -1,4 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "../components/ui/button.tsx";
 
 const Home = () => {
   const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
@@ -21,12 +22,7 @@ const Home = () => {
           </button>
         </div>
       ) : (
-        <button
-          onClick={() => loginWithRedirect()}
-          className="px-6 py-2 bg-purple-500 text-white rounded cursor-pointer"
-        >
-          Login
-        </button>
+        <Button onClick={() => loginWithRedirect()}>Login</Button>
       )}
     </div>
   );
