@@ -149,3 +149,11 @@ export const deleteBoard = async (id: string, performedBy: string) => {
 
   return deletedBoard;
 };
+
+export const removeBoard = async (id: string) => {
+  return await prisma.board.delete({
+    where: {
+      id,
+    },
+  });
+};

@@ -71,3 +71,16 @@ export const deleteBoardController = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+// DELETE /api/boards/remove/:id
+export const removeBoardController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const board = await boardServices.removeBoard(id);
+    res
+      .status(200)
+      .json({ success: true, message: "Board removed", data: board });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};

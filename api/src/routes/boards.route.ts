@@ -8,5 +8,6 @@ boardRouter.get("/:id", boardControllers.getBoardByIdController);
 boardRouter.post("/", boardControllers.createBoardController);
 boardRouter.put("/:id", boardControllers.updateBoardController);
 boardRouter.patch("/:id", boardControllers.deleteBoardController);
+boardRouter.delete("/remove/:id", boardControllers.removeBoardController);
 
 export default boardRouter;
