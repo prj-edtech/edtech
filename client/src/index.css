@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "Outfit";
+  src: url("./assets/fonts/Outfit.ttf");
+}
+
+@theme {
+  --font-outfit: "Outfit", "sans-serif"
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
