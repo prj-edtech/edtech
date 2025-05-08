@@ -115,8 +115,9 @@ model Section {
   standard   Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
 
   subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   Topic     Topic[]
+  SubTopic  SubTopic[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
@@ -148,23 +149,25 @@ model Topic {
 }
 
 model SubTopic {
-  id           String   @id @default(cuid()) // internal DB PK
-  partitionKey String // e.g. "SubTopic#CBSE#XII"
-  sortKey      String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>#<SUBTOPIC_ID>"
-  subTopicId   String   @unique // Base62 UUID (22-char external ID)
-  topicId      String // FK to Topic
-  priority     Int // ordering within topic
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  createdBy    String
-  updatedBy    String
+  id                  String   @id @default(cuid()) // internal DB PK
+  partitionKey        String // e.g. "SubTopic#CBSE#XII"
+  sortKey             String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>#<SUBTOPIC_ID>"
+  subTopicId          String   @unique // Base62 UUID external identifier (22-char)
+  topicId             String // FK to Topic
+  sectionId           String // redundant denormalized FK (for easier querying)
+  priority            Int
+  subtopicContentPath String // Supabase storage path to JSON content file
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  createdBy           String
+  updatedBy           String
 
-  // The JSON column to store all relevant subtopic data
-  subTopicJson Json // All subtopic-related data in a single JSON column
+  subTopicJson Json // strict production JSON snapshot
 
   // Relations
-  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topic   Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
