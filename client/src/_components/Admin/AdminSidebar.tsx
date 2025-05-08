@@ -14,6 +14,12 @@ const AdminSidebar = () => {
         <Link to="/admin/standards" className="hover:text-purple-400">
           Standards
         </Link>
+        <Link to="/admin/topics" className="hover:text-purple-400">
+          Topics
+        </Link>
+        <Link to="/admin/subtopics" className="hover:text-purple-400">
+          Subtopics
+        </Link>
         <Link to="/admin/audit-logs" className="hover:text-purple-400">
           Audit Logs
         </Link>

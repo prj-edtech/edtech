@@ -29,6 +29,7 @@ export const createSubTopic = async ({
   // Build partition and sort keys
   const partitionKey = `SubTopic#${boardCode}#${standardCode}`;
   const sortKey = `${subjectName}#${sectionId}#${topicId}#${subTopicId}`;
+  const priorityNumber = Number(priority);
 
   // Assemble strict production JSON
   const subTopicJson = {
@@ -55,7 +56,7 @@ export const createSubTopic = async ({
       subTopicId,
       topicId,
       sectionId,
-      priority,
+      priority: priorityNumber,
       subtopicContentPath: contentPath, // added missing field
       createdBy,
       updatedBy: createdBy,
@@ -165,4 +166,8 @@ export const softDeleteSubTopic = async (
     performedBy,
     details: updatedJson,
   });
+};
+
+export const getAllSubtopics = async () => {
+  return await prisma.subTopic.findMany();
 };

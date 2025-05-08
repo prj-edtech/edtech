@@ -98,3 +98,14 @@ export const softDeleteSubTopic = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get all subtopics
+export const fetchAllSubtopics = async (_req: Request, res: Response) => {
+  try {
+    const subtopics = await subTopicService.getAllSubtopics();
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
