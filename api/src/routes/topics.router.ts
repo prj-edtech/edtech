@@ -1,18 +1,21 @@
 import { Router } from "express";
 import * as topicsController from "../controllers/topics.controller";
 
-const router = Router();
+const topicRouter = Router();
 
 // POST /api/topics
-router.post("/", topicsController.handleCreateTopic);
+topicRouter.post("/", topicsController.handleCreateTopic);
 
 // PUT /api/topics/:topicId
-router.put("/:topicId", topicsController.handleUpdateTopic);
+topicRouter.put("/:topicId", topicsController.handleUpdateTopic);
 
 // GET /api/topics/section/:sectionId
-router.get("/section/:sectionId", topicsController.handleGetTopicsBySection);
+topicRouter.get(
+  "/section/:sectionId",
+  topicsController.handleGetTopicsBySection
+);
 
 // DELETE /api/topics/:topicId
-router.delete("/:topicId", topicsController.handleSoftDeleteTopic);
+topicRouter.delete("/:topicId", topicsController.handleSoftDeleteTopic);
 
-export default router;
+export default topicRouter;

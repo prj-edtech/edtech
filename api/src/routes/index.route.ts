@@ -5,6 +5,7 @@ import boardRouter from "./boards.route";
 import standardRouter from "./standards.route";
 import subjectRouter from "./subjects.route";
 import sectionRouter from "./sections.route";
+import topicRouter from "./topics.router";
 
 const mainRouter = Router();
 
@@ -14,5 +15,6 @@ mainRouter.use("/boards", boardRouter);
 mainRouter.use("/standards", standardRouter);
 mainRouter.use("/subjects", subjectRouter);
 mainRouter.use("/sections", sectionRouter);
+mainRouter.use("/topics", topicRouter);
 
 export default mainRouter;

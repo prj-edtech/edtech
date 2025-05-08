@@ -50,7 +50,7 @@ model Standard {
   standardJson Json
 
   boardId  String
-  board    Board     @relation(fields: [boardId], references: [id])
+  board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
   subjects Subject[]
   Section  Section[]
 
@@ -84,10 +84,10 @@ model Subject {
   subjectJson Json // strict production JSON for downstream systems
 
   boardId String
-  board   Board  @relation(fields: [boardId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   standardId String
-  standard   Standard  @relation(fields: [standardId], references: [id])
+  standard   Standard  @relation(fields: [standardId], references: [id], onDelete: Cascade)
   Section    Section[]
 
   @@unique([partitionKey, sortKey])
@@ -109,13 +109,13 @@ model Section {
 
   // Relations
   boardId String
-  board   Board  @relation(fields: [boardId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   standardId String
-  standard   Standard @relation(fields: [standardId], references: [id])
+  standard   Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
 
   subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id])
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   Topic     Topic[]
 
   @@unique([partitionKey, sortKey])
@@ -139,7 +139,32 @@ model Topic {
   topicJson Json // strict production JSON structure
 
   // Relations
-  section Section @relation(fields: [sectionId], references: [id])
+  section  Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  SubTopic SubTopic[]
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
+}
+
+model SubTopic {
+  id           String   @id @default(cuid()) // internal DB PK
+  partitionKey String // e.g. "SubTopic#CBSE#XII"
+  sortKey      String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>#<SUBTOPIC_ID>"
+  subTopicId   String   @unique // Base62 UUID (22-char external ID)
+  topicId      String // FK to Topic
+  priority     Int // ordering within topic
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  // The JSON column to store all relevant subtopic data
+  subTopicJson Json // All subtopic-related data in a single JSON column
+
+  // Relations
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
