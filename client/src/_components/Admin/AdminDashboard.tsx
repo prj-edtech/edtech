@@ -3,6 +3,7 @@ import AdminLayout from "./AdminLayout";
 
 const AdminDashboard = () => {
   const { user } = useAuth0();
+  console.log(user);
 
   return (
     <AdminLayout>

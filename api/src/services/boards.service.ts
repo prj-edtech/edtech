@@ -41,35 +41,6 @@ export const createBoard = async (data: {
     details: { newState: board },
   });
 
-  const changeLogData = {
-    changeLogId: `clog_${Math.random().toString(36).substring(2, 15)}`,
-    entityType: "BOARD",
-    entityId: board.id,
-    changeType: "CREATE",
-    changeStatus: "AUTO_APPROVED",
-    submittedBy: data.createdBy,
-    createdBy: data.createdBy,
-    submittedAt: new Date(),
-    jsonData: {
-      // Store all Change Log fields in the jsonData field
-      changeLogId: `clog_${Math.random().toString(36).substring(2, 15)}`,
-      entityType: "BOARD",
-      entityId: board.id,
-      changeType: "CREATE",
-      changeStatus: "AUTO_APPROVED",
-      submittedBy: data.createdBy,
-      submittedAt: new Date(),
-      jsonData: board.boardJson, // Store the JSON snapshot of the board
-      movedToDev: false,
-      movedToQA: false,
-      movedToProd: false,
-      notes: "Admin added board",
-    },
-    notes: "Admin added board",
-  };
-
-  await createChangeLog(changeLogData);
-
   return board;
 };
 

@@ -14,9 +14,10 @@ interface Subtopics {
 }
 
 export const getAllSubtopics = async () => {
-  return axios.get(`${apiURL}/subtopics`);
+  const response = await axios.get(`${apiURL}/subtopics`);
+  return response.data.data; // Extract the array of subtopics
 };
 
 export const addSubtopic = async (data: Subtopics) => {
-  return axios.post(`${apiURL}/subtopics`, data);
+  return await axios.post(`${apiURL}/subtopics`, data);
 };
