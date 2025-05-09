@@ -32,9 +32,10 @@ model Board {
   boardJson Json
 
   // Relationship to standards (one-to-many)
-  standards Standard[]
-  subjects  Subject[]
-  Section   Section[]
+  standards     Standard[]
+  subjects      Subject[]
+  Section       Section[]
+  QuestionPaper QuestionPaper[]
 }
 
 model Standard {
@@ -49,10 +50,11 @@ model Standard {
 
   standardJson Json
 
-  boardId  String
-  board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  subjects Subject[]
-  Section  Section[]
+  boardId       String
+  board         Board           @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  subjects      Subject[]
+  Section       Section[]
+  QuestionPaper QuestionPaper[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
@@ -86,9 +88,10 @@ model Subject {
   boardId String
   board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
-  standardId String
-  standard   Standard  @relation(fields: [standardId], references: [id], onDelete: Cascade)
-  Section    Section[]
+  standardId    String
+  standard      Standard        @relation(fields: [standardId], references: [id], onDelete: Cascade)
+  Section       Section[]
+  QuestionPaper QuestionPaper[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
@@ -172,4 +175,36 @@ model SubTopic {
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
   @@index([isActive])
+}
+
+model QuestionPaper {
+  id           String   @id @default(cuid())
+  partitionKey String // e.g. "QuestionPaper#CBSE#XII"
+  sortKey      String // e.g. "Mathematics#2025#MAR"
+  year         String
+  month        String // e.g. JAN, FEB, MAR...
+  totalMarks   Int
+  attributes   Json // { displayName, notes, heading, questionPaperInstruction }
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  questionPaperJson Json //  full snapshot JSON of critical fields
+
+  // Relations
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  standardId String
+  standard   Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([isActive])
+  @@index([year])
 }

@@ -18,5 +18,6 @@ mainRouter.use("/subjects", subjectRouter);
 mainRouter.use("/sections", sectionRouter);
 mainRouter.use("/topics", topicRouter);
 mainRouter.use("/subtopics", subtopicRouter);
+mainRouter.use("/question-papers", subtopicRouter);
 
 export default mainRouter;
