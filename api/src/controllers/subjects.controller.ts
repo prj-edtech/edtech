@@ -90,3 +90,12 @@ export const softDeleteSubject = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const fetchAllSubjects = async (_req: Request, res: Response) => {
+  try {
+    const subjects = await subjectService.getAllSubjects();
+    res.status(200).json({ data: subjects });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};

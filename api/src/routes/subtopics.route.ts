@@ -15,4 +15,7 @@ subtopicRouter.put("/:subTopicId", subTopicController.updateSubTopic);
 // Soft Delete SubTopic
 subtopicRouter.delete("/:subTopicId", subTopicController.softDeleteSubTopic);
 
+// Soft Delete SubTopic
+subtopicRouter.get("/", subTopicController.fetchAllSubtopics);
+
 export default subtopicRouter;

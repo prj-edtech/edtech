@@ -158,3 +158,7 @@ export const softDeleteSubject = async (id: string, performedBy: string) => {
 
   return updatedSubject;
 };
+
+export const getAllSubjects = async () => {
+  return await prisma.subject.findMany();
+};

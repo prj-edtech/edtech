@@ -3,6 +3,7 @@
 import prisma from "../config/db";
 import { buildBoardJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Create Board
 export const createBoard = async (data: {

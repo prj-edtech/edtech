@@ -247,3 +247,7 @@ export const softDeleteSection = async (
 
   return updatedSection;
 };
+
+export const getAllSections = async () => {
+  return await prisma.section.findMany();
+};
