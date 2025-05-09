@@ -12,9 +12,7 @@ import Standards from "./_components/Admin/Standards/FetchAllStandards";
 import AuditLogs from "./_components/Admin/AuditTrail/FetchAllLogs";
 import Subtopics from "./_components/Admin/Subtopics/FetchSubtopics";
 import AddSubtopics from "./_components/Admin/Subtopics/AddSubtopics";
-// import AdminBoards from "./pages/AdminBoards";
-// import AdminStandards from "./pages/AdminStandards";
-// import AdminAuditLogs from "./pages/AdminAuditLogs";
+import Topics from "./_components/Admin/Topics/FetchTopics";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -34,17 +32,9 @@ function App() {
         <Route path="/admin/boards" element={<Boards />} />
         <Route path="/admin/standards" element={<Standards />} />
         <Route path="/admin/audit-logs" element={<AuditLogs />} />
-        {/* <Route path="/admin/topics" element={<Topics />} /> */}
+        <Route path="/admin/topics" element={<Topics />} />
         <Route path="/admin/subtopics" element={<Subtopics />} />
         <Route path="/admin/subtopics/add" element={<AddSubtopics />} />
-        {/* 
-        Future admin routes — no need to wrap in isAuthenticated. 
-        Each of these pages should internally check roles 
-        */}
-        {/* 
-        <Route path="/admin/standards" element={<AdminStandards />} />
-        <Route path="/admin/audit-logs" element={<AdminAuditLogs />} />
-        */}
       </Routes>
     </Router>
   );

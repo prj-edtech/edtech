@@ -148,3 +148,7 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
 
   return deletedTopic;
 };
+
+export const getAllTopics = async () => {
+  return await prisma.topic.findMany();
+};
