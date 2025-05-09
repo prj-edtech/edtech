@@ -7,9 +7,8 @@ export const createQuestionPaperController = async (
   res: Response
 ) => {
   try {
+    // Destructuring the request body
     const {
-      partitionKey,
-      sortKey,
       year,
       month,
       totalMarks,
@@ -20,19 +19,38 @@ export const createQuestionPaperController = async (
       boardId,
       standardId,
       subjectId,
+      boardCode,
+      standardCode,
+      subjectName,
     } = req.body;
 
     // Basic validation for required fields
-    if (!partitionKey || !sortKey || !year || !month || !totalMarks) {
+    if (
+      !year ||
+      !month ||
+      !totalMarks ||
+      !boardId ||
+      !standardId ||
+      !subjectId
+    ) {
       res.status(400).json({
         success: false,
-        message: "Missing required fields",
+        message:
+          "Missing required fields: year, month, totalMarks, boardId, standardId, or subjectId",
       });
     }
 
+    // Ensure all necessary attributes are provided
+    if (!boardCode || !standardCode || !subjectName) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Missing required fields for partitionKey and sortKey construction: boardCode, standardCode, subjectName",
+      });
+    }
+
+    // Call the service to create the Question Paper
     const result = await questionPaperService.createQuestionPaper({
-      partitionKey,
-      sortKey,
       year,
       month,
       totalMarks,
@@ -43,15 +61,22 @@ export const createQuestionPaperController = async (
       boardId,
       standardId,
       subjectId,
+      boardCode,
+      standardCode,
+      subjectName,
     });
 
+    // Send success response
     res.status(201).json({
       success: true,
       message: "Question paper created successfully",
       data: result,
     });
   } catch (error: any) {
-    console.error("Create QuestionPaper Error:", error);
+    // Log the error for debugging
+    console.error("Create Question Paper Error:", error);
+
+    // Send error response
     res.status(500).json({
       success: false,
       message: "Failed to create question paper",
@@ -92,12 +117,12 @@ export const getQuestionPapersByBoardStandardSubjectController = async (
   res: Response
 ) => {
   try {
-    const { boardId, standardId, subjectId } = req.query;
+    const { boardId, standardId, subjectId } = req.params;
 
     if (!boardId || !standardId || !subjectId) {
       res.status(400).json({
         success: false,
-        message: "Missing query parameters",
+        message: "Missing  parameters",
       });
     }
 

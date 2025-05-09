@@ -15,7 +15,10 @@ questionPaperRouter.post("/", createQuestionPaperController);
 questionPaperRouter.put("/:id", updateQuestionPaperController);
 
 // Get question papers by boardId, standardId, subjectId (as query params)
-questionPaperRouter.get("/", getQuestionPapersByBoardStandardSubjectController);
+questionPaperRouter.get(
+  "/:boardId/:standardId/:subjectId",
+  getQuestionPapersByBoardStandardSubjectController
+);
 
 // Soft delete a question paper by ID
 questionPaperRouter.delete("/:id", softDeleteQuestionPaperController);

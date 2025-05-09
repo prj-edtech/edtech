@@ -2,9 +2,8 @@ import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
 
+// Interface for creating a Question Paper
 interface QuestionPaperPayload {
-  partitionKey: string;
-  sortKey: string;
   year: string;
   month: string;
   totalMarks: number;
@@ -12,16 +11,27 @@ interface QuestionPaperPayload {
   isActive: boolean;
   createdBy: string;
   updatedBy: string;
-  boardId: string;
-  standardId: string;
-  subjectId: string;
+  boardCode: string; // Add boardCode, standardCode, and subjectName to form keys
+  standardCode: string;
+  subjectName: string;
+  boardId: string; // Required for relational integrity
+  standardId: string; // Required for relational integrity
+  subjectId: string; // Required for relational integrity
 }
 
 // Create Question Paper
 export const createQuestionPaper = async (data: QuestionPaperPayload) => {
+  // Generate a unique ID for the Question Paper (could be similar to how you generate subtopicId)
+  const questionPaperId = base62Encode(); // Or any other method for generating a unique identifier
+
+  // Build partition and sort keys like in the SubTopic service
+  const partitionKey = `QuestionPaper#${data.boardCode}#${data.standardCode}`;
+  const sortKey = `${data.subjectName}#${data.year}#${data.month}#${questionPaperId}`;
+
+  // Assemble the strict production JSON (mirroring the same structure for consistency)
   const questionPaperJson = {
-    partitionKey: data.partitionKey,
-    sortKey: data.sortKey,
+    partitionKey,
+    sortKey,
     year: data.year,
     month: data.month,
     totalMarks: data.totalMarks,
@@ -33,13 +43,36 @@ export const createQuestionPaper = async (data: QuestionPaperPayload) => {
     updatedBy: data.updatedBy,
   };
 
+  // Create the Question Paper in the database, include the relational data (board, standard, subject)
   const questionPaper = await prisma.questionPaper.create({
     data: {
-      ...data,
-      questionPaperJson,
+      partitionKey,
+      sortKey,
+      year: data.year,
+      month: data.month,
+      totalMarks: data.totalMarks,
+      attributes: data.attributes,
+      isActive: data.isActive,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: data.createdBy,
+      updatedBy: data.updatedBy,
+      questionPaperJson, // Store the full JSON structure for audit and reference
+
+      // Include the required relations (board, standard, and subject)
+      board: {
+        connect: { id: data.boardId }, // Assuming boardId is the primary key in Board model
+      },
+      standard: {
+        connect: { id: data.standardId }, // Assuming standardId is the primary key in Standard model
+      },
+      subject: {
+        connect: { id: data.subjectId }, // Assuming subjectId is the primary key in Subject model
+      },
     },
   });
 
+  // Create an audit log for the creation of the question paper
   await createAuditLog({
     entityType: "QuestionPaper",
     entityId: questionPaper.id,
