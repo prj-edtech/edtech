@@ -6,6 +6,9 @@ const router = Router();
 // Create Section
 router.post("/", sectionsController.createSection);
 
+// Get all Sections
+router.get("/", sectionsController.fetchAllSections);
+
 // Update Section
 router.put("/:sectionId", sectionsController.updateSection);
 
