@@ -113,3 +113,12 @@ export const softDeleteSection = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
+
+export const fetchAllSections = async (_req: Request, res: Response) => {
+  try {
+    const sections = await sectionService.getAllSections();
+    res.status(200).json({ data: sections });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
