@@ -3,6 +3,7 @@
 import prisma from "../config/db";
 import { buildBoardJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Create Board
 export const createBoard = async (data: {
@@ -38,6 +39,17 @@ export const createBoard = async (data: {
     action: "CREATED",
     performedBy: data.createdBy,
     details: { newState: board },
+  });
+
+  await createChangeLog({
+    entityType: "BOARD",
+    entityId: board.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: board.createdBy,
+    createdBy: board.createdBy,
+    jsonData: board.boardJson,
+    notes: "Admin has created a board",
   });
 
   return board;

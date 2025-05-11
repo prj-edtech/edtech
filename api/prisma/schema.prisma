@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now())
 
   auditLogs AuditLog[]
+  ChangeLog ChangeLog[]
 }
 
 model Board {
@@ -207,4 +208,32 @@ model QuestionPaper {
   @@index([partitionKey, sortKey])
   @@index([isActive])
   @@index([year])
+}
+
+model ChangeLog {
+  changeLogId  String    @id @default(uuid()) // Unique identifier for each Change Log
+  entityType   String // The type of entity being changed (e.g., BOARD, QUESTION_PAPER)
+  entityId     String // The ID of the affected entity (e.g., boardId, questionPaperId)
+  changeType   String // The type of change: CREATE, UPDATE, DELETE
+  changeStatus String // Status of the change: REQUESTED, REVIEWED, APPROVED, REJECTED, AUTO_APPROVED
+  submittedBy  String // User ID of the submitter
+  reviewedBy   String? // User ID of the reviewer (if applicable)
+  approvedBy   String? // User ID of the approver (if applicable)
+  submittedAt  DateTime // Timestamp when the change was submitted
+  reviewedAt   DateTime? // Timestamp when the change was reviewed
+  approvedAt   DateTime? // Timestamp when the change was approved
+  jsonData     Json // JSON data representing the state of the entity at the time of the change
+  movedToDev   Boolean   @default(false) // Whether the change has been deployed to Dev environment
+  movedToQA    Boolean   @default(false) // Whether the change has been deployed to QA environment
+  movedToProd  Boolean   @default(false) // Whether the change has been deployed to Production environment
+  notes        String? // Optional notes for the reviewer/approver
+
+  // Audit Trail related fields
+  createdBy String // User ID who created the ChangeLog entry
+  createdAt DateTime  @default(now()) // Timestamp for the creation of the Change Log entry
+  updatedBy String? // User ID who last updated the ChangeLog entry
+  updatedAt DateTime? // Timestamp for when the entry was last updated
+
+  // Relation to the user who performed the action
+  User User @relation(fields: [submittedBy], references: [id])
 }
