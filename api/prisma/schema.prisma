@@ -12,6 +12,7 @@ model User {
   auth0Id   String   @unique
   email     String
   name      String
+  role      String
   picture   String?
   createdAt DateTime @default(now())
 
@@ -71,7 +72,7 @@ model AuditLog {
   details     Json?
   createdAt   DateTime @default(now())
 
-  user User? @relation(fields: [performedBy], references: [auth0Id])
+  user User? @relation(fields: [performedBy], references: [auth0Id], onDelete: Cascade)
 }
 
 model Subject {
@@ -235,5 +236,5 @@ model ChangeLog {
   updatedAt DateTime? // Timestamp for when the entry was last updated
 
   // Relation to the user who performed the action
-  User User @relation(fields: [submittedBy], references: [id])
+  User User @relation(fields: [submittedBy], references: [auth0Id], onDelete: Cascade)
 }

@@ -18,8 +18,19 @@ export const createUser = async (data: {
   auth0Id: string;
   email: string;
   name: string;
+  role: string;
   picture?: string;
 }) => {
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      auth0Id: data.auth0Id,
+    },
+  });
+
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
+
   const user = await prisma.user.create({
     data,
   });

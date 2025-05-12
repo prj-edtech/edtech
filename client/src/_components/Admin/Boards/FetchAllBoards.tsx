@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -167,20 +167,22 @@ const FetchAllBoards = () => {
 
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
-      <div className="flex justify-start items-center w-full lg:px-10 lg:py-8 flex-col lg:gap-y-8 border rounded-2xl shadow min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 w-full">
-          <h6 className="font-outfit text-xl font-medium">Education Boards</h6>
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 border rounded-2xl shadow min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full">
+          <h6 className="font-outfit lg:text-xl font-medium">
+            Education Boards
+          </h6>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="px-6 py-1.5 font-outfit text-base font-medium bg-purple-600 hover:bg-purple-500 hover:shadow-md cursor-pointer"
+                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
               >
                 <Plus className="w-4 h-4 mr-2" /> Add Board
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md font-redhat">
               <DialogHeader>
                 <DialogTitle>Add New Board</DialogTitle>
               </DialogHeader>
@@ -209,10 +211,18 @@ const FetchAllBoards = () => {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                  className="cursor-pointer"
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleAddBoard} disabled={loading}>
+                <Button
+                  onClick={handleAddBoard}
+                  disabled={loading}
+                  className="cursor-pointer"
+                >
                   {loading ? <Loader2 className="animate-spin" /> : "Add Board"}
                 </Button>
               </div>
@@ -223,31 +233,36 @@ const FetchAllBoards = () => {
         <Table className="border-b">
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>Sort Key</TableHead>
               <TableHead>Display Name</TableHead>
+              <TableHead>Partition Key</TableHead>
               <TableHead>Is Active</TableHead>
-              <TableHead>Created By</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((board) => (
               <TableRow key={board.id}>
-                <TableCell>{board.id}</TableCell>
                 <TableCell>{board.sortKey}</TableCell>
                 <TableCell>{board.displayName}</TableCell>
+                <TableCell>{board.partitionKey}</TableCell>
                 <TableCell>{board.isActive ? "Yes" : "No"}</TableCell>
-                <TableCell>{board.createdBy}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => openEditDialog(board)}>
+                    <DropdownMenuContent className="font-redhat font-semibold">
+                      <DropdownMenuItem
+                        onClick={() => openEditDialog(board)}
+                        className="cursor-pointer"
+                      >
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -255,13 +270,16 @@ const FetchAllBoards = () => {
                           setBoardToSoftDelete(board);
                           setSoftDeleteOpen(true);
                         }}
+                        className="cursor-pointer"
                       >
                         Deactivate
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleRemoveBoard(board)}
+                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
                       >
-                        Remove
+                        <Trash className="w-4 h-4 text-red-700" />
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -333,13 +351,13 @@ const FetchAllBoards = () => {
       </Dialog>
 
       <Dialog open={softDeleteOpen} onOpenChange={setSoftDeleteOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md font-redhat">
           <DialogHeader>
             <DialogTitle>Deactivate Board</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Performed By</Label>
+          <div className="flex justify-start items-start w-full flex-col gap-y-2">
+            <div className="flex items-center justify-start w-full gap-x-2">
+              <Label className="text-right">Admin</Label>
               <Input value={user?.sub} disabled className="col-span-3" />
             </div>
             <p className="text-sm text-gray-500 col-span-4">
@@ -351,10 +369,18 @@ const FetchAllBoards = () => {
             </p>
           </div>
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setSoftDeleteOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setSoftDeleteOpen(false)}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button onClick={handleSoftDeleteBoard} disabled={loading}>
+            <Button
+              onClick={handleSoftDeleteBoard}
+              disabled={loading}
+              className="cursor-pointer"
+            >
               {loading ? <Loader2 className="animate-spin" /> : "Deactivate"}
             </Button>
           </div>

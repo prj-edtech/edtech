@@ -28,12 +28,12 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 // Create new user (from Auth0 webhook)
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { auth0Id, email, name, picture } = req.body;
+    const { auth0Id, email, name, role, picture } = req.body;
 
-    if (!auth0Id || !email || !name) {
+    if (!auth0Id || !email || !name || !role) {
       res.status(400).json({
         success: false,
-        message: "auth0Id, email, and name are required",
+        message: "auth0Id, email, name and role are required",
       });
     }
 
@@ -41,11 +41,12 @@ export const createUserController = async (req: Request, res: Response) => {
       auth0Id,
       email,
       name,
+      role,
       picture,
     });
     res.status(201).json({ success: true, data: newUser });
   } catch (error: any) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
