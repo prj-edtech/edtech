@@ -102,7 +102,7 @@ export const updateSubject = async (
   const updatedSubject = await prisma.subject.update({
     where: { id },
     data: {
-      isActive: data.isActive ?? existing.isActive,
+      isActive: true,
       updatedBy: data.updatedBy,
       subjectJson: updatedJson,
     },
@@ -157,6 +157,14 @@ export const softDeleteSubject = async (id: string, performedBy: string) => {
   });
 
   return updatedSubject;
+};
+
+export const removeSubject = async (id: string) => {
+  return await prisma.subject.delete({
+    where: {
+      id,
+    },
+  });
 };
 
 export const getAllSubjects = async () => {

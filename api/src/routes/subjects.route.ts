@@ -18,9 +18,12 @@ subjectRouter.get(
 );
 
 // Update Subject (toggle isActive etc.)
-subjectRouter.patch("/:id", subjectsController.updateSubject);
+subjectRouter.patch("/:id/activate", subjectsController.updateSubject);
 
 // Soft Delete a Subject
-subjectRouter.delete("/:id", subjectsController.softDeleteSubject);
+subjectRouter.patch("/:id/deactivate", subjectsController.softDeleteSubject);
+
+// Remove a Subject
+subjectRouter.delete("/:id/remove", subjectsController.removeSubject);
 
 export default subjectRouter;

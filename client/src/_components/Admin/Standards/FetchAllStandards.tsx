@@ -251,6 +251,11 @@ const FetchAllStandards = () => {
                 <TableCell>{standard.partitionKey}</TableCell>
                 <TableCell>{standard.sortKey}</TableCell>
                 <TableCell>{standard.board?.sortKey || "-"}</TableCell>
+                {loading && (
+                  <TableCell className="flex justify-center items-center w-full">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </TableCell>
+                )}
                 <TableCell>{standard.board?.displayName || "-"}</TableCell>
                 <TableCell>{standard.isActive ? "Yes" : "No"}</TableCell>
                 <TableCell>
@@ -260,7 +265,7 @@ const FetchAllStandards = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="font-redhat">
+                    <DropdownMenuContent className="font-redhat font-semibold">
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={() => handleActivate(standard.id)}
@@ -291,11 +296,6 @@ const FetchAllStandards = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
-                {loading && (
-                  <TableCell className="flex justify-center items-center w-full">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  </TableCell>
-                )}
               </TableRow>
             ))}
           </TableBody>
