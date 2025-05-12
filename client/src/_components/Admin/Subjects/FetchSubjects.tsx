@@ -1,3 +1,5 @@
+import { fetchBoards } from "@/api/boards";
+import { fetchStandards } from "@/api/standards";
 import { getAllSubjects, AddSubject } from "@/api/subjects";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,6 +13,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -21,8 +31,20 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
+interface Boards {
+  id: string;
+  displayName: string;
+}
+
+interface Standards {
+  id: string;
+  sortKey: string;
+}
+
 const FetchSubjects = () => {
   const [subjects, setSubjects] = useState<any[]>([]);
+  const [boardData, setBoardData] = useState<Boards[]>([]);
+  const [standardData, setStandardData] = useState<Standards[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const { user } = useAuth0();
 
@@ -41,7 +63,19 @@ const FetchSubjects = () => {
 
   useEffect(() => {
     fetchAllSubjects();
+    loadBoards();
+    loadStandards();
   }, []);
+
+  const loadBoards = async () => {
+    const response = await fetchBoards();
+    setBoardData(response.data.data);
+  };
+
+  const loadStandards = async () => {
+    const response = await fetchStandards();
+    setBoardData(response.data);
+  };
 
   const handleAddSubject = async () => {
     try {
@@ -94,11 +128,28 @@ const FetchSubjects = () => {
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Board ID</Label>
-                  <Input
+                  {/* <Input
                     type="text"
                     value={boardId}
                     onChange={(e) => setBoardId(e.target.value)}
-                  />
+                  /> */}
+                  <Select
+                    value={boardId}
+                    onValueChange={(value) => setBoardId(value)}
+                  >
+                    <SelectTrigger className="w-full cursor-pointer">
+                      <SelectValue placeholder="Select a board" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {boardData.map((board) => (
+                          <SelectItem key={board.id} value={board.id}>
+                            {board.displayName}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Standard ID</Label>
