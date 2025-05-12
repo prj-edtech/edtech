@@ -156,19 +156,55 @@ export const updateStandard = async (
 };
 
 export const deactivateStandard = async (id: string, performedBy: string) => {
-  const updatedStandard = await updateStandard(id, {
-    isActive: false,
-    updatedBy: performedBy,
+  const standard = await prisma.standard.update({
+    where: {
+      id,
+    },
+    data: {
+      updatedBy: performedBy,
+      isActive: false,
+    },
   });
 
   // Log as DEACTIVATE instead of UPDATE
   await createAuditLog({
     entityType: "STANDARD",
-    entityId: updatedStandard.id,
+    entityId: standard.id,
     action: "DEACTIVATE",
     performedBy,
-    details: updatedStandard.standardJson,
+    details: standard.standardJson,
   });
 
-  return updatedStandard;
+  return standard;
+};
+
+export const activateStandard = async (id: string, performedBy: string) => {
+  const standard = await prisma.standard.update({
+    where: {
+      id,
+    },
+    data: {
+      updatedBy: performedBy,
+      isActive: true,
+    },
+  });
+
+  // Log as ACTIVATE instead of UPDATE
+  await createAuditLog({
+    entityType: "STANDARD",
+    entityId: standard.id,
+    action: "ACTIVATE",
+    performedBy,
+    details: standard.standardJson,
+  });
+
+  return standard;
+};
+
+export const deleteStandard = async (id: string) => {
+  return await prisma.standard.delete({
+    where: {
+      id,
+    },
+  });
 };

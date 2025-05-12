@@ -30,6 +30,13 @@ export const softDeleteStandard = (
   return axios.patch(`${apiURL}/standards/${id}/deactivate`, payload);
 };
 
+export const activateStandard = (
+  id: string,
+  payload: { performedBy: string }
+) => {
+  return axios.patch(`${apiURL}/standards/${id}/activate`, payload);
+};
+
 export const removeStandard = (id: string) => {
-  return axios.delete(`${apiURL}/standards/remove/${id}`);
+  return axios.delete(`${apiURL}/standards/${id}`);
 };

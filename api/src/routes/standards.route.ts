@@ -18,4 +18,10 @@ standardRouter.put("/:id", standardController.updateStandard);
 // Deactivate a Standard
 standardRouter.patch("/:id/deactivate", standardController.deactivateStandard);
 
+// Activate a Standard
+standardRouter.patch("/:id/activate", standardController.activateStandard);
+
+// Delete a Standard
+standardRouter.delete("/:id", standardController.removeStandard);
+
 export default standardRouter;

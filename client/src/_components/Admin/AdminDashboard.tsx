@@ -15,7 +15,7 @@ const AdminDashboard = () => {
       const response = await createUser(auth0Id, email, name, role, picture);
       console.log("Adding user: ", response);
     } catch (error) {
-      console.error(error);
+      console.log("User already signed up");
     }
   };
 

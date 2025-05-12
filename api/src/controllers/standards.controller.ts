@@ -83,3 +83,32 @@ export const deactivateStandard = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Controller to activate a standard
+export const activateStandard = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+
+    if (!performedBy) {
+      res.status(400).json({ message: "performedBy is required." });
+    }
+
+    const result = await standardService.activateStandard(id, performedBy);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Controller to remove a standard
+export const removeStandard = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const result = await standardService.deleteStandard(id);
+    res.status(200).json({ data: result, message: "Standard deleted" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
