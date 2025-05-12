@@ -15,6 +15,7 @@ import AddSubtopics from "./_components/Admin/Subtopics/AddSubtopics";
 import Topics from "./_components/Admin/Topics/FetchTopics";
 import Subjects from "./_components/Admin/Subjects/FetchSubjects";
 import Sections from "./_components/Admin/Sections/FetchSections";
+import AdminDashboard from "./_components/Admin/AdminDashboard";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -31,14 +32,17 @@ function App() {
             isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
           }
         />
-        <Route path="/admin/boards" element={<Boards />} />
-        <Route path="/admin/standards" element={<Standards />} />
-        <Route path="/admin/subjects" element={<Subjects />} />
-        <Route path="/admin/sections" element={<Sections />} />
-        <Route path="/admin/audit-logs" element={<AuditLogs />} />
-        <Route path="/admin/topics" element={<Topics />} />
-        <Route path="/admin/subtopics" element={<Subtopics />} />
-        <Route path="/admin/subtopics/add" element={<AddSubtopics />} />
+
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route path="boards" element={<Boards />} />
+          <Route path="standards" element={<Standards />} />
+          <Route path="subjects" element={<Subjects />} />
+          <Route path="sections" element={<Sections />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="topics" element={<Topics />} />
+          <Route path="subtopics" element={<Subtopics />} />
+          <Route path="subtopics/add" element={<AddSubtopics />} />
+        </Route>
       </Routes>
     </Router>
   );

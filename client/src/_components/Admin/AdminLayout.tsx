@@ -1,15 +1,19 @@
 import { ReactNode } from "react";
+import AdminNavbar from "./AdminNavbar";
 import AdminSidebar from "./AdminSidebar";
+import { Outlet } from "react-router-dom";
 
-interface AdminLayoutProps {
-  children: ReactNode;
-}
-
-const AdminLayout = ({ children }: AdminLayoutProps) => {
+const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 bg-gray-100 p-6">{children}</main>
+      <div className="flex-1 flex flex-col lg:ml-64">
+        <AdminNavbar />
+        <main className="flex-1 p-6">
+          <Outlet />
+          {children}
+        </main>
+      </div>
     </div>
   );
 };

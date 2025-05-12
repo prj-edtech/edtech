@@ -6,8 +6,17 @@
   src: url("./assets/fonts/Outfit.ttf");
 }
 
+@font-face {
+  font-family: "RedHat";
+  src: url("./assets/fonts/RedHat.ttf");
+}
+
 @theme {
   --font-outfit: "Outfit", "sans-serif"
+}
+
+@theme {
+  --font-redhat: "RedHat", "sans-serif"
 }
 
 @custom-variant dark (&:is(.dark *));

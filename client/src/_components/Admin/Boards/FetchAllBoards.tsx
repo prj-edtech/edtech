@@ -69,8 +69,15 @@ const FetchAllBoards = () => {
 
   useEffect(() => {
     const getBoards = async () => {
-      const response = await fetchBoards();
-      setData(response.data.data);
+      setLoading(true);
+      try {
+        const response = await fetchBoards();
+        setData(response.data.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getBoards();
@@ -159,7 +166,7 @@ const FetchAllBoards = () => {
   };
 
   return (
-    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10">
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 lg:py-8 flex-col lg:gap-y-8 border rounded-2xl shadow min-h-screen">
         <div className="flex justify-between items-center lg:p-6 w-full">
           <h6 className="font-outfit text-xl font-medium">Education Boards</h6>
@@ -168,7 +175,7 @@ const FetchAllBoards = () => {
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="px-6 py-1.5 font-outfit text-base font-medium"
+                className="px-6 py-1.5 font-outfit text-base font-medium bg-purple-600 hover:bg-purple-500 hover:shadow-md cursor-pointer"
               >
                 <Plus className="w-4 h-4 mr-2" /> Add Board
               </Button>
@@ -261,6 +268,15 @@ const FetchAllBoards = () => {
                 </TableCell>
               </TableRow>
             ))}
+            {loading && (
+              <TableRow>
+                <TableCell>
+                  <div className="flex justify-center items-center w-full">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
