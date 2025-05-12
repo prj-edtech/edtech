@@ -114,6 +114,23 @@ export const softDeleteSection = async (req: Request, res: Response) => {
   }
 };
 
+//  Delete Section
+export const removeSection = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ message: "Missing ID" });
+    }
+
+    const deletedSection = await sectionService.removeSection(id);
+
+    res.status(200).json(deletedSection);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const fetchAllSections = async (_req: Request, res: Response) => {
   try {
     const sections = await sectionService.getAllSections();

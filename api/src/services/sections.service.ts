@@ -167,6 +167,7 @@ export const updateSection = async (data: {
     where: { id: data.sectionId },
     data: {
       sectionJson: updatedJson,
+      isActive: data.isActive,
       updatedBy: data.updatedBy,
     },
   });
@@ -246,6 +247,23 @@ export const softDeleteSection = async (
   });
 
   return updatedSection;
+};
+
+export const removeSection = async (id: string) => {
+  const section = await prisma.section.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SECTION",
+    entityId: id,
+    action: "DELETED",
+    performedBy: "admin",
+  });
+
+  return section;
 };
 
 export const getAllSections = async () => {

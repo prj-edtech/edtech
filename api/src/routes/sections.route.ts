@@ -16,6 +16,9 @@ router.put("/:sectionId", sectionsController.updateSection);
 router.get("/by-subject/:subjectId", sectionsController.getSectionsBySubject);
 
 // Soft Delete Section
-router.delete("/:sectionId", sectionsController.softDeleteSection);
+router.patch("/:sectionId", sectionsController.softDeleteSection);
+
+//  Remove Section
+router.delete("/:id", sectionsController.removeSection);
 
 export default router;
