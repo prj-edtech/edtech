@@ -17,7 +17,7 @@ const AdminSidebar = () => {
   const { logout } = useAuth0();
 
   return (
-    <div className="lg:w-64 h-screen fixed top-0 left-0 bg-black text-stone-100 lg:flex hidden flex-col p-4 space-y-6 font-redhat">
+    <div className="lg:w-64 h-screen fixed top-0 left-0 bg-black text-stone-100 lg:flex hidden flex-col p-4 space-y-6 font-redhat z-50 overflow-y-auto">
       <h2 className="lg:text-2xl font-bold mb-8 p-4">EdTech Admin</h2>
       <nav className="flex flex-col lg:gap-y-6 text-lg">
         <Link
