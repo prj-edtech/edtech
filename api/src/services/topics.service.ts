@@ -73,18 +73,20 @@ export const updateTopic = async (
     priority?: number;
     attributes?: any;
     updatedBy: string;
+    isActive?: boolean;
   }
 ) => {
   const topic = await prisma.topic.findUnique({ where: { topicId } });
 
   if (!topic) throw new Error("Topic not found.");
 
+  const topicJson = topic.topicJson as Record<string, any>;
+
   const updatedJson = {
-    ...(topic.topicJson as Record<string, any>),
-    priority:
-      data.priority ?? (topic.topicJson as Record<string, any>).priority,
-    attributes:
-      data.attributes ?? (topic.topicJson as Record<string, any>).attributes,
+    ...topicJson,
+    priority: data.priority ?? topicJson.priority,
+    attributes: data.attributes ?? topicJson.attributes,
+    isActive: data.isActive ?? topicJson.isActive,
     updatedAt: new Date().toISOString(),
     updatedBy: data.updatedBy,
   };
@@ -95,16 +97,17 @@ export const updateTopic = async (
       priority: data.priority,
       updatedBy: data.updatedBy,
       topicJson: updatedJson,
+      isActive: data.isActive,
     },
   });
 
-  await createAuditLog({
-    entityType: "Topic",
-    entityId: topic.topicId,
-    action: "UPDATE",
-    performedBy: data.updatedBy,
-    details: updatedJson,
-  });
+  // await createAuditLog({
+  //   entityType: "Topic",
+  //   entityId: topic.topicId,
+  //   action: "UPDATE",
+  //   performedBy: data.updatedBy,
+  //   details: updatedJson,
+  // });
 
   return updatedTopic;
 };
@@ -151,4 +154,12 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
 
 export const getAllTopics = async () => {
   return await prisma.topic.findMany();
+};
+
+export const removeTopic = async (id: string) => {
+  return prisma.topic.delete({
+    where: {
+      id,
+    },
+  });
 };

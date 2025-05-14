@@ -13,10 +13,27 @@ interface AddTopics {
   createdBy: string;
 }
 
+interface updateTopics {
+  priority: number;
+  attributes: {
+    displayName: string;
+  };
+  updatedBy: string;
+  isActive: boolean;
+}
+
 export const addTopics = (data: AddTopics) => {
   return axios.post(`${apiURL}/topics`, data);
 };
 
 export const fetchAllTopics = () => {
   return axios.get(`${apiURL}/topics`);
+};
+
+export const removeTopic = async (id: string) => {
+  return axios.delete(`${apiURL}/topics/${id}/remove`);
+};
+
+export const editTopic = async (topicId: string, data: updateTopics) => {
+  return axios.put(`${apiURL}/topics/${topicId}`, data);
 };

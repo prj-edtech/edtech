@@ -21,4 +21,7 @@ topicRouter.delete("/:topicId", topicsController.handleSoftDeleteTopic);
 // GET /api/topics/
 topicRouter.get("/", topicsController.fetchAllTopics);
 
+// DELETE /api/topics/:id/remove
+topicRouter.delete("/:id/remove", topicsController.deleteTopic);
+
 export default topicRouter;

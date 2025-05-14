@@ -157,7 +157,7 @@ const FetchSubjects = () => {
   };
 
   return (
-    <div className="flex flex-col p-20 font-outfit">
+    <div className="flex flex-col p-20 font-redhat">
       <Card className="border shadow-md rounded-2xl p-6">
         <div className="flex items-center justify-between p-4">
           <h6 className="font-outfit text-xl font-medium">Subjects</h6>
@@ -260,7 +260,7 @@ const FetchSubjects = () => {
               <TableCell>Subject Name</TableCell>
               <TableCell>Board</TableCell>
               <TableCell>Standard</TableCell>
-              <TableCell>Is Active</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -283,7 +283,13 @@ const FetchSubjects = () => {
                   <TableCell>{subject.boardId}</TableCell>
                   <TableCell>{subject.standardId}</TableCell>
 
-                  <TableCell>{subject.isActive ? "Yes" : "No"}</TableCell>
+                  <TableCell>
+                    {subject.isActive ? (
+                      <p className="text-green-600 font-semibold">Active</p>
+                    ) : (
+                      <p className="text-red-600 font-semibold">Inactive</p>
+                    )}
+                  </TableCell>
                   <TableCell>{subject.createdAt.split("T")[0]}</TableCell>
                   <TableCell>
                     <DropdownMenu>

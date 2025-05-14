@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { addTopics, fetchAllTopics } from "@/api/topics";
+import {
+  addTopics,
+  editTopic,
+  fetchAllTopics,
+  removeTopic,
+} from "@/api/topics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -17,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,6 +85,14 @@ const FetchAllTopics = () => {
   const [subjectData, setSubjectData] = useState<Subjects[]>([]);
   const [sectionData, setSectiontData] = useState<Sections[]>([]);
 
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [currentTopic, setCurrentTopic] = useState<any | null>(null);
+  const [editPriority, setEditPriority] = useState("");
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editIsActive, setEditIsActive] = useState("true");
+
+  const [loading, setLoading] = useState(false);
+
   const { user } = useAuth0();
 
   const loadTopics = async () => {
@@ -119,8 +132,21 @@ const FetchAllTopics = () => {
     loadSections();
   }, []);
 
-  // 🔹 Handle Add Topic Submit
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeTopic(id);
+      loadTopics();
+    } catch (error: any) {
+      console.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //  Handle Add Topic Submit
   const handleAddTopic = async () => {
+    setLoading(true);
     try {
       if (
         !boardId ||
@@ -160,11 +186,46 @@ const FetchAllTopics = () => {
     } catch (error) {
       console.error(error);
       alert("Failed to add topic. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditClick = (topic: any) => {
+    setCurrentTopic(topic);
+    setEditPriority(topic.priority.toString());
+    setEditDisplayName(topic.topicJson.attributes.displayName);
+    setEditIsActive(topic.isActive ? "true" : "false");
+    setOpenEditDialog(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!currentTopic) return;
+
+    try {
+      setLoading(true);
+
+      await editTopic(currentTopic.topicId, {
+        priority: Number(editPriority),
+        attributes: {
+          displayName: editDisplayName,
+        },
+        isActive: editIsActive === "true",
+        updatedBy: user?.sub || "",
+      });
+
+      setOpenEditDialog(false);
+      loadTopics();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update topic.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col p-20 font-outfit">
+    <div className="flex flex-col p-20 font-redhat">
       <Card className="border shadow-md rounded-2xl p-6">
         <div className="flex items-center justify-between p-4">
           <h6 className="font-outfit text-xl font-medium">Topics</h6>
@@ -302,9 +363,14 @@ const FetchAllTopics = () => {
 
                 <Button
                   onClick={handleAddTopic}
+                  disabled={loading}
                   className="mt-4 cursor-pointer"
                 >
-                  Submit
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </div>
             </DialogContent>
@@ -333,13 +399,9 @@ const FetchAllTopics = () => {
                     <TableCell>{topic.partitionKey}</TableCell>
                     <TableCell>
                       {topic.isActive ? (
-                        <span className="text-green-600 font-medium">
-                          Active
-                        </span>
+                        <p className="text-green-600 font-semibold">Active</p>
                       ) : (
-                        <span className="text-red-600 font-medium">
-                          Inactive
-                        </span>
+                        <p className="text-red-600 font-semibold">Inactive</p>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -350,9 +412,23 @@ const FetchAllTopics = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Deactivate</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleEditClick(topic)}
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRemove(topic.id)}
+                            disabled={loading}
+                            className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                          >
+                            {loading ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash className="w-4 h-4 text-red-700" />
+                            )}
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -369,6 +445,61 @@ const FetchAllTopics = () => {
           </Table>
         </CardContent>
       </Card>
+      <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="lg:mb-6 font-outfit">
+            <DialogTitle>Edit Topic</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-y-5">
+            <div className="flex flex-col gap-y-2">
+              <Label>Priority</Label>
+              <Input
+                type="number"
+                value={editPriority}
+                onChange={(e) => setEditPriority(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-y-2">
+              <Label>Display Name</Label>
+              <Input
+                type="text"
+                value={editDisplayName}
+                onChange={(e) => setEditDisplayName(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-y-2">
+              <Label>Status</Label>
+              <Select
+                value={editIsActive}
+                onValueChange={(value) => setEditIsActive(value)}
+              >
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={handleEditSubmit}
+              disabled={loading}
+              className="mt-4 cursor-pointer"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Update"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

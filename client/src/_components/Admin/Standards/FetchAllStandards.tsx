@@ -241,7 +241,7 @@ const FetchAllStandards = () => {
               <TableHead>Sort Key</TableHead>
               <TableHead>Board Sort Key</TableHead>
               <TableHead>Board Name</TableHead>
-              <TableHead>Is Active</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -257,7 +257,13 @@ const FetchAllStandards = () => {
                   </TableCell>
                 )}
                 <TableCell>{standard.board?.displayName || "-"}</TableCell>
-                <TableCell>{standard.isActive ? "Yes" : "No"}</TableCell>
+                <TableCell>
+                  {standard.isActive ? (
+                    <p className="text-green-600 font-semibold">Active</p>
+                  ) : (
+                    <p className="text-red-600 font-semibold">Inactive</p>
+                  )}
+                </TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild className="cursor-pointer">

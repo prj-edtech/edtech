@@ -236,7 +236,7 @@ const FetchAllBoards = () => {
               <TableHead>Sort Key</TableHead>
               <TableHead>Display Name</TableHead>
               <TableHead>Partition Key</TableHead>
-              <TableHead>Is Active</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -246,7 +246,13 @@ const FetchAllBoards = () => {
                 <TableCell>{board.sortKey}</TableCell>
                 <TableCell>{board.displayName}</TableCell>
                 <TableCell>{board.partitionKey}</TableCell>
-                <TableCell>{board.isActive ? "Yes" : "No"}</TableCell>
+                <TableCell>
+                  {board.isActive ? (
+                    <p className="text-green-600 font-semibold">Active</p>
+                  ) : (
+                    <p className="text-red-600 font-semibold">Inactive</p>
+                  )}
+                </TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
