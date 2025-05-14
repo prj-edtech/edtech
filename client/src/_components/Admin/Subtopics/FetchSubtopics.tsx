@@ -1,4 +1,9 @@
-import { getAllSubtopics } from "@/api/subtopics";
+import {
+  activateSubtopic,
+  deactivateSubtopic,
+  getAllSubtopics,
+  removeSubtopic,
+} from "@/api/subtopics";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -15,20 +20,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const FetchSubtopics = () => {
   const [subtopics, setSubtopics] = useState<any[]>([]); // Store fetched subtopics
+  const [loading, setLoading] = useState(false);
 
   // Fetch subtopics from API
   const loadSubtopics = async () => {
+    setLoading(true);
     try {
       const response = await getAllSubtopics();
       setSubtopics(response); // Set the fetched subtopics
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,6 +45,42 @@ const FetchSubtopics = () => {
   useEffect(() => {
     loadSubtopics();
   }, []);
+
+  const handleDeactivate = async (id: string) => {
+    setLoading(true);
+    try {
+      await deactivateSubtopic(id);
+      loadSubtopics();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleActivate = async (id: string) => {
+    setLoading(true);
+    try {
+      await activateSubtopic(id);
+      loadSubtopics();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeSubtopic(id);
+      loadSubtopics();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (subtopics.length === 0) {
     return (
@@ -59,12 +104,13 @@ const FetchSubtopics = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Subtopic ID</TableHead>
-                <TableHead>Topic ID</TableHead>
-                <TableHead>Section ID</TableHead>
+                <TableHead>Subtopic Name</TableHead>
+                <TableHead>Topic</TableHead>
+                <TableHead>Section</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Content storage</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -145,17 +191,31 @@ const FetchSubtopics = () => {
                         <MoreHorizontal className="h-5 w-5" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent
+                      align="end"
+                      className="font-redhat font-semibold"
+                    >
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                       <DropdownMenuItem
-                        // disabled={loading}
+                        onClick={() => handleActivate(subtopic.id)}
+                      >
+                        Activate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDeactivate(subtopic.id)}
+                      >
+                        Deactivate
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleRemove(subtopic.id)}
+                        disabled={loading}
                         className="cursor-pointer flex items-center gap-x-4 text-red-700"
                       >
-                        {/* {loading ? (
+                        {loading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <Trash className="w-4 h-4 text-red-700" />
-                        )} */}
+                        )}
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

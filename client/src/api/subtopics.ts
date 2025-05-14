@@ -21,3 +21,15 @@ export const getAllSubtopics = async () => {
 export const addSubtopic = async (data: Subtopics) => {
   return await axios.post(`${apiURL}/subtopics`, data);
 };
+
+export const removeSubtopic = async (id: string) => {
+  return axios.delete(`${apiURL}/subtopics/${id}/remove`);
+};
+
+export const activateSubtopic = async (id: string) => {
+  return axios.patch(`${apiURL}/subtopics/${id}/activate`);
+};
+
+export const deactivateSubtopic = async (id: string) => {
+  return axios.patch(`${apiURL}/subtopics/${id}/deactivate`);
+};
