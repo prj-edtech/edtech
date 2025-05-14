@@ -10,6 +10,19 @@ import { CalloutGreen, CalloutViolet } from "@/extensions/CustomCallouts";
 import { uploadImageToCloudinary } from "@/utils/cloudinary"; // Assuming the image upload logic is here
 
 import "@/styles/editor.css";
+import {
+  BoldIcon,
+  Heading1Icon,
+  Heading2Icon,
+  Heading3Icon,
+  ImageUp,
+  ItalicIcon,
+  Lightbulb,
+  Link2,
+  List,
+  ListOrdered,
+  PencilRuler,
+} from "lucide-react";
 
 const RichEditor = () => {
   const editor = useEditor({
@@ -59,59 +72,59 @@ const RichEditor = () => {
   };
 
   return (
-    <div className="editor-container w-full min-h-screen border rounded p-4">
+    <div className="editor-container w-full min-h-screen border rounded">
       {/* Toolbar for buttons */}
-      <div className="toolbar flex gap-2 p-2 bg-gray-200 border-b mb-4">
+      <div className="toolbar flex gap-4 p-2 bg-gray-200 dark:bg-stone-800 border-b mb-4">
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 dark:hover:text-stone-900 p-1 rounded cursor-pointer"
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
-          Bold
+          <BoldIcon className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
-          Italic
+          <ItalicIcon className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()
           }
         >
-          Heading 1
+          <Heading1Icon className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
         >
-          Heading 2
+          <Heading2Icon className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 3 }).run()
           }
         >
-          Heading 3
+          <Heading3Icon className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
-          Bullet List
+          <List className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
-          Ordered List
+          <ListOrdered className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor
               .chain()
@@ -120,25 +133,45 @@ const RichEditor = () => {
               .run()
           }
         >
-          Link
+          <Link2 className="w-4 h-4" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
-          onClick={() => editor.chain().focus().setNode("calloutGreen").run()}
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
+          onClick={() =>
+            editor
+              .chain()
+              .focus()
+              .insertContent({
+                type: "calloutGreen",
+                content: [{ type: "paragraph" }],
+              })
+              .run()
+          }
         >
-          Green Callout
+          <PencilRuler className="w-4 h-4" />
         </button>
+
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
-          onClick={() => editor.chain().focus().setNode("calloutViolet").run()}
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
+          onClick={() =>
+            editor
+              .chain()
+              .focus()
+              .insertContent({
+                type: "calloutViolet",
+                content: [{ type: "paragraph" }],
+              })
+              .run()
+          }
         >
-          Violet Callout
+          <Lightbulb className="w-4 h-4" />
         </button>
+
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded"
+          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={triggerImageUpload} // Trigger image upload on button click
         >
-          Upload Images
+          <ImageUp className="w-4 h-4" />
         </button>
       </div>
 

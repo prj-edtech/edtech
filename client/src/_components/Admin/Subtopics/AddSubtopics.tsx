@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { addSubtopic } from "@/api/subtopics";
 import { uploadToSupabaseStorage } from "@/utils/supabase-bucket";
-import { uploadImageToCloudinary } from "@/utils/cloudinary";
+// import { uploadImageToCloudinary } from "@/utils/cloudinary";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -20,8 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import RichEditor from "@/_components/RichEditor";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Boards {
   id: string;
@@ -70,6 +72,7 @@ const AddSubtopics = () => {
 
   const { user } = useAuth0();
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const [boardData, setBoardData] = useState<Boards[]>([]);
   const [standardData, setStandardData] = useState<Standards[]>([]);
@@ -130,18 +133,18 @@ const AddSubtopics = () => {
     }));
   };
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      const imageUrl = await uploadImageToCloudinary(file);
-      editor?.chain().focus().setImage({ src: imageUrl }).run();
-    } catch (err) {
-      console.error("Failed to upload image:", err);
-    }
-  };
+  // const handleImageUpload = async (
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const file = event.target.files?.[0];
+  //   if (!file) return;
+  //   try {
+  //     const imageUrl = await uploadImageToCloudinary(file);
+  //     editor?.chain().focus().setImage({ src: imageUrl }).run();
+  //   } catch (err) {
+  //     console.error("Failed to upload image:", err);
+  //   }
+  // };
 
   const handleSubmit = async () => {
     if (!editor) return;
@@ -172,6 +175,7 @@ const AddSubtopics = () => {
         priority: 0,
         createdBy: user?.sub || "",
       });
+      navigate("/admin/subtopics");
     } catch (err) {
       console.error("Error adding subtopic:", err);
       alert("Failed to add subtopic");
@@ -181,7 +185,7 @@ const AddSubtopics = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto font-redhat">
+    <div className="flex justify-start items-start flex-col font-redhat">
       <div className="flex justify-start items-start w-full flex-col lg:gap-y-6">
         <Select
           value={form.boardCode}
@@ -302,27 +306,24 @@ const AddSubtopics = () => {
           className="border p-2 w-full"
         />
 
-        <div>
-          <Label className="block mb-1 font-medium">
-            Subtopic Content (Tiptap)
-          </Label>
+        <div className="w-full">
           <RichEditor />
         </div>
 
-        <div>
+        {/* <div>
           <Label className="block mb-1 font-medium">
             Upload Image to Cloudinary
           </Label>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
-        </div>
+        </div> */}
 
-        <button
+        <Button
+          className="cursor-pointer"
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          {submitting ? "Saving..." : "Save Subtopic"}
-        </button>
+          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit"}
+        </Button>
       </div>
     </div>
   );

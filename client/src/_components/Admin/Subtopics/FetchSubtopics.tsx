@@ -154,7 +154,7 @@ const FetchSubtopics = () => {
           <TableBody>
             {subtopics.map((subtopic) => (
               <TableRow key={subtopic.subTopicId}>
-                <TableCell>
+                <TableCell className="max-w-32 truncate">
                   {subtopic.subTopicJson.attributes.displayName}
                 </TableCell>
                 <TableCell>{subtopic.topicId}</TableCell>

@@ -43,11 +43,11 @@
 
 /* Optional: Customize the markers (bullets and numbers) */
 .ProseMirror ul li::marker {
-  color: #4A90E2; /* Bullet color */
+  color: gray; /* Bullet color */
 }
 
 .ProseMirror ol li::marker {
-  color: #FF6347; /* Number color */
+  color: gray; /* Number color */
 }
 
 /* Link Styling */
@@ -57,6 +57,6 @@
 }
 
 .ProseMirror a:hover {
-  color: #FF6347; /* Change color on hover */
+  color: gray; /* Change color on hover */
   text-decoration: none; /* Optionally remove underline on hover */
 }

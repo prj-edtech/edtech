@@ -3,7 +3,7 @@ import { Node, mergeAttributes } from "@tiptap/core";
 export const CalloutGreen = Node.create({
   name: "calloutGreen",
   group: "block",
-  content: "inline*",
+  content: "block+",
   parseHTML() {
     return [{ tag: "div[data-type='calloutGreen']" }];
   },
@@ -12,7 +12,7 @@ export const CalloutGreen = Node.create({
       "div",
       mergeAttributes(HTMLAttributes, {
         "data-type": "calloutGreen",
-        class: "border-l-4 border-green-500 pl-3 py-2 my-2",
+        class: "border-l-4 bg-green-200 border-green-500 pl-3 py-2 my-2",
       }),
       0,
     ];
@@ -22,7 +22,7 @@ export const CalloutGreen = Node.create({
 export const CalloutViolet = Node.create({
   name: "calloutViolet",
   group: "block",
-  content: "inline*",
+  content: "block+",
   parseHTML() {
     return [{ tag: "div[data-type='calloutViolet']" }];
   },
@@ -31,7 +31,7 @@ export const CalloutViolet = Node.create({
       "div",
       mergeAttributes(HTMLAttributes, {
         "data-type": "calloutViolet",
-        class: "border-l-4 border-violet-500 pl-3 py-2 my-2",
+        class: "border-l-4 bg-violet-200 border-violet-500 pl-3 py-2 my-2",
       }),
       0,
     ];
