@@ -1,10 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addSubtopic } from "@/api/subtopics";
 import { uploadToSupabaseStorage } from "@/utils/supabase-bucket";
 import { uploadImageToCloudinary } from "@/utils/cloudinary";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import { fetchBoards } from "@/api/boards";
+import { fetchStandards } from "@/api/standards";
+import { getAllSubjects } from "@/api/subjects";
+import { getAllSections } from "@/api/sections";
+import { fetchAllTopics } from "@/api/topics";
+import { useAuth0 } from "@auth0/auth0-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import RichEditor from "@/_components/RichEditor";
+
+interface Boards {
+  id: string;
+  sortKey: string;
+}
+
+interface Standards {
+  id: string;
+  sortKey: string;
+}
+
+interface Subjects {
+  id: string;
+  sortKey: string;
+}
+
+interface Sections {
+  id: string;
+  sectionJson: {
+    attributes: {
+      displayName: string;
+    };
+  };
+}
+
+interface Topics {
+  id: string;
+  topicJson: {
+    attributes: {
+      displayName: string;
+    };
+  };
+}
 
 const AddSubtopics = () => {
   const [form, setForm] = useState({
@@ -17,7 +67,50 @@ const AddSubtopics = () => {
     priority: 0,
     createdBy: "",
   });
+
+  const { user } = useAuth0();
   const [submitting, setSubmitting] = useState(false);
+
+  const [boardData, setBoardData] = useState<Boards[]>([]);
+  const [standardData, setStandardData] = useState<Standards[]>([]);
+  const [subjectData, setSubjectData] = useState<Subjects[]>([]);
+  const [sectionData, setSectionData] = useState<Sections[]>([]);
+  const [topicData, setTopicData] = useState<Topics[]>([]);
+
+  const loadBoards = async () => {
+    const response = await fetchBoards();
+    setBoardData(response.data.data);
+  };
+
+  const loadStandards = async () => {
+    const response = await fetchStandards();
+    setStandardData(response.data);
+  };
+
+  const loadSubjects = async () => {
+    const response = await getAllSubjects();
+    setSubjectData(response.data.data);
+  };
+
+  const loadSections = async () => {
+    const response = await getAllSections();
+    setSectionData(response.data.data);
+  };
+
+  const loadTopics = async () => {
+    const response = await fetchAllTopics();
+    setTopicData(response.data.data);
+  };
+
+  useEffect(() => {
+    loadBoards();
+    loadStandards();
+    loadSubjects();
+    loadSections();
+    loadTopics();
+
+    setForm((prev) => ({ ...prev, createdBy: user?.sub || "" }));
+  }, [user]);
 
   const editor = useEditor({
     extensions: [
@@ -30,8 +123,7 @@ const AddSubtopics = () => {
     content: "<p>Start writing your subtopic content here...</p>",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFieldChange = (name: string, value: string | number) => {
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -56,20 +148,20 @@ const AddSubtopics = () => {
 
     setSubmitting(true);
     try {
-      // Upload content HTML to Supabase Storage
       const htmlContent = editor.getHTML();
       const contentPath = await uploadToSupabaseStorage(htmlContent);
 
-      // Call backend API to save Subtopic metadata
       await addSubtopic({
         ...form,
         contentPath,
       });
 
       alert("Subtopic created successfully!");
+
       editor.commands.setContent(
         "<p>Start writing your subtopic content here...</p>"
       );
+
       setForm({
         boardCode: "",
         standardCode: "",
@@ -78,7 +170,7 @@ const AddSubtopics = () => {
         topicId: "",
         displayName: "",
         priority: 0,
-        createdBy: "",
+        createdBy: user?.sub || "",
       });
     } catch (err) {
       console.error("Error adding subtopic:", err);
@@ -89,89 +181,138 @@ const AddSubtopics = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Add New Subtopic</h2>
-
-      <div className="space-y-4">
-        <input
-          type="text"
-          name="boardCode"
+    <div className="p-6 max-w-3xl mx-auto font-redhat">
+      <div className="flex justify-start items-start w-full flex-col lg:gap-y-6">
+        <Select
           value={form.boardCode}
-          onChange={handleChange}
-          placeholder="Board Code"
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          name="standardCode"
+          onValueChange={(value) => handleFieldChange("boardCode", value)}
+        >
+          <SelectTrigger className="w-full cursor-pointer">
+            <SelectValue placeholder="Select a board" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {boardData.map((board) => (
+                <SelectItem key={board.id} value={board.id}>
+                  {board.sortKey}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select
           value={form.standardCode}
-          onChange={handleChange}
-          placeholder="Standard Code"
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          name="subjectName"
+          onValueChange={(value) => handleFieldChange("standardCode", value)}
+        >
+          <SelectTrigger className="w-full cursor-pointer">
+            <SelectValue placeholder="Select a standard" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {standardData.map((standard) => (
+                <SelectItem key={standard.id} value={standard.id}>
+                  {standard.sortKey}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select
           value={form.subjectName}
-          onChange={handleChange}
-          placeholder="Subject Name"
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          name="sectionId"
+          onValueChange={(value) => handleFieldChange("subjectName", value)}
+        >
+          <SelectTrigger className="w-full cursor-pointer">
+            <SelectValue placeholder="Select a subject" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {subjectData.map((subject) => (
+                <SelectItem key={subject.id} value={subject.sortKey}>
+                  {subject.sortKey}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select
           value={form.sectionId}
-          onChange={handleChange}
-          placeholder="Section ID"
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          name="topicId"
+          onValueChange={(value) => handleFieldChange("sectionId", value)}
+        >
+          <SelectTrigger className="w-full cursor-pointer">
+            <SelectValue placeholder="Select a section" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {sectionData.map((section) => (
+                <SelectItem key={section.id} value={section.id}>
+                  {section.sectionJson.attributes.displayName}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select
           value={form.topicId}
-          onChange={handleChange}
-          placeholder="Topic ID"
-          className="border p-2 w-full"
-        />
-        <input
+          onValueChange={(value) => handleFieldChange("topicId", value)}
+        >
+          <SelectTrigger className="w-full cursor-pointer">
+            <SelectValue placeholder="Select a topic" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {topicData.map((topic) => (
+                <SelectItem key={topic.id} value={topic.id}>
+                  {topic.topicJson.attributes.displayName}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Input
           type="text"
           name="displayName"
           value={form.displayName}
-          onChange={handleChange}
+          onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
           placeholder="Display Name"
           className="border p-2 w-full"
         />
-        <input
+
+        <Input
           type="number"
           name="priority"
           value={form.priority}
-          onChange={handleChange}
+          onChange={(e) =>
+            handleFieldChange(e.target.name, Number(e.target.value))
+          }
           placeholder="Priority"
           className="border p-2 w-full"
         />
-        <input
+
+        <Input
           type="text"
           name="createdBy"
           value={form.createdBy}
-          onChange={handleChange}
+          disabled
           placeholder="Created By"
           className="border p-2 w-full"
         />
 
         <div>
-          <label className="block mb-1 font-medium">
+          <Label className="block mb-1 font-medium">
             Subtopic Content (Tiptap)
-          </label>
-          <EditorContent
-            editor={editor}
-            className="border p-2 min-h-[200px] rounded"
-          />
+          </Label>
+          <RichEditor />
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">
+          <Label className="block mb-1 font-medium">
             Upload Image to Cloudinary
-          </label>
+          </Label>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
         </div>
 
