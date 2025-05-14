@@ -179,3 +179,25 @@ export const removeSubtopic = async (id: string) => {
     },
   });
 };
+
+export const activeSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+    },
+  });
+};
+
+export const deactiveSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
+};
