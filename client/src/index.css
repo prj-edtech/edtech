@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 
 @font-face {
@@ -12,11 +13,11 @@
 }
 
 @theme {
-  --font-outfit: "Outfit", "sans-serif"
+  --font-outfit: "Outfit", "sans-serif";
 }
 
 @theme {
-  --font-redhat: "RedHat", "sans-serif"
+  --font-redhat: "RedHat", "sans-serif";
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -135,4 +136,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}  
+}

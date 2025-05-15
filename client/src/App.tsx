@@ -22,6 +22,7 @@ import EditorSections from "./_components/Editor/Sections/FetchAllSections";
 import EditorTopics from "./_components/Editor/Topics/FetchAllTopics";
 import EditorSubtopics from "./_components/Editor/Subtopic/FetchAllSubtopic";
 import SubtopicViewer from "./_components/Admin/Subtopics/ViewEdit";
+import EditorSingleSubtopics from "./_components/Editor/Subtopic/FetchSingleSubtopic";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -57,6 +58,10 @@ function App() {
           <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<EditorSubtopics />} />
           <Route path="subtopics/add" element={<EditorAddSubtopic />} />
+          <Route
+            path="subtopics/view/:id"
+            element={<EditorSingleSubtopics />}
+          />
         </Route>
       </Routes>
     </Router>

@@ -154,19 +154,20 @@ model Topic {
 }
 
 model SubTopic {
-  id                  String   @id @default(cuid()) // internal DB PK
+  id                  String       @id @default(cuid()) // internal DB PK
   partitionKey        String // e.g. "SubTopic#CBSE#XII"
   sortKey             String // e.g. "Mathematics#<SECTION_ID>#<TOPIC_ID>#<SUBTOPIC_ID>"
-  subTopicId          String   @unique // Base62 UUID external identifier (22-char)
+  subTopicId          String       @unique // Base62 UUID external identifier (22-char)
   topicId             String // FK to Topic
   sectionId           String // redundant denormalized FK (for easier querying)
   priority            Int
   subtopicContentPath String // Supabase storage path to JSON content file
-  isActive            Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  isActive            Boolean      @default(false)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
   createdBy           String
   updatedBy           String
+  review              ReviewStatus @default(PENDING)
 
   subTopicJson Json // strict production JSON snapshot
 
@@ -237,4 +238,10 @@ model ChangeLog {
 
   // Relation to the user who performed the action
   User User @relation(fields: [submittedBy], references: [auth0Id], onDelete: Cascade)
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

@@ -101,11 +101,11 @@ const FetchAllSubtopics = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Subtopic Name</TableHead>
+              <TableHead>Subtopic</TableHead>
               <TableHead>Topic</TableHead>
               <TableHead>Section</TableHead>
-              <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Content storage</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -122,7 +122,6 @@ const FetchAllSubtopics = () => {
                 <TableCell>
                   {subtopic.section.sectionJson.attributes.displayName}
                 </TableCell>
-                <TableCell>{subtopic.priority}</TableCell>
                 <TableCell>
                   {subtopic.isActive ? (
                     <p className="text-green-600 font-semibold">Active</p>
@@ -130,6 +129,7 @@ const FetchAllSubtopics = () => {
                     <p className="text-red-600 font-semibold">Inactive</p>
                   )}
                 </TableCell>
+                <TableCell>{subtopic.review}</TableCell>
                 <TableCell className="lg:max-w-32 truncate">
                   <Link
                     target="_blank"
@@ -158,7 +158,11 @@ const FetchAllSubtopics = () => {
                       align="end"
                       className="font-redhat font-semibold"
                     >
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to={`/editor/subtopics/view/${subtopic.id}`}>
+                          View
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

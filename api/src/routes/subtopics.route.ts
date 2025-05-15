@@ -10,7 +10,7 @@ subtopicRouter.post("/", subTopicController.createSubTopic);
 subtopicRouter.get("/topic/:topicId", subTopicController.getSubTopicsByTopic);
 
 // Get single SubTopic
-subtopicRouter.get("/:id/content", subTopicController.fetchAllSubtopics);
+subtopicRouter.get("/:id/content", subTopicController.getSingleSubtopic);
 
 // Update SubTopic
 subtopicRouter.put("/:subTopicId", subTopicController.updateSubTopic);
@@ -27,7 +27,13 @@ subtopicRouter.delete("/:id/remove", subTopicController.removeSubtopic);
 // Activate SubTopic
 subtopicRouter.patch("/:id/activate", subTopicController.activeSubtopic);
 
-// Deactivate SubTopic
-subtopicRouter.patch("/:id/deactivate", subTopicController.deactiveSubtopic);
+// Approve SubTopic
+subtopicRouter.patch("/:id/approve", subTopicController.approveSubtopic);
+
+// Reject SubTopic
+subtopicRouter.patch("/:id/disapprove", subTopicController.rejectSubtopic);
+
+// Reset SubTopic
+subtopicRouter.patch("/:id/reset", subTopicController.resetSubtopic);
 
 export default subtopicRouter;

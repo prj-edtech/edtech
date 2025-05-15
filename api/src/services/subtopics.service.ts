@@ -214,3 +214,39 @@ export const getSingleSubtopic = async (id: string) => {
     },
   });
 };
+
+export const approveSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+      review: "APPROVED",
+    },
+  });
+};
+
+export const rejectSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+      review: "REJECTED",
+    },
+  });
+};
+
+export const resetSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+      review: "PENDING",
+    },
+  });
+};

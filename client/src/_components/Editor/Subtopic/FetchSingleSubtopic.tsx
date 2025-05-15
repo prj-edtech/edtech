@@ -1,21 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  getSubtopicById,
-  approveSubtopic,
-  resetSubtopic,
-  rejectSubtopic,
-} from "@/api/subtopics";
+import { useParams } from "react-router-dom";
+import { getSubtopicById } from "@/api/subtopics";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
 
 interface Subtopic {
   id: string;
@@ -28,12 +14,11 @@ interface Subtopic {
   review: string;
 }
 
-const SubtopicViewer = () => {
+const FetchSingleSubtopics = () => {
   const { id } = useParams<{ id: string }>();
   const [subtopic, setSubtopic] = useState<Subtopic | null>(null);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSubtopic = async () => {
@@ -88,48 +73,7 @@ const SubtopicViewer = () => {
     }
   }, [id]);
 
-  const handleApprove = async (id: string) => {
-    setLoading(true);
-    try {
-      await approveSubtopic(id);
-      navigate("/admin/subtopics");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReject = async (id: string) => {
-    setLoading(true);
-    try {
-      await rejectSubtopic(id);
-      navigate("/admin/subtopics");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReset = async (id: string) => {
-    setLoading(true);
-    try {
-      await resetSubtopic(id);
-      navigate("/admin/subtopics");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="flex justify-center items-center w-full min-h-screen">
-        <Loader2 className="w-6 h-6 animate-spin" />
-      </div>
-    );
+  if (loading) return <p className="p-6">Loading...</p>;
   if (!subtopic) return <p className="p-6">Subtopic not found.</p>;
 
   return (
@@ -159,27 +103,9 @@ const SubtopicViewer = () => {
             )}
           </h3>
         </div>
-        <Select
-          onValueChange={(value) => {
-            if (value === "Approve") handleApprove(subtopic.id);
-            if (value === "Reject") handleReject(subtopic.id);
-            if (value === "Reset") handleReset(subtopic.id);
-          }}
-        >
-          <SelectTrigger className="lg:w-[300px] cursor-pointer">
-            <SelectValue placeholder="Review this subtopic" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="Approve">Approve</SelectItem>
-              <SelectItem value="Reject">Reject</SelectItem>
-              <SelectItem value="Reset">Reset</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
       </div>
     </div>
   );
 };
 
-export default SubtopicViewer;
+export default FetchSingleSubtopics;

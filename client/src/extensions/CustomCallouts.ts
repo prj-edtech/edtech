@@ -12,7 +12,8 @@ export const CalloutGreen = Node.create({
       "div",
       mergeAttributes(HTMLAttributes, {
         "data-type": "calloutGreen",
-        class: "border-l-4 bg-green-200 border-green-500 pl-3 py-2 my-2",
+        class:
+          "border-l-4 bg-green-200 border-green-500 pl-3 py-2 my-2 rounded-lg",
       }),
       0,
     ];
@@ -31,7 +32,8 @@ export const CalloutViolet = Node.create({
       "div",
       mergeAttributes(HTMLAttributes, {
         "data-type": "calloutViolet",
-        class: "border-l-4 bg-violet-200 border-violet-500 pl-3 py-2 my-2",
+        class:
+          "border-l-4 bg-violet-200 border-violet-500 pl-3 py-2 my-2 rounded-lg",
       }),
       0,
     ];

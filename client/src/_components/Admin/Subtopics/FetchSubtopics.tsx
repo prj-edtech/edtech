@@ -142,10 +142,10 @@ const FetchSubtopics = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Subtopic Name</TableHead>
+              <TableHead>Subtopic</TableHead>
               <TableHead>Topic</TableHead>
               <TableHead>Section</TableHead>
-              <TableHead>Priority</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Content storage</TableHead>
               <TableHead>Actions</TableHead>
@@ -163,7 +163,7 @@ const FetchSubtopics = () => {
                 <TableCell>
                   {subtopic.section.sectionJson.attributes.displayName}
                 </TableCell>
-                <TableCell>{subtopic.priority}</TableCell>
+                <TableCell>{subtopic.review}</TableCell>
                 <TableCell>
                   {subtopic.isActive ? (
                     <p className="text-green-600 font-semibold">Active</p>
