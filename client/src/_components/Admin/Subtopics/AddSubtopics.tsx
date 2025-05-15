@@ -5,11 +5,11 @@ import { uploadToSupabaseStorage } from "@/utils/supabase-bucket";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import { fetchBoards } from "@/api/boards";
-import { fetchStandards } from "@/api/standards";
-import { getAllSubjects } from "@/api/subjects";
-import { getAllSections } from "@/api/sections";
-import { fetchAllTopics } from "@/api/topics";
+import { fetchActiveBoards } from "@/api/boards";
+import { fetchActiveStandards } from "@/api/standards";
+import { getAllActiveSubjects } from "@/api/subjects";
+import { getAllActiveSections } from "@/api/sections";
+import { fetchAllActiveTopics } from "@/api/topics";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Select,
@@ -81,27 +81,27 @@ const AddSubtopics = () => {
   const [topicData, setTopicData] = useState<Topics[]>([]);
 
   const loadBoards = async () => {
-    const response = await fetchBoards();
+    const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 
   const loadStandards = async () => {
-    const response = await fetchStandards();
+    const response = await fetchActiveStandards();
     setStandardData(response.data);
   };
 
   const loadSubjects = async () => {
-    const response = await getAllSubjects();
+    const response = await getAllActiveSubjects();
     setSubjectData(response.data.data);
   };
 
   const loadSections = async () => {
-    const response = await getAllSections();
+    const response = await getAllActiveSections();
     setSectionData(response.data.data);
   };
 
   const loadTopics = async () => {
-    const response = await fetchAllTopics();
+    const response = await fetchAllActiveTopics();
     setTopicData(response.data.data);
   };
 
@@ -297,14 +297,14 @@ const AddSubtopics = () => {
           className="border p-2 w-full"
         />
 
-        <Input
+        {/* <Input
           type="text"
           name="createdBy"
           value={form.createdBy}
           disabled
           placeholder="Created By"
           className="border p-2 w-full"
-        />
+        /> */}
 
         <div className="w-full">
           <RichEditor />

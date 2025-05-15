@@ -30,6 +30,10 @@ export const fetchAllTopics = () => {
   return axios.get(`${apiURL}/topics`);
 };
 
+export const fetchAllActiveTopics = () => {
+  return axios.get(`${apiURL}/topics/active`);
+};
+
 export const removeTopic = async (id: string) => {
   return axios.delete(`${apiURL}/topics/${id}/remove`);
 };

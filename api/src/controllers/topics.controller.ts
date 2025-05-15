@@ -6,6 +6,7 @@ import {
   softDeleteTopic,
   getAllTopics,
   removeTopic,
+  getAllActiveTopics,
 } from "../services/topics.service";
 
 // Create a new topic
@@ -103,6 +104,16 @@ export const handleSoftDeleteTopic = async (req: Request, res: Response) => {
 export const fetchAllTopics = async (_req: Request, res: Response) => {
   try {
     const topics = await getAllTopics();
+    res.status(200).json({ data: topics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all active topics
+export const fetchAllActiveTopics = async (_req: Request, res: Response) => {
+  try {
+    const topics = await getAllActiveTopics();
     res.status(200).json({ data: topics });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

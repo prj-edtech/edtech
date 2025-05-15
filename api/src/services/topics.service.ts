@@ -160,6 +160,17 @@ export const getAllTopics = async () => {
   });
 };
 
+export const getAllActiveTopics = async () => {
+  return await prisma.topic.findMany({
+    where: {
+      isActive: true,
+    },
+    include: {
+      section: true,
+    },
+  });
+};
+
 export const removeTopic = async (id: string) => {
   return prisma.topic.delete({
     where: {

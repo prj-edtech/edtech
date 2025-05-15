@@ -169,7 +169,12 @@ export const softDeleteSubTopic = async (
 };
 
 export const getAllSubtopics = async () => {
-  return await prisma.subTopic.findMany();
+  return await prisma.subTopic.findMany({
+    include: {
+      topic: true,
+      section: true,
+    },
+  });
 };
 
 export const removeSubtopic = async (id: string) => {

@@ -1,9 +1,4 @@
-import {
-  activateSubtopic,
-  deactivateSubtopic,
-  getAllSubtopics,
-  removeSubtopic,
-} from "@/api/subtopics";
+import { getAllSubtopics } from "@/api/subtopics";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -20,11 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const FetchSubtopics = () => {
+const FetchAllSubtopics = () => {
   const [subtopics, setSubtopics] = useState<any[]>([]); // Store fetched subtopics
   const [loading, setLoading] = useState(false);
 
@@ -46,43 +41,7 @@ const FetchSubtopics = () => {
     loadSubtopics();
   }, []);
 
-  const handleDeactivate = async (id: string) => {
-    setLoading(true);
-    try {
-      await deactivateSubtopic(id);
-      loadSubtopics();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleActivate = async (id: string) => {
-    setLoading(true);
-    try {
-      await activateSubtopic(id);
-      loadSubtopics();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRemove = async (id: string) => {
-    setLoading(true);
-    try {
-      await removeSubtopic(id);
-      loadSubtopics();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (subtopics.length === 0) {
+  if (subtopics.length === 0 || loading) {
     return (
       <div className="flex flex-col p-20 font-redhat">
         <Card className="border shadow-md rounded-2xl p-6">
@@ -200,28 +159,6 @@ const FetchSubtopics = () => {
                       className="font-redhat font-semibold"
                     >
                       <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleActivate(subtopic.id)}
-                      >
-                        Activate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDeactivate(subtopic.id)}
-                      >
-                        Deactivate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRemove(subtopic.id)}
-                        disabled={loading}
-                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash className="w-4 h-4 text-red-700" />
-                        )}
-                        Delete
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -234,4 +171,4 @@ const FetchSubtopics = () => {
   );
 };
 
-export default FetchSubtopics;
+export default FetchAllSubtopics;
