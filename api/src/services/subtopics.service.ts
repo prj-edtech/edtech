@@ -41,7 +41,7 @@ export const createSubTopic = async ({
     subtopicContentPath: contentPath,
     priority,
     attributes: { displayName },
-    isActive: true,
+    isActive: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     createdBy,

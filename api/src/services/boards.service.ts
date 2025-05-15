@@ -41,6 +41,17 @@ export const createBoard = async (data: {
     details: { newState: board },
   });
 
+  await createChangeLog({
+    entityType: "BOARD",
+    entityId: board.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    jsonData: board,
+    notes: "Board created by admin",
+    createdBy: data.createdBy,
+  });
+
   return board;
 };
 

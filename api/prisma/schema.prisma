@@ -25,7 +25,7 @@ model Board {
   partitionKey String   @default("Board")
   sortKey      String // e.g., "CBSE"
   displayName  String
-  isActive     Boolean  @default(true)
+  isActive     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   createdBy    String
@@ -44,7 +44,7 @@ model Standard {
   id           String   @id @default(cuid())
   partitionKey String
   sortKey      String // e.g., "X", "XI", "XII"
-  isActive     Boolean  @default(true)
+  isActive     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   createdBy    String
@@ -79,7 +79,7 @@ model Subject {
   id           String   @id @default(cuid())
   partitionKey String // e.g. "Subject#CBSE#X"
   sortKey      String // e.g. "Mathematics"
-  isActive     Boolean  @default(true)
+  isActive     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   createdBy    String
@@ -162,7 +162,7 @@ model SubTopic {
   sectionId           String // redundant denormalized FK (for easier querying)
   priority            Int
   subtopicContentPath String // Supabase storage path to JSON content file
-  isActive            Boolean  @default(true)
+  isActive            Boolean  @default(false)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   createdBy           String
