@@ -27,9 +27,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { fetchBoards } from "@/api/boards";
-import { fetchStandards } from "@/api/standards";
-import { getAllSubjects } from "@/api/subjects";
+import { fetchActiveBoards } from "@/api/boards";
+import { fetchActiveStandards } from "@/api/standards";
+import { getAllActiveSubjects } from "@/api/subjects";
 import { Select } from "@radix-ui/react-select";
 import {
   SelectContent,
@@ -98,17 +98,17 @@ const FetchSections = () => {
   };
 
   const loadBoards = async () => {
-    const response = await fetchBoards();
+    const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 
   const loadStandards = async () => {
-    const response = await fetchStandards();
+    const response = await fetchActiveStandards();
     setStandardData(response.data);
   };
 
   const loadSubjects = async () => {
-    const response = await getAllSubjects();
+    const response = await getAllActiveSubjects();
     setSubjectData(response.data.data);
   };
 

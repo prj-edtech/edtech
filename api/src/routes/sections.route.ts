@@ -9,6 +9,9 @@ router.post("/", sectionsController.createSection);
 // Get all Sections
 router.get("/", sectionsController.fetchAllSections);
 
+// Get all active sections
+router.get("/active", sectionsController.fetchAllActiveSections);
+
 // Update Section
 router.put("/:sectionId", sectionsController.updateSection);
 

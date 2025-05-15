@@ -153,7 +153,11 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
 };
 
 export const getAllTopics = async () => {
-  return await prisma.topic.findMany();
+  return await prisma.topic.findMany({
+    include: {
+      section: true,
+    },
+  });
 };
 
 export const removeTopic = async (id: string) => {

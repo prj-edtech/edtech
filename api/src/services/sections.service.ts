@@ -275,3 +275,13 @@ export const getAllSections = async () => {
     },
   });
 };
+
+export const getAllActiveSections = async () => {
+  return await prisma.section.findMany({
+    include: {
+      board: true,
+      standard: true,
+      subject: true,
+    },
+  });
+};

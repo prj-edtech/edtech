@@ -477,6 +477,7 @@ const FetchAllTopics = () => {
             <div className="flex flex-col gap-y-2">
               <Label>Status</Label>
               <Select
+                disabled
                 value={editIsActive}
                 onValueChange={(value) => setEditIsActive(value)}
               >

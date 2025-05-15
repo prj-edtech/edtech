@@ -18,6 +18,7 @@ import Sections from "./_components/Admin/Sections/FetchSections";
 import AdminDashboard from "./_components/Admin/AdminDashboard";
 import EditorDashboard from "./_components/Editor/EditorDashboard";
 import EditorSections from "./_components/Editor/Sections/FetchAllSections";
+import EditorTopics from "./_components/Editor/Topics/FetchAllTopics";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -49,7 +50,7 @@ function App() {
         <Route path="/editor" element={<EditorDashboard />}>
           <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
-          <Route path="topics" element={<Topics />} />
+          <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
         </Route>

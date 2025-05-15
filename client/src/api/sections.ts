@@ -19,6 +19,10 @@ export const getAllSections = async () => {
   return axios.get(`${apiURL}/sections`);
 };
 
+export const getAllActiveSections = async () => {
+  return axios.get(`${apiURL}/sections/active`);
+};
+
 export const removeSection = async (id: string) => {
   return axios.delete(`${apiURL}/sections/${id}`);
 };
