@@ -11,6 +11,9 @@ subjectRouter.post("/", subjectsController.createSubject);
 // Get all Subjects
 subjectRouter.get("/", subjectsController.fetchAllSubjects);
 
+// Get all active Subjects
+subjectRouter.get("/active", subjectsController.fetchAllSubjects);
+
 // Get Subjects by Board + Standard
 subjectRouter.get(
   "/:boardId/:standardId",

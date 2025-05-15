@@ -5,6 +5,10 @@ export const fetchStandards = async () => {
   return axios.get(`${apiURL}/standards`);
 };
 
+export const fetchActiveStandards = async () => {
+  return axios.get(`${apiURL}/standards/active`);
+};
+
 export const createStandard = (payload: {
   boardId: string;
   sortKey: string;

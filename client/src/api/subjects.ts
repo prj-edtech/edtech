@@ -16,6 +16,10 @@ export const getAllSubjects = async () => {
   return axios.get(`${apiURL}/subjects`);
 };
 
+export const getAllActiveSubjects = async () => {
+  return axios.get(`${apiURL}/subjects/active`);
+};
+
 export const removeSubject = async (id: string) => {
   return axios.delete(`${apiURL}/subjects/${id}/remove`);
 };

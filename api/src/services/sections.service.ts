@@ -267,5 +267,11 @@ export const removeSection = async (id: string) => {
 };
 
 export const getAllSections = async () => {
-  return await prisma.section.findMany();
+  return await prisma.section.findMany({
+    include: {
+      board: true,
+      standard: true,
+      subject: true,
+    },
+  });
 };

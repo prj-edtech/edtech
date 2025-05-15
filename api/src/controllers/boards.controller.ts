@@ -13,6 +13,19 @@ export const getAllBoardsController = async (_req: Request, res: Response) => {
   }
 };
 
+// GET /api/boards/active
+export const getAllActiveBoardsController = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const boards = await boardServices.getAllActiveBoards();
+    res.status(200).json({ success: true, total: boards.length, data: boards });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 // GET /api/boards/:id
 export const getBoardByIdController = async (req: Request, res: Response) => {
   try {

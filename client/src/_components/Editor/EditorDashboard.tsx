@@ -1,9 +1,9 @@
 import { createUser } from "@/api/user";
-import AdminLayout from "./AdminLayout";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import EditorLayout from "./EditorLayout";
 
-const AdminDashboard = () => {
+const EditorDashboard = () => {
   const addUser = async (
     auth0Id: string,
     email: string,
@@ -40,10 +40,10 @@ const AdminDashboard = () => {
   }, [user, roles]);
 
   return (
-    <AdminLayout>
+    <EditorLayout>
       <div />
-    </AdminLayout>
+    </EditorLayout>
   );
 };
 
-export default AdminDashboard;
+export default EditorDashboard;

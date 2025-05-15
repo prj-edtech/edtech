@@ -22,9 +22,18 @@ export const createStandard = async (req: Request, res: Response) => {
 };
 
 // Controller to get all standards
-export const getAllStandards = async (req: Request, res: Response) => {
+export const getAllStandards = async (_req: Request, res: Response) => {
   try {
     const standards = await standardService.getAllStandards();
+    res.status(200).json(standards);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// Controller to get all active standards
+export const getAllActiveStandards = async (_req: Request, res: Response) => {
+  try {
+    const standards = await standardService.getAllActiveStandards();
     res.status(200).json(standards);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

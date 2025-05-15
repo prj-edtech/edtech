@@ -95,6 +95,20 @@ export const getAllStandards = async () => {
   });
 };
 
+export const getAllActiveStandards = async () => {
+  return await prisma.standard.findMany({
+    where: {
+      isActive: true,
+    },
+    include: {
+      board: true, // include associated board details
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
 export const getStandardById = async (id: string) => {
   return await prisma.standard.findUnique({
     where: { id },

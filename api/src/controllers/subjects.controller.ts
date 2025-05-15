@@ -116,3 +116,12 @@ export const fetchAllSubjects = async (_req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const fetchAllActiveSubjects = async (_req: Request, res: Response) => {
+  try {
+    const subjects = await subjectService.getAllActiveSubjects();
+    res.status(200).json({ data: subjects });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};

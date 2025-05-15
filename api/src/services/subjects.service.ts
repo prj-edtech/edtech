@@ -170,3 +170,11 @@ export const removeSubject = async (id: string) => {
 export const getAllSubjects = async () => {
   return await prisma.subject.findMany();
 };
+
+export const getAllActiveSubjects = async () => {
+  return await prisma.subject.findMany({
+    where: {
+      isActive: true,
+    },
+  });
+};

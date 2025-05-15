@@ -9,6 +9,9 @@ standardRouter.post("/", standardController.createStandard);
 // Get all Standards
 standardRouter.get("/", standardController.getAllStandards);
 
+// Get all active Standards
+standardRouter.get("/active", standardController.getAllActiveStandards);
+
 // Get a Standard by ID
 standardRouter.get("/:id", standardController.getStandardById);
 

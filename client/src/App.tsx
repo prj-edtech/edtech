@@ -16,6 +16,8 @@ import Topics from "./_components/Admin/Topics/FetchTopics";
 import Subjects from "./_components/Admin/Subjects/FetchSubjects";
 import Sections from "./_components/Admin/Sections/FetchSections";
 import AdminDashboard from "./_components/Admin/AdminDashboard";
+import EditorDashboard from "./_components/Editor/EditorDashboard";
+import EditorSections from "./_components/Editor/Sections/FetchAllSections";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -38,6 +40,14 @@ function App() {
           <Route path="standards" element={<Standards />} />
           <Route path="subjects" element={<Subjects />} />
           <Route path="sections" element={<Sections />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="topics" element={<Topics />} />
+          <Route path="subtopics" element={<Subtopics />} />
+          <Route path="subtopics/add" element={<AddSubtopics />} />
+        </Route>
+
+        <Route path="/editor" element={<EditorDashboard />}>
+          <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="topics" element={<Topics />} />
           <Route path="subtopics" element={<Subtopics />} />

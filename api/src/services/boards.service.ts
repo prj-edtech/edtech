@@ -51,6 +51,15 @@ export const getAllBoards = async () => {
   });
 };
 
+// Get All active Boards
+export const getAllActiveBoards = async () => {
+  return await prisma.board.findMany({
+    where: {
+      isActive: true,
+    },
+  });
+};
+
 // Get Single Board
 export const getBoardById = async (id: string) => {
   return await prisma.board.findUnique({

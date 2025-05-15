@@ -1,13 +1,7 @@
-import {
-  getAllSections,
-  addSection,
-  removeSection,
-  editSection,
-  softDeleteSection,
-} from "@/api/sections";
+import { getAllSections, addSection, editSection } from "@/api/sections";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
-import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -27,9 +21,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { fetchBoards } from "@/api/boards";
-import { fetchStandards } from "@/api/standards";
-import { getAllSubjects } from "@/api/subjects";
+import { fetchActiveBoards } from "@/api/boards";
+import { fetchActiveStandards } from "@/api/standards";
+import { getAllActiveSubjects } from "@/api/subjects";
 import { Select } from "@radix-ui/react-select";
 import {
   SelectContent,
@@ -61,7 +55,7 @@ interface Subjects {
   sortKey: string;
 }
 
-const FetchSections = () => {
+const FetchAllSections = () => {
   const [sections, setSections] = useState<any[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [boardData, setBoardData] = useState<Boards[]>([]);
@@ -98,17 +92,17 @@ const FetchSections = () => {
   };
 
   const loadBoards = async () => {
-    const response = await fetchBoards();
+    const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 
   const loadStandards = async () => {
-    const response = await fetchStandards();
+    const response = await fetchActiveStandards();
     setStandardData(response.data);
   };
 
   const loadSubjects = async () => {
-    const response = await getAllSubjects();
+    const response = await getAllActiveSubjects();
     setSubjectData(response.data.data);
   };
 
@@ -147,18 +141,6 @@ const FetchSections = () => {
     }
   };
 
-  const handleRemove = async (sectionId: string) => {
-    setLoading(true);
-    try {
-      await removeSection(sectionId);
-      fetchAllSections();
-    } catch (error: any) {
-      console.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEditOpen = (section: any) => {
     setSelectedSection(section);
     setEditDisplayName(section.sectionJson?.attributes?.displayName || "");
@@ -178,19 +160,6 @@ const FetchSections = () => {
         user?.sub as string
       );
       setEditDialogOpen(false);
-      fetchAllSections();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeactive = async (id: string) => {
-    setLoading(true);
-    try {
-      const performedBy = user?.sub;
-      await softDeleteSection(id, performedBy!);
       fetchAllSections();
     } catch (error) {
       console.error(error);
@@ -391,28 +360,6 @@ const FetchSections = () => {
                           "Edit"
                         )}
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDeactive(section.id)}
-                        className="cursor-pointer"
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Deactivate"
-                        )}
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem
-                        onClick={() => handleRemove(section.id)}
-                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash className="w-4 h-4 text-red-700" />
-                        )}
-                        Delete
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -448,6 +395,7 @@ const FetchSections = () => {
                 <Label>Is Active</Label>
                 <Switch
                   checked={editIsActive}
+                  disabled
                   onCheckedChange={() => setEditIsActive(!editIsActive)}
                 />
               </div>
@@ -469,4 +417,4 @@ const FetchSections = () => {
   );
 };
 
-export default FetchSections;
+export default FetchAllSections;
