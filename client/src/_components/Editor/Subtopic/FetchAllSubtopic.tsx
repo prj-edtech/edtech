@@ -52,7 +52,7 @@ const FetchAllSubtopics = () => {
               className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
             >
               <Link
-                to="/admin/subtopics/add"
+                to="/editor/subtopics/add"
                 className="flex items-center gap-x-2"
               >
                 <Plus className="w-4 h-4 mr-2" /> Add Subtopic
@@ -91,7 +91,7 @@ const FetchAllSubtopics = () => {
             className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
           >
             <Link
-              to="/admin/subtopics/add"
+              to="/editor/subtopics/add"
               className="flex items-center gap-x-2"
             >
               <Plus className="w-4 h-4 mr-2" /> Add Subtopic

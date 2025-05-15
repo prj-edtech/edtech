@@ -206,3 +206,11 @@ export const deactiveSubtopic = async (id: string) => {
     },
   });
 };
+
+export const getSingleSubtopic = async (id: string) => {
+  return await prisma.subTopic.findUnique({
+    where: {
+      id,
+    },
+  });
+};

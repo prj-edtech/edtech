@@ -9,6 +9,9 @@ subtopicRouter.post("/", subTopicController.createSubTopic);
 // Get all SubTopics for a Topic
 subtopicRouter.get("/topic/:topicId", subTopicController.getSubTopicsByTopic);
 
+// Get single SubTopic
+subtopicRouter.get("/:id/content", subTopicController.fetchAllSubtopics);
+
 // Update SubTopic
 subtopicRouter.put("/:subTopicId", subTopicController.updateSubTopic);
 

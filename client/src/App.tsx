@@ -12,6 +12,7 @@ import Standards from "./_components/Admin/Standards/FetchAllStandards";
 import AuditLogs from "./_components/Admin/AuditTrail/FetchAllLogs";
 import Subtopics from "./_components/Admin/Subtopics/FetchSubtopics";
 import AddSubtopics from "./_components/Admin/Subtopics/AddSubtopics";
+import EditorAddSubtopic from "./_components/Editor/Subtopic/AddSubtopic";
 import Topics from "./_components/Admin/Topics/FetchTopics";
 import Subjects from "./_components/Admin/Subjects/FetchSubjects";
 import Sections from "./_components/Admin/Sections/FetchSections";
@@ -20,6 +21,7 @@ import EditorDashboard from "./_components/Editor/EditorDashboard";
 import EditorSections from "./_components/Editor/Sections/FetchAllSections";
 import EditorTopics from "./_components/Editor/Topics/FetchAllTopics";
 import EditorSubtopics from "./_components/Editor/Subtopic/FetchAllSubtopic";
+import SubtopicViewer from "./_components/Admin/Subtopics/ViewEdit";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -46,6 +48,7 @@ function App() {
           <Route path="topics" element={<Topics />} />
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
+          <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
         </Route>
 
         <Route path="/editor" element={<EditorDashboard />}>
@@ -53,7 +56,7 @@ function App() {
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<EditorSubtopics />} />
-          <Route path="subtopics/add" element={<AddSubtopics />} />
+          <Route path="subtopics/add" element={<EditorAddSubtopic />} />
         </Route>
       </Routes>
     </Router>

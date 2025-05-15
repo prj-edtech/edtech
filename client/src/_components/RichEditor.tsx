@@ -1,4 +1,4 @@
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -7,7 +7,7 @@ import Heading from "@tiptap/extension-heading";
 import Bold from "@tiptap/extension-bold";
 import Italic from "@tiptap/extension-italic";
 import { CalloutGreen, CalloutViolet } from "@/extensions/CustomCallouts";
-import { uploadImageToCloudinary } from "@/utils/cloudinary"; // Assuming the image upload logic is here
+import { uploadImageToCloudinary } from "@/utils/cloudinary";
 
 import "@/styles/editor.css";
 import {
@@ -23,9 +23,20 @@ import {
   ListOrdered,
   PencilRuler,
 } from "lucide-react";
+import { useEffect } from "react";
 
-const RichEditor = () => {
-  const editor = useEditor({
+interface RichEditorProps {
+  editor?: Editor;
+  content?: string;
+  onContentChange?: (html: string) => void;
+}
+
+const RichEditor = ({
+  editor: externalEditor,
+  content,
+  onContentChange,
+}: RichEditorProps) => {
+  const internalEditor = useEditor({
     extensions: [
       StarterKit,
       Image.configure({
@@ -42,7 +53,20 @@ const RichEditor = () => {
       CalloutGreen,
       CalloutViolet,
     ],
+    content: content || "<p></p>",
+    onUpdate({ editor }) {
+      onContentChange?.(editor.getHTML());
+    },
   });
+
+  const editor = externalEditor || internalEditor;
+
+  // If content prop changes externally, update editor content to keep in sync
+  useEffect(() => {
+    if (content !== undefined && editor && editor.getHTML() !== content) {
+      editor.commands.setContent(content, false);
+    }
+  }, [content, editor]);
 
   if (!editor) return null;
 
@@ -52,7 +76,6 @@ const RichEditor = () => {
     const files = event.target.files;
     if (!files) return;
 
-    // Loop through the selected files and upload them one by one
     for (const file of files) {
       try {
         const imageUrl = await uploadImageToCloudinary(file);
@@ -64,7 +87,6 @@ const RichEditor = () => {
   };
 
   const triggerImageUpload = () => {
-    // Trigger the file input to open when the button is clicked
     const fileInput = document.getElementById(
       "image-upload-input"
     ) as HTMLInputElement;
@@ -73,58 +95,44 @@ const RichEditor = () => {
 
   return (
     <div className="editor-container w-full min-h-screen border rounded">
-      {/* Toolbar for buttons */}
+      {/* Toolbar */}
       <div className="toolbar flex gap-4 p-2 bg-gray-200 dark:bg-stone-800 border-b mb-4">
-        <button
-          className="text-left hover:bg-gray-100 dark:hover:text-stone-900 p-1 rounded cursor-pointer"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-        >
-          <BoldIcon className="w-4 h-4" />
+        <button onClick={() => editor.chain().focus().toggleBold().run()}>
+          <BoldIcon className="w-4 h-4 cursor-pointer" />
+        </button>
+        <button onClick={() => editor.chain().focus().toggleItalic().run()}>
+          <ItalicIcon className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-        >
-          <ItalicIcon className="w-4 h-4" />
-        </button>
-        <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()
           }
         >
-          <Heading1Icon className="w-4 h-4" />
+          <Heading1Icon className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
         >
-          <Heading2Icon className="w-4 h-4" />
+          <Heading2Icon className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 3 }).run()
           }
         >
-          <Heading3Icon className="w-4 h-4" />
+          <Heading3Icon className="w-4 h-4 cursor-pointer" />
+        </button>
+        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          <List className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-        >
-          <List className="w-4 h-4" />
-        </button>
-        <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
-          <ListOrdered className="w-4 h-4" />
+          <ListOrdered className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor
               .chain()
@@ -133,10 +141,9 @@ const RichEditor = () => {
               .run()
           }
         >
-          <Link2 className="w-4 h-4" />
+          <Link2 className="w-4 h-4 cursor-pointer" />
         </button>
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor
               .chain()
@@ -148,11 +155,9 @@ const RichEditor = () => {
               .run()
           }
         >
-          <PencilRuler className="w-4 h-4" />
+          <PencilRuler className="w-4 h-4 cursor-pointer" />
         </button>
-
         <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
           onClick={() =>
             editor
               .chain()
@@ -164,30 +169,24 @@ const RichEditor = () => {
               .run()
           }
         >
-          <Lightbulb className="w-4 h-4" />
+          <Lightbulb className="w-4 h-4 cursor-pointer" />
         </button>
-
-        <button
-          className="text-left hover:bg-gray-100 p-1 rounded cursor-pointer dark:hover:text-stone-900"
-          onClick={triggerImageUpload} // Trigger image upload on button click
-        >
-          <ImageUp className="w-4 h-4" />
+        <button onClick={triggerImageUpload}>
+          <ImageUp className="w-4 h-4 cursor-pointer" />
         </button>
       </div>
 
-      {/* Editor Content */}
       <div className="editor-content-wrapper w-full">
         <EditorContent editor={editor} />
       </div>
 
-      {/* Hidden File Input for Image Upload */}
       <input
         type="file"
         id="image-upload-input"
         accept="image/*"
         multiple
         onChange={handleImageUpload}
-        className="hidden" // Make it invisible but functional
+        className="hidden"
       />
     </div>
   );

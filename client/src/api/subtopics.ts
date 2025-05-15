@@ -33,3 +33,7 @@ export const activateSubtopic = async (id: string) => {
 export const deactivateSubtopic = async (id: string) => {
   return axios.patch(`${apiURL}/subtopics/${id}/deactivate`);
 };
+
+export const getSubtopicById = async (id: string) => {
+  return axios.get(`${apiURL}/subtopics/${id}/content`);
+};

@@ -160,3 +160,20 @@ export const deactiveSubtopic = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Fetch single subtopic
+export const getSingleSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.getSingleSubtopic(id);
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -199,7 +199,11 @@ const FetchSubtopics = () => {
                       align="end"
                       className="font-redhat font-semibold"
                     >
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to={`/admin/subtopics/view-edit/${subtopic.id}`}>
+                          View & Edit
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleActivate(subtopic.id)}
                       >
