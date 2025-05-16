@@ -183,3 +183,43 @@ export const softDeleteQuestionPaperController = async (
     });
   }
 };
+
+// Delete Question Paper Controller
+export const deleteQuestionPaper = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await questionPaperService.removeQuestionPaper(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Question paper removed successfully",
+      data: deleted,
+    });
+  } catch (error: any) {
+    console.error("Update QuestionPaper Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete question paper",
+      error: error.message,
+    });
+  }
+};
+
+// Delete Question Paper Controller
+export const getAllQuestionPaper = async (req: Request, res: Response) => {
+  try {
+    const questionPapers = await questionPaperService.getAllQuestionPaper();
+
+    res.status(200).json({
+      success: true,
+      data: questionPapers,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to fetch question papers",
+      error: error.message,
+    });
+  }
+};
