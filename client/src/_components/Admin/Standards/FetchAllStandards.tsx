@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth0 } from "@auth0/auth0-react";
-import { fetchBoards } from "@/api/boards";
+import { fetchActiveBoards } from "@/api/boards";
 import {
   Select,
   SelectContent,
@@ -84,7 +84,7 @@ const FetchAllStandards = () => {
   };
 
   const getBoards = async () => {
-    const response = await fetchBoards();
+    const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 

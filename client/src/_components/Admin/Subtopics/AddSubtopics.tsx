@@ -145,7 +145,7 @@ const AddSubtopics = () => {
         priority: 0,
         createdBy: user?.sub || "",
       });
-      navigate("/editor/subtopics");
+      navigate("/admin/subtopics");
     } catch (err) {
       console.error("Error adding subtopic:", err);
       alert("Failed to add subtopic");

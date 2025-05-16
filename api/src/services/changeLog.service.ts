@@ -36,5 +36,7 @@ export const createChangeLog = async (data: {
 };
 
 export const fetchAllChangeLog = async () => {
-  return await prisma.changeLog.findMany();
+  return await prisma.changeLog.findMany({
+    orderBy: { createdAt: "desc" },
+  });
 };

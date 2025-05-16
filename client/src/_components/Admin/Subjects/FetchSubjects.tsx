@@ -1,5 +1,5 @@
-import { fetchBoards } from "@/api/boards";
-import { fetchStandards } from "@/api/standards";
+import { fetchActiveBoards } from "@/api/boards";
+import { fetchActiveStandards } from "@/api/standards";
 import {
   getAllSubjects,
   addSubject,
@@ -82,12 +82,12 @@ const FetchSubjects = () => {
   }, []);
 
   const loadBoards = async () => {
-    const response = await fetchBoards();
+    const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 
   const loadStandards = async () => {
-    const response = await fetchStandards();
+    const response = await fetchActiveStandards();
     setStandardData(response.data);
   };
 
