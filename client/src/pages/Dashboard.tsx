@@ -1,9 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Unauthorized from "../_components/Unauthorized";
 import AdminDashboard from "../_components/Admin/AdminDashboard";
-import ReviewerDashboard from "../_components/ReviewerDashboard";
 import EditorDashboard from "../_components/Editor/EditorDashboard";
 import { Navigate } from "react-router-dom";
+import ReviewerDashboard from "@/_components/Reviewer/ReviewerDashboard";
 
 const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();

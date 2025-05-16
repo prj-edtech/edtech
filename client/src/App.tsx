@@ -25,6 +25,9 @@ import SubtopicViewer from "./_components/Admin/Subtopics/ViewEdit";
 import EditorSingleSubtopics from "./_components/Editor/Subtopic/FetchSingleSubtopic";
 import ChangeLogs from "./_components/Admin/ChangeLogs/FetchAllChangeLogs";
 import QuestionPaper from "./_components/Admin/Question-Paper/FetchAllQuestionPaper";
+import ReviewerSubtopics from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
+import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtopic";
+import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -41,7 +44,6 @@ function App() {
             isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
           }
         />
-
         <Route path="/admin" element={<AdminDashboard />}>
           <Route path="boards" element={<Boards />} />
           <Route path="standards" element={<Standards />} />
@@ -55,7 +57,6 @@ function App() {
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
-
         <Route path="/editor" element={<EditorDashboard />}>
           <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
@@ -67,6 +68,14 @@ function App() {
             element={<EditorSingleSubtopics />}
           />
         </Route>
+        <Route path="/reviewer" element={<ReviewerDashboard />}>
+          <Route path="subtopics" element={<ReviewerSubtopics />} />
+          <Route
+            path="subtopics/review/:id"
+            element={<ReviewerSubtopicReview />}
+          />
+        </Route>
+        Review
       </Routes>
     </Router>
   );
