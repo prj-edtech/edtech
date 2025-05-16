@@ -13,9 +13,9 @@ import {
   ScrollText,
   ChevronUp,
   ChevronDown,
-  Bell,
+  BookType,
+  NotepadText,
 } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const AdminSidebar = () => {
@@ -96,6 +96,20 @@ const AdminSidebar = () => {
           Subtopics
         </Link>
         <Link
+          to="/admin/question-paper"
+          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
+        >
+          <BookType className="w-5 h-5 stroke-[1] text-violet-600" />
+          Question Papers
+        </Link>
+        <Link
+          to="/admin/questions"
+          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
+        >
+          <NotepadText className="w-5 h-5 stroke-[1] text-violet-600" />
+          Questions
+        </Link>
+        <Link
           to="/admin/audit-logs"
           className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
         >
@@ -110,10 +124,6 @@ const AdminSidebar = () => {
           Change Logs
         </Link>
       </nav>
-      <div className="flex justify-start items-center lg:gap-x-4 lg:mt-6">
-        <ModeToggle />
-        <Bell className="w-4 h-4 stroke-[1.5]" />
-      </div>
     </div>
   );
 };

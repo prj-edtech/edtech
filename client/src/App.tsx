@@ -23,6 +23,7 @@ import EditorTopics from "./_components/Editor/Topics/FetchAllTopics";
 import EditorSubtopics from "./_components/Editor/Subtopic/FetchAllSubtopic";
 import SubtopicViewer from "./_components/Admin/Subtopics/ViewEdit";
 import EditorSingleSubtopics from "./_components/Editor/Subtopic/FetchSingleSubtopic";
+import ChangeLogs from "./_components/Admin/ChangeLogs/FetchAllChangeLogs";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -46,6 +47,7 @@ function App() {
           <Route path="subjects" element={<Subjects />} />
           <Route path="sections" element={<Sections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="change-logs" element={<ChangeLogs />} />
           <Route path="topics" element={<Topics />} />
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
