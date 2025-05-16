@@ -92,7 +92,7 @@ const ReviewerSubtopic = () => {
     setLoading(true);
     try {
       await approveSubtopic(id);
-      navigate("/admin/subtopics");
+      navigate("/reviewer/subtopics");
     } catch (error) {
       console.error(error);
     } finally {
@@ -104,7 +104,7 @@ const ReviewerSubtopic = () => {
     setLoading(true);
     try {
       await rejectSubtopic(id);
-      navigate("/admin/subtopics");
+      navigate("/reviewer/subtopics");
     } catch (error) {
       console.error(error);
     } finally {
@@ -116,7 +116,7 @@ const ReviewerSubtopic = () => {
     setLoading(true);
     try {
       await resetSubtopic(id);
-      navigate("/admin/subtopics");
+      navigate("/reviewer/subtopics");
     } catch (error) {
       console.error(error);
     } finally {

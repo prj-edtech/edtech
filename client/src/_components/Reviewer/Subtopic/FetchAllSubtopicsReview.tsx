@@ -167,7 +167,7 @@ const FetchAllSubtopicsReview = () => {
                       className="font-redhat font-semibold"
                     >
                       <DropdownMenuItem>
-                        <Link to={`/admin/subtopics/review/${subtopic.id}`}>
+                        <Link to={`/reviewer/subtopics/review/${subtopic.id}`}>
                           Review
                         </Link>
                       </DropdownMenuItem>

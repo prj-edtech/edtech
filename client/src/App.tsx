@@ -25,9 +25,9 @@ import SubtopicViewer from "./_components/Admin/Subtopics/ViewEdit";
 import EditorSingleSubtopics from "./_components/Editor/Subtopic/FetchSingleSubtopic";
 import ChangeLogs from "./_components/Admin/ChangeLogs/FetchAllChangeLogs";
 import QuestionPaper from "./_components/Admin/Question-Paper/FetchAllQuestionPaper";
-import ReviewerSubtopics from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
 import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtopic";
 import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
+import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -69,7 +69,7 @@ function App() {
           />
         </Route>
         <Route path="/reviewer" element={<ReviewerDashboard />}>
-          <Route path="subtopics" element={<ReviewerSubtopics />} />
+          <Route path="subtopics" element={<FetchAllSubtopicsReview />} />
           <Route
             path="subtopics/review/:id"
             element={<ReviewerSubtopicReview />}

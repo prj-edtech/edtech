@@ -46,14 +46,14 @@ const ReviewerSidebar = () => {
           Dashboard
         </Link>
         <Link
-          to="/admin/subtopics"
+          to="/reviewer/subtopics"
           className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
         >
           <NotebookPen className="w-5 h-5 stroke-[1] text-violet-600" />
           Subtopics
         </Link>
         <Link
-          to="/admin/questions"
+          to="/reviewer/questions"
           className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
         >
           <NotepadText className="w-5 h-5 stroke-[1] text-violet-600" />
