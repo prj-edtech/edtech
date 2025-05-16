@@ -6,13 +6,11 @@ import {
   LayoutDashboard,
   Notebook,
   NotebookPen,
-  Scroll,
-  ScrollText,
   ChevronUp,
   ChevronDown,
-  Bell,
+  BookType,
+  NotepadText,
 } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const EditorSidebar = () => {
@@ -72,24 +70,20 @@ const EditorSidebar = () => {
           Subtopics
         </Link>
         <Link
-          to="/admin/audit-logs"
+          to="/editor/question-paper"
           className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
         >
-          <Scroll className="w-5 h-5 stroke-[1] text-violet-600" />
-          Audit Logs
+          <BookType className="w-5 h-5 stroke-[1] text-violet-600" />
+          Question Papers
         </Link>
         <Link
-          to="/admin/change-logs"
+          to="/editor/questions"
           className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
         >
-          <ScrollText className="w-5 h-5 stroke-[1] text-violet-600" />
-          Change Logs
+          <NotepadText className="w-5 h-5 stroke-[1] text-violet-600" />
+          Questions
         </Link>
       </nav>
-      <div className="flex justify-start items-center lg:gap-x-4 lg:mt-6 mt-auto">
-        <ModeToggle />
-        <Bell className="w-4 h-4 stroke-[1.5]" />
-      </div>
     </div>
   );
 };
