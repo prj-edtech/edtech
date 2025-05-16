@@ -1,6 +1,7 @@
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Interface for creating a Question Paper
 interface QuestionPaperPayload {
@@ -81,6 +82,16 @@ export const createQuestionPaper = async (data: QuestionPaperPayload) => {
     details: questionPaperJson,
   });
 
+  await createChangeLog({
+    entityType: "QUESTION_PAPER",
+    entityId: questionPaper.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Question paper created",
+  });
+
   return questionPaper;
 };
 
@@ -118,6 +129,16 @@ export const updateQuestionPaper = async (
     action: "UPDATE",
     performedBy: updates.updatedBy || existing.updatedBy,
     details: updatedJson,
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION_PAPER",
+    entityId: id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: updates.updatedBy || existing.updatedBy,
+    createdBy: updates.updatedBy || existing.updatedBy,
+    notes: "Question paper updated",
   });
 
   return updated;
@@ -177,5 +198,53 @@ export const softDeleteQuestionPaper = async (
     details: updatedJson,
   });
 
+  await createChangeLog({
+    entityType: "QUESTION_PAPER",
+    entityId: id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Question paper deactivated",
+  });
+
   return deleted;
+};
+
+export const removeQuestionPaper = async (id: string) => {
+  const questionPaper = await prisma.questionPaper.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QuestionPaper",
+    entityId: id,
+    action: "DELETE",
+    performedBy: "user",
+    details: "Question paper hard deleted",
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION_PAPER",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Question paper hard deleted",
+  });
+
+  return questionPaper;
+};
+
+export const getAllQuestionPaper = async () => {
+  return await prisma.questionPaper.findMany({
+    include: {
+      board: true,
+      standard: true,
+      subject: true,
+    },
+  });
 };

@@ -4,6 +4,7 @@ import { JsonObject } from "@prisma/client/runtime/library";
 import prisma from "../config/db";
 import { generateSubjectJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Create Subject
 export const createSubject = async (data: {
@@ -66,6 +67,16 @@ export const createSubject = async (data: {
     details: { newState: subject },
   });
 
+  await createChangeLog({
+    entityType: "SUBJECT",
+    entityId: subject.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Subject created without needing to be reviewed",
+  });
+
   return subject;
 };
 
@@ -102,7 +113,7 @@ export const updateSubject = async (
   const updatedSubject = await prisma.subject.update({
     where: { id },
     data: {
-      isActive: data.isActive ?? existing.isActive,
+      isActive: true,
       updatedBy: data.updatedBy,
       subjectJson: updatedJson,
     },
@@ -117,6 +128,16 @@ export const updateSubject = async (
       previousState: existing,
       newState: updatedSubject,
     },
+  });
+
+  await createChangeLog({
+    entityType: "SUBJECT",
+    entityId: id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Subject updated without needing to be reviewed",
   });
 
   return updatedSubject;
@@ -156,9 +177,57 @@ export const softDeleteSubject = async (id: string, performedBy: string) => {
     },
   });
 
+  await createChangeLog({
+    entityType: "SUBJECT",
+    entityId: id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Subject soft deleted without needing to be reviewed",
+  });
+
   return updatedSubject;
+};
+
+export const removeSubject = async (id: string) => {
+  const deletedSubject = await prisma.subject.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SUBJECT",
+    entityId: id,
+    action: "DELETED",
+    performedBy: "admin",
+    details: {
+      notes: "Subject has been removed permanently",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "SUBJECT",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Subject hard deleted without needing to be reviewed",
+  });
+
+  return deletedSubject;
 };
 
 export const getAllSubjects = async () => {
   return await prisma.subject.findMany();
+};
+
+export const getAllActiveSubjects = async () => {
+  return await prisma.subject.findMany({
+    where: {
+      isActive: true,
+    },
+  });
 };

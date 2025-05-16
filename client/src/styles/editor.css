@@ -1,0 +1,62 @@
+/* General Styling */
+.ProseMirror {
+  outline: none;
+  min-height: 400px;
+  font-size: 1rem;
+}
+
+.ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0.75rem 0;
+}
+/* Bullet and Ordered List Styling */
+.ProseMirror ul {
+  list-style-type: disc; /* Use bullets for unordered lists */
+  padding-left: 1.5rem; /* Indent the list */
+}
+
+.ProseMirror ol {
+  list-style-type: decimal; /* Use numbers for ordered lists */
+  padding-left: 1.5rem; /* Indent the list */
+}
+
+.ProseMirror li {
+  margin-bottom: 0.5rem;
+}
+
+/* Optional: Customize the markers (bullets and numbers) */
+.ProseMirror ul li::marker {
+  color: gray; /* Bullet color */
+}
+
+.ProseMirror ol li::marker {
+  color: gray; /* Number color */
+}
+
+/* Link Styling */
+.ProseMirror a {
+  color: #1E90FF;
+  text-decoration: underline;
+}
+
+.ProseMirror a:hover {
+  color: gray; /* Change color on hover */
+  text-decoration: none; /* Optionally remove underline on hover */
+}

@@ -5,6 +5,10 @@ export const fetchStandards = async () => {
   return axios.get(`${apiURL}/standards`);
 };
 
+export const fetchActiveStandards = async () => {
+  return axios.get(`${apiURL}/standards/active`);
+};
+
 export const createStandard = (payload: {
   boardId: string;
   sortKey: string;
@@ -30,6 +34,13 @@ export const softDeleteStandard = (
   return axios.patch(`${apiURL}/standards/${id}/deactivate`, payload);
 };
 
+export const activateStandard = (
+  id: string,
+  payload: { performedBy: string }
+) => {
+  return axios.patch(`${apiURL}/standards/${id}/activate`, payload);
+};
+
 export const removeStandard = (id: string) => {
-  return axios.delete(`${apiURL}/standards/remove/${id}`);
+  return axios.delete(`${apiURL}/standards/${id}`);
 };

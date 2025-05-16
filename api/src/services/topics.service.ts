@@ -1,6 +1,7 @@
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 export const createTopic = async (data: {
   boardId: string;
@@ -64,6 +65,16 @@ export const createTopic = async (data: {
     details: topicJson,
   });
 
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: topic.topicId,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Topic created by user",
+  });
+
   return topic;
 };
 
@@ -73,18 +84,20 @@ export const updateTopic = async (
     priority?: number;
     attributes?: any;
     updatedBy: string;
+    isActive?: boolean;
   }
 ) => {
   const topic = await prisma.topic.findUnique({ where: { topicId } });
 
   if (!topic) throw new Error("Topic not found.");
 
+  const topicJson = topic.topicJson as Record<string, any>;
+
   const updatedJson = {
-    ...(topic.topicJson as Record<string, any>),
-    priority:
-      data.priority ?? (topic.topicJson as Record<string, any>).priority,
-    attributes:
-      data.attributes ?? (topic.topicJson as Record<string, any>).attributes,
+    ...topicJson,
+    priority: data.priority ?? topicJson.priority,
+    attributes: data.attributes ?? topicJson.attributes,
+    isActive: data.isActive ?? topicJson.isActive,
     updatedAt: new Date().toISOString(),
     updatedBy: data.updatedBy,
   };
@@ -95,15 +108,26 @@ export const updateTopic = async (
       priority: data.priority,
       updatedBy: data.updatedBy,
       topicJson: updatedJson,
+      isActive: data.isActive,
     },
   });
 
-  await createAuditLog({
-    entityType: "Topic",
+  // await createAuditLog({
+  //   entityType: "Topic",
+  //   entityId: topic.topicId,
+  //   action: "UPDATE",
+  //   performedBy: data.updatedBy,
+  //   details: updatedJson,
+  // });
+
+  await createChangeLog({
+    entityType: "TOPIC",
     entityId: topic.topicId,
-    action: "UPDATE",
-    performedBy: data.updatedBy,
-    details: updatedJson,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Topic updated by user",
   });
 
   return updatedTopic;
@@ -146,9 +170,62 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
     details: updatedJson,
   });
 
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: topic.topicId,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: deletedBy,
+    createdBy: deletedBy,
+    notes: "Topic soft deleted by user",
+  });
+
   return deletedTopic;
 };
 
 export const getAllTopics = async () => {
-  return await prisma.topic.findMany();
+  return await prisma.topic.findMany({
+    include: {
+      section: true,
+    },
+  });
+};
+
+export const getAllActiveTopics = async () => {
+  return await prisma.topic.findMany({
+    where: {
+      isActive: true,
+    },
+    include: {
+      section: true,
+    },
+  });
+};
+
+export const removeTopic = async (id: string) => {
+  const topic = prisma.topic.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "Topic",
+    entityId: id,
+    action: "DELETE",
+    performedBy: "user",
+    details: "Topic hard deleted by user",
+  });
+
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Topic soft deleted by user",
+  });
+
+  return topic;
 };

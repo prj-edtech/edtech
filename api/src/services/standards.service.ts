@@ -1,6 +1,7 @@
 import { JsonValue } from "@prisma/client/runtime/library";
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Utility to validate Roman numerals (I to XII)
 const isRomanNumeral = (value: string) =>
@@ -81,11 +82,35 @@ export const createStandard = async (data: {
     details: standardJson,
   });
 
+  await createChangeLog({
+    entityType: "STANDARDS",
+    entityId: newStandard.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Standard created without needing to be reviewed",
+  });
+
   return newStandard;
 };
 
 export const getAllStandards = async () => {
   return await prisma.standard.findMany({
+    include: {
+      board: true, // include associated board details
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const getAllActiveStandards = async () => {
+  return await prisma.standard.findMany({
+    where: {
+      isActive: true,
+    },
     include: {
       board: true, // include associated board details
     },
@@ -152,23 +177,109 @@ export const updateStandard = async (
     details: updatedJson, // we log the full updated JSON payload for traceability
   });
 
+  await createChangeLog({
+    entityType: "STANDARDS",
+    entityId: updatedStandard.id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Standard updated without needing to be reviewed",
+  });
+
   return updatedStandard;
 };
 
 export const deactivateStandard = async (id: string, performedBy: string) => {
-  const updatedStandard = await updateStandard(id, {
-    isActive: false,
-    updatedBy: performedBy,
+  const standard = await prisma.standard.update({
+    where: {
+      id,
+    },
+    data: {
+      updatedBy: performedBy,
+      isActive: false,
+    },
   });
 
   // Log as DEACTIVATE instead of UPDATE
   await createAuditLog({
     entityType: "STANDARD",
-    entityId: updatedStandard.id,
+    entityId: standard.id,
     action: "DEACTIVATE",
     performedBy,
-    details: updatedStandard.standardJson,
+    details: standard.standardJson,
   });
 
-  return updatedStandard;
+  await createChangeLog({
+    entityType: "STANDARDS",
+    entityId: standard.id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Standard soft deleted without needing to be reviewed",
+  });
+
+  return standard;
+};
+
+export const activateStandard = async (id: string, performedBy: string) => {
+  const standard = await prisma.standard.update({
+    where: {
+      id,
+    },
+    data: {
+      updatedBy: performedBy,
+      isActive: true,
+    },
+  });
+
+  // Log as ACTIVATE instead of UPDATE
+  await createAuditLog({
+    entityType: "STANDARD",
+    entityId: standard.id,
+    action: "ACTIVATE",
+    performedBy,
+    details: standard.standardJson,
+  });
+
+  await createChangeLog({
+    entityType: "STANDARDS",
+    entityId: standard.id,
+    changeType: "ACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Standard activated without needing to be reviewed",
+  });
+
+  return standard;
+};
+
+export const deleteStandard = async (id: string) => {
+  const deletedStandard = await prisma.standard.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "STANDARD",
+    entityId: id,
+    action: "DELETE",
+    performedBy: "admin",
+    details: "N/A",
+  });
+
+  await createChangeLog({
+    entityType: "STANDARDS",
+    entityId: id,
+    changeType: "ACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Standard hard deleted without needing to be reviewed",
+  });
+
+  return deletedStandard;
 };

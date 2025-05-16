@@ -22,9 +22,18 @@ export const createStandard = async (req: Request, res: Response) => {
 };
 
 // Controller to get all standards
-export const getAllStandards = async (req: Request, res: Response) => {
+export const getAllStandards = async (_req: Request, res: Response) => {
   try {
     const standards = await standardService.getAllStandards();
+    res.status(200).json(standards);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// Controller to get all active standards
+export const getAllActiveStandards = async (_req: Request, res: Response) => {
+  try {
+    const standards = await standardService.getAllActiveStandards();
     res.status(200).json(standards);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -79,6 +88,35 @@ export const deactivateStandard = async (req: Request, res: Response) => {
 
     const result = await standardService.deactivateStandard(id, performedBy);
     res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Controller to activate a standard
+export const activateStandard = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+
+    if (!performedBy) {
+      res.status(400).json({ message: "performedBy is required." });
+    }
+
+    const result = await standardService.activateStandard(id, performedBy);
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Controller to remove a standard
+export const removeStandard = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const result = await standardService.deleteStandard(id);
+    res.status(200).json({ data: result, message: "Standard deleted" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

@@ -109,3 +109,122 @@ export const fetchAllSubtopics = async (_req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Remove  a subtopic
+export const removeSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.removeSubtopic(id);
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Set subtopic to active
+export const activeSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.activeSubtopic(id);
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Set subtopic to active
+export const deactiveSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.deactiveSubtopic(id);
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Fetch single subtopic
+export const getSingleSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.getSingleSubtopic(id);
+
+    res.status(200).json({ data: subtopics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Approve subtopic
+export const approveSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.approveSubtopic(id);
+
+    res.status(200).json({ data: subtopics, message: "Subtopic approved" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reset subtopic
+export const resetSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.resetSubtopic(id);
+
+    res.status(200).json({ data: subtopics, message: "Subtopic reset" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reject subtopic
+export const rejectSubtopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({ message: "ID is invalid or do not exists" });
+    }
+
+    const subtopics = await subTopicService.rejectSubtopic(id);
+
+    res.status(200).json({ data: subtopics, message: "Subtopic disapproved" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

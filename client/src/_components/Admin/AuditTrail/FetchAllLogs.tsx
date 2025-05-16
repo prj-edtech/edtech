@@ -47,7 +47,7 @@ const FetchAllLogs = () => {
                 <TableHead>Performed At</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="font-redhat">
               {logs.length > 0 ? (
                 logs.map((log) => (
                   <TableRow key={log.id}>

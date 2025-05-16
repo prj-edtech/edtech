@@ -1,5 +1,6 @@
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Get all users
 export const getAllUsers = async () => {
@@ -7,9 +8,9 @@ export const getAllUsers = async () => {
 };
 
 // Get user by id
-export const getUserById = async (id: string) => {
+export const getUserById = async (auth0Id: string) => {
   return await prisma.user.findUnique({
-    where: { id },
+    where: { auth0Id },
   });
 };
 
@@ -18,8 +19,19 @@ export const createUser = async (data: {
   auth0Id: string;
   email: string;
   name: string;
+  role: string;
   picture?: string;
 }) => {
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      auth0Id: data.auth0Id,
+    },
+  });
+
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
+
   const user = await prisma.user.create({
     data,
   });
@@ -34,6 +46,16 @@ export const createUser = async (data: {
       newState: user,
       notes: "New user created via Auth0 webhook.",
     },
+  });
+
+  await createChangeLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: user.auth0Id,
+    createdBy: user.auth0Id,
+    notes: "New user created",
   });
 
   return user;
@@ -58,6 +80,16 @@ export const deleteUserById = async (id: string) => {
       previousState: user,
       notes: `User ${user.name} deleted.`,
     },
+  });
+
+  await createChangeLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: user.auth0Id,
+    createdBy: user.auth0Id,
+    notes: "User deleted",
   });
 
   return user;

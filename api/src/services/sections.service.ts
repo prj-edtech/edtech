@@ -3,6 +3,7 @@
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 type SectionJson = {
   partitionKey: string;
@@ -126,6 +127,16 @@ export const createSection = async (data: {
     details: { newState: section },
   });
 
+  await createChangeLog({
+    entityType: "SECTION",
+    entityId: section.id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Section created without needing to be reviewed",
+  });
+
   return section;
 };
 
@@ -167,6 +178,7 @@ export const updateSection = async (data: {
     where: { id: data.sectionId },
     data: {
       sectionJson: updatedJson,
+      isActive: data.isActive,
       updatedBy: data.updatedBy,
     },
   });
@@ -178,6 +190,16 @@ export const updateSection = async (data: {
     action: "UPDATED",
     performedBy: data.updatedBy,
     details: { newState: updatedSection },
+  });
+
+  await createChangeLog({
+    entityType: "SECTION",
+    entityId: section.id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Section updated without needing to be reviewed",
   });
 
   return updatedSection;
@@ -245,9 +267,62 @@ export const softDeleteSection = async (
     details: { previousState: section, newState: updatedSection },
   });
 
+  await createChangeLog({
+    entityType: "SECTION",
+    entityId: section.id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Section soft deleted without needing to be reviewed",
+  });
+
   return updatedSection;
 };
 
+export const removeSection = async (id: string) => {
+  const section = await prisma.section.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SECTION",
+    entityId: id,
+    action: "DELETED",
+    performedBy: "admin",
+  });
+
+  await createChangeLog({
+    entityType: "SECTION",
+    entityId: section.id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Section hard deleted without needing to be reviewed",
+  });
+
+  return section;
+};
+
 export const getAllSections = async () => {
-  return await prisma.section.findMany();
+  return await prisma.section.findMany({
+    include: {
+      board: true,
+      standard: true,
+      subject: true,
+    },
+  });
+};
+
+export const getAllActiveSections = async () => {
+  return await prisma.section.findMany({
+    include: {
+      board: true,
+      standard: true,
+      subject: true,
+    },
+  });
 };

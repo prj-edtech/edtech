@@ -5,6 +5,10 @@ export const fetchBoards = async () => {
   return axios.get(`${apiURL}/boards`);
 };
 
+export const fetchActiveBoards = async () => {
+  return axios.get(`${apiURL}/boards/active`);
+};
+
 export const createBoard = (payload: {
   sortKey: string;
   displayName: string;

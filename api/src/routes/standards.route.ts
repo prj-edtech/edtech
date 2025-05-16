@@ -9,6 +9,9 @@ standardRouter.post("/", standardController.createStandard);
 // Get all Standards
 standardRouter.get("/", standardController.getAllStandards);
 
+// Get all active Standards
+standardRouter.get("/active", standardController.getAllActiveStandards);
+
 // Get a Standard by ID
 standardRouter.get("/:id", standardController.getStandardById);
 
@@ -17,5 +20,11 @@ standardRouter.put("/:id", standardController.updateStandard);
 
 // Deactivate a Standard
 standardRouter.patch("/:id/deactivate", standardController.deactivateStandard);
+
+// Activate a Standard
+standardRouter.patch("/:id/activate", standardController.activateStandard);
+
+// Delete a Standard
+standardRouter.delete("/:id", standardController.removeStandard);
 
 export default standardRouter;

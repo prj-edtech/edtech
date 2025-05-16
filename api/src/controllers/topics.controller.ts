@@ -5,6 +5,8 @@ import {
   getTopicsBySection,
   softDeleteTopic,
   getAllTopics,
+  removeTopic,
+  getAllActiveTopics,
 } from "../services/topics.service";
 
 // Create a new topic
@@ -44,12 +46,13 @@ export const handleCreateTopic = async (req: Request, res: Response) => {
 export const handleUpdateTopic = async (req: Request, res: Response) => {
   try {
     const { topicId } = req.params;
-    const { priority, attributes, updatedBy } = req.body;
+    const { priority, attributes, updatedBy, isActive } = req.body;
 
     const updatedTopic = await updateTopic(topicId, {
       priority,
       attributes,
       updatedBy,
+      isActive,
     });
 
     res.status(200).json({
@@ -102,6 +105,37 @@ export const fetchAllTopics = async (_req: Request, res: Response) => {
   try {
     const topics = await getAllTopics();
     res.status(200).json({ data: topics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all active topics
+export const fetchAllActiveTopics = async (_req: Request, res: Response) => {
+  try {
+    const topics = await getAllActiveTopics();
+    res.status(200).json({ data: topics });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Permanently remove a topic
+export const deleteTopic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(404).json({
+        success: false,
+        message: "ID not found in params or incorrect",
+      });
+    }
+
+    const topic = await removeTopic(id);
+    res
+      .status(200)
+      .json({ success: true, data: topic, message: "Topic deleted" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

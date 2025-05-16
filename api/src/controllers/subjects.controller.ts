@@ -91,9 +91,35 @@ export const softDeleteSubject = async (req: Request, res: Response) => {
   }
 };
 
+//  Delete Subject
+export const removeSubject = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ message: "Missing ID" });
+    }
+
+    const deletedSubject = await subjectService.removeSubject(id);
+
+    res.status(200).json(deletedSubject);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const fetchAllSubjects = async (_req: Request, res: Response) => {
   try {
     const subjects = await subjectService.getAllSubjects();
+    res.status(200).json({ data: subjects });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const fetchAllActiveSubjects = async (_req: Request, res: Response) => {
+  try {
+    const subjects = await subjectService.getAllActiveSubjects();
     res.status(200).json({ data: subjects });
   } catch (error: any) {
     res.status(400).json({ message: error.message });

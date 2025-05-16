@@ -1,6 +1,7 @@
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 export const createSubTopic = async ({
   boardCode,
@@ -41,7 +42,7 @@ export const createSubTopic = async ({
     subtopicContentPath: contentPath,
     priority,
     attributes: { displayName },
-    isActive: true,
+    isActive: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     createdBy,
@@ -71,6 +72,16 @@ export const createSubTopic = async ({
     action: "CREATE",
     performedBy: createdBy,
     details: subTopicJson,
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: subTopic.id,
+    changeType: "CREATE",
+    changeStatus: "REQUESTED",
+    submittedBy: createdBy,
+    createdBy: createdBy,
+    notes: "Subtopic created and waiting to be reviewed",
   });
 
   return subTopic;
@@ -129,6 +140,16 @@ export const updateSubTopic = async ({
     details: updatedJson,
   });
 
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: existing.id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: updatedBy,
+    createdBy: updatedBy,
+    notes: "Subtopic updated",
+  });
+
   return updatedSubTopic;
 };
 
@@ -166,8 +187,213 @@ export const softDeleteSubTopic = async (
     performedBy,
     details: updatedJson,
   });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: existing.id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Subtopic deactivated",
+  });
 };
 
 export const getAllSubtopics = async () => {
-  return await prisma.subTopic.findMany();
+  return await prisma.subTopic.findMany({
+    include: {
+      topic: true,
+      section: true,
+    },
+  });
+};
+
+export const removeSubtopic = async (id: string) => {
+  const deletedSubtopic = await prisma.subTopic.delete({
+    where: {
+      id,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "SOFT_DELETE",
+    performedBy: "admin",
+    details: "Deactivated by admin",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Subtopic hard deleted by admin",
+  });
+
+  return deletedSubtopic;
+};
+
+export const activeSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "SOFT_DELETE",
+    performedBy: "admin",
+    details: "Deactivated by admin",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Subtopic hard deleted by admin",
+  });
+};
+
+export const deactiveSubtopic = async (id: string) => {
+  return await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "SOFT_DELETE",
+    performedBy: "admin",
+    details: "Deactivated by admin",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Subtopic hard deleted by admin",
+  });
+};
+
+export const getSingleSubtopic = async (id: string) => {
+  return await prisma.subTopic.findUnique({
+    where: {
+      id,
+    },
+  });
+};
+
+export const approveSubtopic = async (id: string) => {
+  const subtopic = await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+      review: "APPROVED",
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "APPROVED",
+    performedBy: "user",
+    details: "Request was approved",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "APPROVED",
+    changeStatus: "APPROVED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Request was approved",
+  });
+
+  return subtopic;
+};
+
+export const rejectSubtopic = async (id: string) => {
+  const subtopic = await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+      review: "REJECTED",
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "REJECTED",
+    performedBy: "user",
+    details: "Request was disapproved",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "REJECTED",
+    changeStatus: "REJECTED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Request was disapproved",
+  });
+
+  return subtopic;
+};
+
+export const resetSubtopic = async (id: string) => {
+  const subtopic = await prisma.subTopic.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+      review: "PENDING",
+    },
+  });
+
+  await createAuditLog({
+    entityType: "SubTopic",
+    entityId: id,
+    action: "REQUESTED",
+    performedBy: "user",
+    details: "Waiting for Approval",
+  });
+
+  await createChangeLog({
+    entityType: "SUBTOPIC",
+    entityId: id,
+    changeType: "PENDING",
+    changeStatus: "REQUESTED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Waiting for Approval",
+  });
+
+  return subtopic;
 };
