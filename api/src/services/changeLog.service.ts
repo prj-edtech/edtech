@@ -7,25 +7,30 @@ export const createChangeLog = async (data: {
   changeType: string;
   changeStatus: string;
   submittedBy: string;
-  jsonData: Prisma.InputJsonValue;
   notes?: string;
   createdBy: string;
 }) => {
+  const submittedAt = new Date();
+
+  const changeLogData = {
+    changeLogId: `clog_${Math.random().toString(36).substring(2, 15)}`,
+    entityType: data.entityType,
+    entityId: data.entityId,
+    changeType: data.changeType,
+    changeStatus: data.changeStatus,
+    submittedBy: data.submittedBy,
+    submittedAt: submittedAt,
+    movedToDev: false,
+    movedToQA: false,
+    movedToProd: false,
+    notes: data.notes || null,
+    createdBy: data.createdBy,
+  };
+
   return await prisma.changeLog.create({
     data: {
-      changeLogId: `clog_${Math.random().toString(36).substring(2, 15)}`,
-      entityType: data.entityType,
-      entityId: data.entityId,
-      changeType: data.changeType,
-      changeStatus: data.changeStatus,
-      submittedBy: data.submittedBy,
-      submittedAt: new Date(),
-      jsonData: data.jsonData,
-      movedToDev: false,
-      movedToQA: false,
-      movedToProd: false,
-      notes: data.notes || null,
-      createdBy: data.createdBy,
+      ...changeLogData,
+      jsonData: changeLogData, // save this object as the jsonData
     },
   });
 };

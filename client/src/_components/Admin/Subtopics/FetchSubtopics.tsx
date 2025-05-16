@@ -201,7 +201,7 @@ const FetchSubtopics = () => {
                     >
                       <DropdownMenuItem>
                         <Link to={`/admin/subtopics/view-edit/${subtopic.id}`}>
-                          View & Edit
+                          Review & Edit
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem

@@ -1,6 +1,7 @@
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 export const createTopic = async (data: {
   boardId: string;
@@ -64,6 +65,16 @@ export const createTopic = async (data: {
     details: topicJson,
   });
 
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: topic.topicId,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.createdBy,
+    createdBy: data.createdBy,
+    notes: "Topic created by user",
+  });
+
   return topic;
 };
 
@@ -109,6 +120,16 @@ export const updateTopic = async (
   //   details: updatedJson,
   // });
 
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: topic.topicId,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Topic updated by user",
+  });
+
   return updatedTopic;
 };
 
@@ -149,6 +170,16 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
     details: updatedJson,
   });
 
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: topic.topicId,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: deletedBy,
+    createdBy: deletedBy,
+    notes: "Topic soft deleted by user",
+  });
+
   return deletedTopic;
 };
 
@@ -172,9 +203,29 @@ export const getAllActiveTopics = async () => {
 };
 
 export const removeTopic = async (id: string) => {
-  return prisma.topic.delete({
+  const topic = prisma.topic.delete({
     where: {
       id,
     },
   });
+
+  await createAuditLog({
+    entityType: "Topic",
+    entityId: id,
+    action: "DELETE",
+    performedBy: "user",
+    details: "Topic hard deleted by user",
+  });
+
+  await createChangeLog({
+    entityType: "TOPIC",
+    entityId: id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "user",
+    createdBy: "user",
+    notes: "Topic soft deleted by user",
+  });
+
+  return topic;
 };

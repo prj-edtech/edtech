@@ -47,9 +47,8 @@ export const createBoard = async (data: {
     changeType: "CREATE",
     changeStatus: "AUTO_APPROVED",
     submittedBy: data.createdBy,
-    jsonData: board,
-    notes: "Board created by admin",
     createdBy: data.createdBy,
+    notes: "Board created by admin",
   });
 
   return board;
@@ -126,6 +125,16 @@ export const updateBoard = async (
     },
   });
 
+  await createChangeLog({
+    entityType: "BOARD",
+    entityId: id,
+    changeType: "UPDATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: data.updatedBy,
+    createdBy: data.updatedBy,
+    notes: "Board updated by admin",
+  });
+
   return updatedBoard;
 };
 
@@ -159,7 +168,7 @@ export const deleteBoard = async (id: string, performedBy: string) => {
   await createAuditLog({
     entityType: "BOARD",
     entityId: id,
-    action: "DELETED",
+    action: "DELETE",
     performedBy,
     details: {
       previousState: board,
@@ -168,13 +177,45 @@ export const deleteBoard = async (id: string, performedBy: string) => {
     },
   });
 
+  await createChangeLog({
+    entityType: "BOARD",
+    entityId: id,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Board soft deleted by admin",
+  });
+
   return deletedBoard;
 };
 
 export const removeBoard = async (id: string) => {
-  return await prisma.board.delete({
+  const board = await prisma.board.delete({
     where: {
       id,
     },
+  });
+
+  await createAuditLog({
+    entityType: "BOARD",
+    entityId: id,
+    action: "DELETE",
+    performedBy: "admin",
+    details: {
+      previousState: board,
+      newState: board,
+      notes: "Hard delete",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "BOARD",
+    entityId: id,
+    changeType: "REMOVE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: "admin",
+    createdBy: "admin",
+    notes: "Board hard deleted by admin",
   });
 };

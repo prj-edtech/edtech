@@ -1,5 +1,6 @@
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
+import { createChangeLog } from "./changeLog.service";
 
 // Get all users
 export const getAllUsers = async () => {
@@ -47,6 +48,16 @@ export const createUser = async (data: {
     },
   });
 
+  await createChangeLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    changeType: "CREATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: user.auth0Id,
+    createdBy: user.auth0Id,
+    notes: "New user created",
+  });
+
   return user;
 };
 
@@ -69,6 +80,16 @@ export const deleteUserById = async (id: string) => {
       previousState: user,
       notes: `User ${user.name} deleted.`,
     },
+  });
+
+  await createChangeLog({
+    entityType: "USER",
+    entityId: user.auth0Id,
+    changeType: "DELETE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: user.auth0Id,
+    createdBy: user.auth0Id,
+    notes: "User deleted",
   });
 
   return user;
