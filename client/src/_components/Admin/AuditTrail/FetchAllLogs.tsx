@@ -30,21 +30,23 @@ const FetchAllLogs = () => {
   }, []);
 
   if (loading) {
-    return <div className="p-4">Loading logs...</div>;
+    return <div className="p-4">Loading Audit logs...</div>;
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 font-redhat">
       <div className="border rounded-2xl shadow p-4">
-        <h2 className="text-xl font-outfit font-semibold mb-4">Audit Logs</h2>
+        <h2 className="lg:text-2xl font-bold lg:mb-8">Audit Logs</h2>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Entity Type</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead>Performed By</TableHead>
-                <TableHead>Performed At</TableHead>
+                <TableHead className="font-bold">Entity Type</TableHead>
+                <TableHead className="font-bold">Action</TableHead>
+                <TableHead className="font-bold">User</TableHead>
+                <TableHead className="font-bold">Role</TableHead>
+                <TableHead className="font-bold">Time</TableHead>
+                <TableHead className="font-bold">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="font-redhat">
@@ -53,7 +55,13 @@ const FetchAllLogs = () => {
                   <TableRow key={log.id}>
                     <TableCell>{log.entityType}</TableCell>
                     <TableCell>{log.action}</TableCell>
-                    <TableCell>{log.performedBy}</TableCell>
+                    <TableCell>{log.user.name}</TableCell>
+                    <TableCell className="capitalize">
+                      {log.user.role}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(log.performedAt).toLocaleTimeString()}
+                    </TableCell>
                     <TableCell>{log.performedAt.split("T")[0]}</TableCell>
                   </TableRow>
                 ))

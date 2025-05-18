@@ -39,18 +39,20 @@ const FetchAllChangeLogs = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 font-redhat">
       <div className="border rounded-2xl shadow p-4">
-        <h2 className="text-xl font-outfit font-semibold mb-4">Change Logs</h2>
+        <h2 className="lg:text-2xl font-bold lg:mb-6">Change Logs</h2>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Entity Type</TableHead>
-                <TableHead>Change Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted At</TableHead>
-                <TableHead>Notes</TableHead>
+                <TableHead className="font-bold">Entity Type</TableHead>
+                <TableHead className="font-bold">Change Type</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="font-bold">Name</TableHead>
+                <TableHead className="font-bold">Role</TableHead>
+                <TableHead className="font-bold">Time</TableHead>
+                <TableHead className="font-bold">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="font-redhat">
@@ -60,8 +62,14 @@ const FetchAllChangeLogs = () => {
                     <TableCell>{log.entityType}</TableCell>
                     <TableCell>{log.changeType}</TableCell>
                     <TableCell>{log.changeStatus}</TableCell>
+                    <TableCell>{log.User.name}</TableCell>
+                    <TableCell className="capitalize">
+                      {log.User.role}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(log.submittedAt).toLocaleTimeString()}
+                    </TableCell>
                     <TableCell>{log.submittedAt?.split("T")[0]}</TableCell>
-                    <TableCell>{log.notes}</TableCell>
                   </TableRow>
                 ))
               ) : (

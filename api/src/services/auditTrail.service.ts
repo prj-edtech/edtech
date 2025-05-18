@@ -29,6 +29,9 @@ export const createAuditLog = async (data: {
 export const getAllAuditLogs = async () => {
   return await prisma.auditLog.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      user: true,
+    },
   });
 };
 
