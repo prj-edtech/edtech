@@ -89,7 +89,8 @@ export const deleteBoardController = async (req: Request, res: Response) => {
 export const removeBoardController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const board = await boardServices.removeBoard(id);
+    const { performedBy } = req.body;
+    const board = await boardServices.removeBoard(id, performedBy);
     res
       .status(200)
       .json({ success: true, message: "Board removed", data: board });
