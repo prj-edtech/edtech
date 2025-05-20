@@ -243,8 +243,8 @@ const FetchAllBoards = () => {
         <Table className="border-b">
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Display Name</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead></TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
