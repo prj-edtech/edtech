@@ -189,7 +189,7 @@ const FetchAllBoards = () => {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="sortKey" className="text-right">
-                    Sort Key
+                    Name
                   </Label>
                   <Input
                     id="sortKey"
@@ -233,9 +233,8 @@ const FetchAllBoards = () => {
         <Table className="border-b">
           <TableHeader>
             <TableRow>
-              <TableHead>Sort Key</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Display Name</TableHead>
-              <TableHead>Partition Key</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -245,7 +244,6 @@ const FetchAllBoards = () => {
               <TableRow key={board.id}>
                 <TableCell>{board.sortKey}</TableCell>
                 <TableCell>{board.displayName}</TableCell>
-                <TableCell>{board.partitionKey}</TableCell>
                 <TableCell>
                   {board.isActive ? (
                     <p className="text-green-600 font-semibold">Active</p>

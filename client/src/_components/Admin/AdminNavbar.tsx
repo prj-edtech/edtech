@@ -58,6 +58,9 @@ const AdminNavbar = () => {
                   <NavigationMenuLink href="/admin/subtopics">
                     Subtopics
                   </NavigationMenuLink>
+                  <NavigationMenuLink href="/admin/subtopics/add">
+                    Add Subtopics
+                  </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>

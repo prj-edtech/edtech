@@ -24,6 +24,7 @@
     "@radix-ui/react-tooltip": "^1.2.6",
     "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/vite": "^4.1.5",
+    "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-bold": "^2.12.0",
     "@tiptap/extension-character-count": "^2.12.0",
     "@tiptap/extension-code-block-lowlight": "^2.12.0",
