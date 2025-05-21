@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Standard {
   id: string;
@@ -66,6 +67,8 @@ const FetchAllStandards = () => {
   const [boardData, setBoardData] = useState<Board[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth0();
+
+  const [keepAdding, setKeepAdding] = useState(false);
 
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [formState, setFormState] = useState({
@@ -218,6 +221,20 @@ const FetchAllStandards = () => {
                       placeholder="E.g. XI"
                     />
                   </div>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Checkbox
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
+                  />
+                  <Label
+                    htmlFor="keepAdding"
+                    className="font-medium cursor-pointer"
+                  >
+                    Keep adding
+                  </Label>
                 </div>
 
                 <Button
