@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ReviewStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -17,7 +20,7 @@ CREATE TABLE "Board" (
     "partitionKey" TEXT NOT NULL DEFAULT 'Board',
     "sortKey" TEXT NOT NULL,
     "displayName" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
@@ -32,7 +35,7 @@ CREATE TABLE "Standard" (
     "id" TEXT NOT NULL,
     "partitionKey" TEXT NOT NULL,
     "sortKey" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
@@ -62,7 +65,7 @@ CREATE TABLE "Subject" (
     "id" TEXT NOT NULL,
     "partitionKey" TEXT NOT NULL,
     "sortKey" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
@@ -121,11 +124,12 @@ CREATE TABLE "SubTopic" (
     "sectionId" TEXT NOT NULL,
     "priority" INTEGER NOT NULL,
     "subtopicContentPath" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
+    "review" "ReviewStatus" NOT NULL DEFAULT 'PENDING',
     "subTopicJson" JSONB NOT NULL,
 
     CONSTRAINT "SubTopic_pkey" PRIMARY KEY ("id")
@@ -243,7 +247,7 @@ CREATE UNIQUE INDEX "QuestionPaper_partitionKey_sortKey_key" ON "QuestionPaper"(
 ALTER TABLE "Standard" ADD CONSTRAINT "Standard_boardId_fkey" FOREIGN KEY ("boardId") REFERENCES "Board"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_performedBy_fkey" FOREIGN KEY ("performedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_performedBy_fkey" FOREIGN KEY ("performedBy") REFERENCES "User"("auth0Id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Subject" ADD CONSTRAINT "Subject_boardId_fkey" FOREIGN KEY ("boardId") REFERENCES "Board"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -279,4 +283,4 @@ ALTER TABLE "QuestionPaper" ADD CONSTRAINT "QuestionPaper_standardId_fkey" FOREI
 ALTER TABLE "QuestionPaper" ADD CONSTRAINT "QuestionPaper_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ChangeLog" ADD CONSTRAINT "ChangeLog_submittedBy_fkey" FOREIGN KEY ("submittedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ChangeLog" ADD CONSTRAINT "ChangeLog_submittedBy_fkey" FOREIGN KEY ("submittedBy") REFERENCES "User"("auth0Id") ON DELETE CASCADE ON UPDATE CASCADE;

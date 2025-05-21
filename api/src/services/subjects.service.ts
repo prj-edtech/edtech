@@ -221,7 +221,12 @@ export const removeSubject = async (id: string) => {
 };
 
 export const getAllSubjects = async () => {
-  return await prisma.subject.findMany();
+  return await prisma.subject.findMany({
+    include: {
+      board: true,
+      standard: true,
+    },
+  });
 };
 
 export const getAllActiveSubjects = async () => {

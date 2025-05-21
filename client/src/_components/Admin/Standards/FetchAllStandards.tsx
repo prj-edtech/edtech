@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Standard {
   id: string;
@@ -66,6 +67,8 @@ const FetchAllStandards = () => {
   const [boardData, setBoardData] = useState<Board[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth0();
+
+  const [keepAdding, setKeepAdding] = useState(false);
 
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [formState, setFormState] = useState({
@@ -175,19 +178,11 @@ const FetchAllStandards = () => {
             </DialogTrigger>
             <DialogContent className="font-redhat">
               <DialogHeader>
-                <DialogTitle className="font-bold">Add Standard</DialogTitle>
+                <DialogTitle className="font-bold lg:mb-4">
+                  Add Standard
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div>
-                  <Label className="mb-2 mt-4">Sort Key</Label>
-                  <Input
-                    value={formState.sortKey}
-                    onChange={(e) =>
-                      setFormState({ ...formState, sortKey: e.target.value })
-                    }
-                    placeholder="E.g. XI"
-                  />
-                </div>
                 <div>
                   <Label className="mb-2">Board</Label>
                   {/* <Input
@@ -216,6 +211,30 @@ const FetchAllStandards = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  <div>
+                    <Label className="mb-2 mt-4">Standard</Label>
+                    <Input
+                      value={formState.sortKey}
+                      onChange={(e) =>
+                        setFormState({ ...formState, sortKey: e.target.value })
+                      }
+                      placeholder="E.g. XI"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Checkbox
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
+                  />
+                  <Label
+                    htmlFor="keepAdding"
+                    className="font-medium cursor-pointer"
+                  >
+                    Keep adding
+                  </Label>
                 </div>
 
                 <Button
@@ -237,10 +256,9 @@ const FetchAllStandards = () => {
         <Table className="border-b">
           <TableHeader>
             <TableRow>
-              <TableHead>Partition Key</TableHead>
-              <TableHead>Sort Key</TableHead>
-              <TableHead>Board Sort Key</TableHead>
-              <TableHead>Board Name</TableHead>
+              <TableHead>Standard</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead></TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -248,7 +266,6 @@ const FetchAllStandards = () => {
           <TableBody>
             {data.map((standard) => (
               <TableRow key={standard.id}>
-                <TableCell>{standard.partitionKey}</TableCell>
                 <TableCell>{standard.sortKey}</TableCell>
                 <TableCell>{standard.board?.sortKey || "-"}</TableCell>
                 {loading && (

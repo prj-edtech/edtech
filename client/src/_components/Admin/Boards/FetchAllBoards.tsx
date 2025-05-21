@@ -165,6 +165,14 @@ const FetchAllBoards = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="animate-spin w-6 h-6" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 border rounded-2xl shadow min-h-screen">
@@ -189,13 +197,14 @@ const FetchAllBoards = () => {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="sortKey" className="text-right">
-                    Sort Key
+                    Name
                   </Label>
                   <Input
                     id="sortKey"
                     value={sortKey}
                     onChange={(e) => setSortKey(e.target.value)}
                     className="col-span-3"
+                    placeholder="eg. CBSE"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -207,6 +216,7 @@ const FetchAllBoards = () => {
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     className="col-span-3"
+                    placeholder="eg. Central Board of Secondary Education"
                   />
                 </div>
               </div>
@@ -233,9 +243,8 @@ const FetchAllBoards = () => {
         <Table className="border-b">
           <TableHeader>
             <TableRow>
-              <TableHead>Sort Key</TableHead>
-              <TableHead>Display Name</TableHead>
-              <TableHead>Partition Key</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead></TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -245,7 +254,6 @@ const FetchAllBoards = () => {
               <TableRow key={board.id}>
                 <TableCell>{board.sortKey}</TableCell>
                 <TableCell>{board.displayName}</TableCell>
-                <TableCell>{board.partitionKey}</TableCell>
                 <TableCell>
                   {board.isActive ? (
                     <p className="text-green-600 font-semibold">Active</p>
@@ -325,22 +333,6 @@ const FetchAllBoards = () => {
               <Switch
                 checked={editIsActive}
                 onCheckedChange={setEditIsActive}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Syllabus Version</Label>
-              <Input
-                value={editSyllabusVersion}
-                onChange={(e) => setEditSyllabusVersion(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Subjects (comma separated)</Label>
-              <Input
-                value={editSubjects}
-                onChange={(e) => setEditSubjects(e.target.value)}
                 className="col-span-3"
               />
             </div>

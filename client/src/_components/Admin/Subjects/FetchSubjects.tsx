@@ -9,6 +9,7 @@ import {
 } from "@/api/subjects";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -65,6 +66,7 @@ const FetchSubjects = () => {
   const [standardId, setStandardId] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [keepAdding, setKeepAdding] = useState(false);
 
   const fetchAllSubjects = async () => {
     try {
@@ -103,11 +105,17 @@ const FetchSubjects = () => {
       await addSubject(newSubject);
       // Refresh subjects list after adding
       fetchAllSubjects();
-      // Close the dialog and reset form
-      setOpenAddDialog(false);
-      setSortKey("");
-      setBoardId("");
-      setStandardId("");
+
+      if (keepAdding) {
+        setSortKey("");
+      } else {
+        // Close the dialog and reset form
+        setOpenAddDialog(false);
+        setSortKey("");
+        setBoardId("");
+        setStandardId("");
+        setKeepAdding(false);
+      }
     } catch (error) {
       console.error("Failed to add subject:", error);
     } finally {
@@ -177,14 +185,6 @@ const FetchSubjects = () => {
 
               <div className="flex flex-col gap-y-6">
                 <div className="flex flex-col gap-y-2">
-                  <Label className="font-semibold">Subject Name</Label>
-                  <Input
-                    type="text"
-                    value={sortKey}
-                    onChange={(e) => setSortKey(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-y-2">
                   <Label className="font-semibold">Board</Label>
                   {/* <Input
                     type="text"
@@ -239,6 +239,29 @@ const FetchSubjects = () => {
                   <Input type="text" value={user?.sub} disabled />
                 </div> */}
 
+                <div className="flex flex-col gap-y-2">
+                  <Label className="font-semibold">Subject Name</Label>
+                  <Input
+                    type="text"
+                    value={sortKey}
+                    onChange={(e) => setSortKey(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Checkbox
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
+                  />
+                  <Label
+                    htmlFor="keepAdding"
+                    className="font-medium cursor-pointer"
+                  >
+                    Keep adding
+                  </Label>
+                </div>
+
                 <Button
                   onClick={handleAddSubject}
                   className="mt-4 cursor-pointer"
@@ -257,7 +280,7 @@ const FetchSubjects = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableCell>Subject Name</TableCell>
+              <TableCell>Subject</TableCell>
               <TableCell>Board</TableCell>
               <TableCell>Standard</TableCell>
               <TableCell>Status</TableCell>
@@ -280,8 +303,10 @@ const FetchSubjects = () => {
                   <TableCell>
                     {subject.subjectJson[0]?.attributes?.displayName}
                   </TableCell>
-                  <TableCell>{subject.boardId}</TableCell>
-                  <TableCell>{subject.standardId}</TableCell>
+                  <TableCell>
+                    {subject.board.sortKey} - {subject.board.displayName}
+                  </TableCell>
+                  <TableCell>{subject.standard.sortKey}</TableCell>
 
                   <TableCell>
                     {subject.isActive ? (
