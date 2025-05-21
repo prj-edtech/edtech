@@ -190,7 +190,7 @@ export const deleteBoard = async (id: string, performedBy: string) => {
   return deletedBoard;
 };
 
-export const removeBoard = async (id: string) => {
+export const removeBoard = async (id: string, performedBy: string) => {
   const board = await prisma.board.delete({
     where: {
       id,
@@ -201,7 +201,7 @@ export const removeBoard = async (id: string) => {
     entityType: "BOARD",
     entityId: id,
     action: "DELETE",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: {
       previousState: board,
       newState: board,
@@ -214,8 +214,8 @@ export const removeBoard = async (id: string) => {
     entityId: id,
     changeType: "REMOVE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Board hard deleted by admin",
   });
 };
