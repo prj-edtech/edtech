@@ -95,12 +95,13 @@ export const softDeleteSubject = async (req: Request, res: Response) => {
 export const removeSubject = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { performedBy } = req.body;
 
     if (!id) {
       res.status(400).json({ message: "Missing ID" });
     }
 
-    const deletedSubject = await subjectService.removeSubject(id);
+    const deletedSubject = await subjectService.removeSubject(id, performedBy);
 
     res.status(200).json(deletedSubject);
   } catch (error: any) {

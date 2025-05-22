@@ -190,7 +190,7 @@ export const softDeleteSubject = async (id: string, performedBy: string) => {
   return updatedSubject;
 };
 
-export const removeSubject = async (id: string) => {
+export const removeSubject = async (id: string, performedBy: string) => {
   const deletedSubject = await prisma.subject.delete({
     where: {
       id,
@@ -201,7 +201,7 @@ export const removeSubject = async (id: string) => {
     entityType: "SUBJECT",
     entityId: id,
     action: "DELETED",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: {
       notes: "Subject has been removed permanently",
     },
@@ -212,8 +212,8 @@ export const removeSubject = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Subject hard deleted without needing to be reviewed",
   });
 

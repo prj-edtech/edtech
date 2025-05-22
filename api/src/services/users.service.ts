@@ -89,7 +89,7 @@ export const deleteUserById = async (id: string) => {
     changeStatus: "AUTO_APPROVED",
     submittedBy: user.auth0Id,
     createdBy: user.auth0Id,
-    notes: "User deleted",
+    notes: `User ${user.name} deleted.`,
   });
 
   return user;

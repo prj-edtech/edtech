@@ -211,7 +211,7 @@ export const softDeleteQuestionPaper = async (
   return deleted;
 };
 
-export const removeQuestionPaper = async (id: string) => {
+export const removeQuestionPaper = async (id: string, performedBy: string) => {
   const questionPaper = await prisma.questionPaper.delete({
     where: {
       id,
@@ -222,7 +222,7 @@ export const removeQuestionPaper = async (id: string) => {
     entityType: "QuestionPaper",
     entityId: id,
     action: "DELETE",
-    performedBy: "user",
+    performedBy: performedBy,
     details: "Question paper hard deleted",
   });
 
@@ -231,8 +231,8 @@ export const removeQuestionPaper = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "user",
-    createdBy: "user",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Question paper hard deleted",
   });
 

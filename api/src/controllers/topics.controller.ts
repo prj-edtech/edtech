@@ -124,6 +124,7 @@ export const fetchAllActiveTopics = async (_req: Request, res: Response) => {
 export const deleteTopic = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { performedBy } = req.body;
 
     if (!id) {
       res.status(404).json({
@@ -132,7 +133,7 @@ export const deleteTopic = async (req: Request, res: Response) => {
       });
     }
 
-    const topic = await removeTopic(id);
+    const topic = await removeTopic(id, performedBy);
     res
       .status(200)
       .json({ success: true, data: topic, message: "Topic deleted" });

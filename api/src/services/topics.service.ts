@@ -202,7 +202,7 @@ export const getAllActiveTopics = async () => {
   });
 };
 
-export const removeTopic = async (id: string) => {
+export const removeTopic = async (id: string, performedBy: string) => {
   const topic = prisma.topic.delete({
     where: {
       id,
@@ -212,8 +212,8 @@ export const removeTopic = async (id: string) => {
   await createAuditLog({
     entityType: "Topic",
     entityId: id,
-    action: "DELETE",
-    performedBy: "user",
+    action: "DELETED",
+    performedBy: performedBy,
     details: "Topic hard deleted by user",
   });
 
@@ -222,8 +222,8 @@ export const removeTopic = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "user",
-    createdBy: "user",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Topic soft deleted by user",
   });
 
