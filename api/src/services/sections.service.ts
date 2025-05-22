@@ -291,7 +291,7 @@ export const removeSection = async (id: string, performedBy: string) => {
     entityType: "SECTION",
     entityId: id,
     action: "DELETED",
-    performedBy: performedBy,
+    performedBy,
   });
 
   await createChangeLog({
