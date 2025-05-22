@@ -118,12 +118,13 @@ export const softDeleteSection = async (req: Request, res: Response) => {
 export const removeSection = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { performedBy } = req.body;
 
     if (!id) {
       res.status(400).json({ message: "Missing ID" });
     }
 
-    const deletedSection = await sectionService.removeSection(id);
+    const deletedSection = await sectionService.removeSection(id, performedBy);
 
     res.status(200).json(deletedSection);
   } catch (error: any) {

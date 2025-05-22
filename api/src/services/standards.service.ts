@@ -256,7 +256,7 @@ export const activateStandard = async (id: string, performedBy: string) => {
   return standard;
 };
 
-export const deleteStandard = async (id: string) => {
+export const deleteStandard = async (id: string, performedBy: string) => {
   const deletedStandard = await prisma.standard.delete({
     where: {
       id,
@@ -267,7 +267,7 @@ export const deleteStandard = async (id: string) => {
     entityType: "STANDARD",
     entityId: id,
     action: "DELETE",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: "N/A",
   });
 
@@ -276,8 +276,8 @@ export const deleteStandard = async (id: string) => {
     entityId: id,
     changeType: "ACTIVATE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Standard hard deleted without needing to be reviewed",
   });
 

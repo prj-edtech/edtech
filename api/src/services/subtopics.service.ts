@@ -208,7 +208,7 @@ export const getAllSubtopics = async () => {
   });
 };
 
-export const removeSubtopic = async (id: string) => {
+export const removeSubtopic = async (id: string, performedBy: string) => {
   const deletedSubtopic = await prisma.subTopic.delete({
     where: {
       id,
@@ -219,7 +219,7 @@ export const removeSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "SOFT_DELETE",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: "Deactivated by admin",
   });
 
@@ -228,16 +228,16 @@ export const removeSubtopic = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Subtopic hard deleted by admin",
   });
 
   return deletedSubtopic;
 };
 
-export const activeSubtopic = async (id: string) => {
-  return await prisma.subTopic.update({
+export const activeSubtopic = async (id: string, performedBy: string) => {
+  const subtopic = await prisma.subTopic.update({
     where: {
       id,
     },
@@ -250,7 +250,7 @@ export const activeSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "SOFT_DELETE",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: "Deactivated by admin",
   });
 
@@ -259,14 +259,16 @@ export const activeSubtopic = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Subtopic hard deleted by admin",
   });
+
+  return subtopic;
 };
 
-export const deactiveSubtopic = async (id: string) => {
-  return await prisma.subTopic.update({
+export const deactiveSubtopic = async (id: string, performedBy: string) => {
+  const subtopic = await prisma.subTopic.update({
     where: {
       id,
     },
@@ -279,7 +281,7 @@ export const deactiveSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "SOFT_DELETE",
-    performedBy: "admin",
+    performedBy: performedBy,
     details: "Deactivated by admin",
   });
 
@@ -288,10 +290,12 @@ export const deactiveSubtopic = async (id: string) => {
     entityId: id,
     changeType: "DELETE",
     changeStatus: "AUTO_APPROVED",
-    submittedBy: "admin",
-    createdBy: "admin",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Subtopic hard deleted by admin",
   });
+
+  return subtopic;
 };
 
 export const getSingleSubtopic = async (id: string) => {
@@ -302,7 +306,7 @@ export const getSingleSubtopic = async (id: string) => {
   });
 };
 
-export const approveSubtopic = async (id: string) => {
+export const approveSubtopic = async (id: string, performedBy: string) => {
   const subtopic = await prisma.subTopic.update({
     where: {
       id,
@@ -317,7 +321,7 @@ export const approveSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "APPROVED",
-    performedBy: "user",
+    performedBy: performedBy,
     details: "Request was approved",
   });
 
@@ -326,15 +330,15 @@ export const approveSubtopic = async (id: string) => {
     entityId: id,
     changeType: "APPROVED",
     changeStatus: "APPROVED",
-    submittedBy: "user",
-    createdBy: "user",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Request was approved",
   });
 
   return subtopic;
 };
 
-export const rejectSubtopic = async (id: string) => {
+export const rejectSubtopic = async (id: string, performedBy: string) => {
   const subtopic = await prisma.subTopic.update({
     where: {
       id,
@@ -349,7 +353,7 @@ export const rejectSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "REJECTED",
-    performedBy: "user",
+    performedBy: performedBy,
     details: "Request was disapproved",
   });
 
@@ -358,15 +362,15 @@ export const rejectSubtopic = async (id: string) => {
     entityId: id,
     changeType: "REJECTED",
     changeStatus: "REJECTED",
-    submittedBy: "user",
-    createdBy: "user",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Request was disapproved",
   });
 
   return subtopic;
 };
 
-export const resetSubtopic = async (id: string) => {
+export const resetSubtopic = async (id: string, performedBy: string) => {
   const subtopic = await prisma.subTopic.update({
     where: {
       id,
@@ -381,7 +385,7 @@ export const resetSubtopic = async (id: string) => {
     entityType: "SubTopic",
     entityId: id,
     action: "REQUESTED",
-    performedBy: "user",
+    performedBy: performedBy,
     details: "Waiting for Approval",
   });
 
@@ -390,8 +394,8 @@ export const resetSubtopic = async (id: string) => {
     entityId: id,
     changeType: "PENDING",
     changeStatus: "REQUESTED",
-    submittedBy: "user",
-    createdBy: "user",
+    submittedBy: performedBy,
+    createdBy: performedBy,
     notes: "Waiting for Approval",
   });
 

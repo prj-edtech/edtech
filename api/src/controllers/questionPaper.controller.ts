@@ -188,8 +188,12 @@ export const softDeleteQuestionPaperController = async (
 export const deleteQuestionPaper = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { performedBy } = req.body;
 
-    const deleted = await questionPaperService.removeQuestionPaper(id);
+    const deleted = await questionPaperService.removeQuestionPaper(
+      id,
+      performedBy
+    );
 
     res.status(200).json({
       success: true,

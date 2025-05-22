@@ -114,8 +114,9 @@ export const activateStandard = async (req: Request, res: Response) => {
 export const removeStandard = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { performedBy } = req.body;
 
-    const result = await standardService.deleteStandard(id);
+    const result = await standardService.deleteStandard(id, performedBy);
     res.status(200).json({ data: result, message: "Standard deleted" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
