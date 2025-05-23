@@ -1,14 +1,15 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import AdminNavbar from "./AdminNavbar";
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <div className="flex flex-col min-h-screen">
-      <AdminNavbar />
+      <AdminNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className="flex flex-1">
-        <AdminSidebar />
+        <AdminSidebar isOpen={isSidebarOpen} />
         <main className="flex-1 p-6 overflow-y-auto ml-64">
           <Outlet />
           {children}

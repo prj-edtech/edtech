@@ -11,7 +11,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { Bell, Menu } from "lucide-react";
 
-const AdminNavbar = () => {
+const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
   const roles = user && user["https://edtechadmin.dev/roles"];
   console.log(roles);
@@ -20,12 +20,16 @@ const AdminNavbar = () => {
     <div className="flex justify-between items-center w-full lg:px-10 lg:py-6 font-redhat sticky top-0 z-50 bg-white dark:bg-black">
       <div className="flex justify-center items-center lg:gap-x-16 w-full">
         <div className="flex items-center lg:gap-x-4 justify-center">
-          <Menu className="w-6 h-6 cursor-pointer" />
+          <Menu
+            className="w-6 h-6 cursor-pointer lg:block hidden"
+            onClick={toggleSidebar}
+          />
+          <Menu className="w-6 h-6 cursor-pointer lg:hidden" />
           <h1 className="font-medium lg:text-4xl font-outfit text-blue-600">
             edtech
           </h1>
         </div>
-        <ul className="font-semibold flex items-center w-full lg:gap-x-2">
+        <ul className="font-semibold lg:flex hidden items-center w-full lg:gap-x-2">
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
