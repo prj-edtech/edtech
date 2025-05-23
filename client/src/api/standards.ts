@@ -41,6 +41,6 @@ export const activateStandard = (
   return axios.patch(`${apiURL}/standards/${id}/activate`, payload);
 };
 
-export const removeStandard = (id: string) => {
-  return axios.delete(`${apiURL}/standards/${id}`);
+export const removeStandard = (id: string, performedBy: string) => {
+  return axios.delete(`${apiURL}/standards/${id}`, { data: { performedBy } });
 };

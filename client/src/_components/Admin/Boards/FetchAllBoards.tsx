@@ -181,7 +181,7 @@ const FetchAllBoards = () => {
   const handleRemoveBoard = async (board: Board) => {
     setLoading(true);
     try {
-      await removeBoard(board.id);
+      await removeBoard(board.id, user?.sub!);
       const response = await fetchBoards();
       setData(response.data.data);
     } catch (error) {
