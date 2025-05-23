@@ -28,11 +28,17 @@ import QuestionPaper from "./_components/Admin/Question-Paper/FetchAllQuestionPa
 import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtopic";
 import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
+import { Loader2 } from "lucide-react";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
 
   return (
     <Router>

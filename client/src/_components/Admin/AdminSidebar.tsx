@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
 const AdminSidebar = () => {
   return (
@@ -15,10 +16,30 @@ const AdminSidebar = () => {
               Most Used
             </AccordionTrigger>
             <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
-              <h6 className="hover:underline underline-offset-2">Dashboard</h6>
-              <h6 className="hover:underline underline-offset-2">Boards</h6>
-              <h6 className="hover:underline underline-offset-2">Standards</h6>
-              <h6 className="hover:underline underline-offset-2">Subjects</h6>
+              <Link
+                to="/dashboard"
+                className="hover:underline underline-offset-2"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/admin/boards"
+                className="hover:underline underline-offset-2"
+              >
+                Boards
+              </Link>
+              <Link
+                to="/admin/standards"
+                className="hover:underline underline-offset-2"
+              >
+                Standards
+              </Link>
+              <Link
+                to="/admin/subjects"
+                className="hover:underline underline-offset-2"
+              >
+                Subjects
+              </Link>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
@@ -26,21 +47,47 @@ const AdminSidebar = () => {
               Content
             </AccordionTrigger>
             <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
-              <h6 className="hover:underline underline-offset-2">Sections</h6>
-              <h6 className="hover:underline underline-offset-2">Topics</h6>
-              <h6 className="hover:underline underline-offset-2">Subtopics</h6>
-              <h6 className="hover:underline underline-offset-2">
+              <Link
+                to="/admin/sections"
+                className="hover:underline underline-offset-2"
+              >
+                Sections
+              </Link>
+              <Link
+                to="/admin/topics"
+                className="hover:underline underline-offset-2"
+              >
+                Topics
+              </Link>
+              <Link
+                to="/admin/subtopics"
+                className="hover:underline underline-offset-2"
+              >
+                Subtopics
+              </Link>
+              <Link
+                to="/admin/subtopics/add"
+                className="hover:underline underline-offset-2"
+              >
                 Add Subtopic
-              </h6>
+              </Link>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
             <AccordionTrigger className="font-semibold">Tests</AccordionTrigger>
             <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
-              <h6 className="hover:underline underline-offset-2">
+              <Link
+                to="/admin/question-papers"
+                className="hover:underline underline-offset-2"
+              >
                 Question Paper
-              </h6>
-              <h6 className="hover:underline underline-offset-2">Questions</h6>
+              </Link>
+              <Link
+                to="/admin/question-papers/questions"
+                className="hover:underline underline-offset-2"
+              >
+                Questions
+              </Link>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-4">
@@ -48,12 +95,18 @@ const AdminSidebar = () => {
               System Logs
             </AccordionTrigger>
             <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
-              <h6 className="hover:underline underline-offset-2">
+              <Link
+                to="/admin/change-logs"
+                className="hover:underline underline-offset-2"
+              >
                 Change Logs
-              </h6>
-              <h6 className="hover:underline underline-offset-2">
+              </Link>
+              <Link
+                to="/admin/audit-logs"
+                className="hover:underline underline-offset-2"
+              >
                 Audit Trail
-              </h6>
+              </Link>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

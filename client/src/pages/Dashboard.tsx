@@ -4,11 +4,17 @@ import AdminDashboard from "../_components/Admin/AdminDashboard";
 import EditorDashboard from "../_components/Editor/EditorDashboard";
 import { Navigate } from "react-router-dom";
 import ReviewerDashboard from "@/_components/Reviewer/ReviewerDashboard";
+import { Loader2 } from "lucide-react";
 
 const Dashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
   const roles = user && user["https://edtechadmin.dev/roles"];
