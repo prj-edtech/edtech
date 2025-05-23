@@ -73,6 +73,7 @@ const FetchAllBoards = () => {
       try {
         const response = await fetchBoards();
         setData(response.data.data);
+        console.log(response.data);
       } catch (error) {
         console.error(error);
       } finally {

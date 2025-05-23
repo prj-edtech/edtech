@@ -22,7 +22,7 @@ const AdminSidebar = () => {
   const { logout } = useAuth0();
 
   return (
-    <div className="lg:w-64 h-screen fixed top-0 left-0 bg-black text-stone-100 lg:flex hidden flex-col p-4 space-y-6 font-redhat z-50 overflow-y-auto">
+    <div className="lg:w-64 h-screen fixed bg-black text-stone-100 lg:flex hidden flex-col p-4 space-y-6 font-redhat z-20 overflow-y-auto">
       <div className="flex justify-between items-center w-full">
         <div className="flex justify-start items-center lg:gap-x-2">
           <BookCopyIcon className="bg-violet-600 text-stone-200 stroke-[1.5] p-2 rounded-lg shadow-md w-8 h-8" />
