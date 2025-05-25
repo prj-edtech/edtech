@@ -28,17 +28,16 @@ import QuestionPaper from "./_components/Admin/Question-Paper/FetchAllQuestionPa
 import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtopic";
 import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
-import { Loader2 } from "lucide-react";
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated } = useAuth0();
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center w-full min-h-screen">
-        <Loader2 className="w-6 h-6 animate-spin" />
-      </div>
-    );
+  // if (isLoading)
+  //   return (
+  //     <div className="flex justify-center items-center w-full min-h-screen">
+  //       <Loader2 className="w-6 h-6 animate-spin" />
+  //     </div>
+  //   );
 
   return (
     <Router>
@@ -59,7 +58,7 @@ function App() {
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
           <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
-          <Route path="question-paper" element={<QuestionPaper />} />
+          <Route path="question-papers" element={<QuestionPaper />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>

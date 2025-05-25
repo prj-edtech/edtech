@@ -108,8 +108,15 @@ const FetchAllStandards = () => {
   }, []);
 
   const getStandards = async () => {
-    const response = await fetchStandards();
-    setData(response.data);
+    setLoading(true);
+    try {
+      const response = await fetchStandards();
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getBoards = async () => {
@@ -287,11 +294,11 @@ const FetchAllStandards = () => {
         <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Standard</TableHead>
-              <TableHead>Board</TableHead>
-              <TableHead></TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="font-bold">Standard</TableHead>
+              <TableHead className="font-bold">Board</TableHead>
+              <TableHead className="font-bold"></TableHead>
+              <TableHead className="font-bold">Status</TableHead>
+              <TableHead className="font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
