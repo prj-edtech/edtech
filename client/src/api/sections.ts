@@ -23,8 +23,8 @@ export const getAllActiveSections = async () => {
   return axios.get(`${apiURL}/sections/active`);
 };
 
-export const removeSection = async (id: string) => {
-  return axios.delete(`${apiURL}/sections/${id}`);
+export const removeSection = async (id: string, performedBy: string) => {
+  return axios.delete(`${apiURL}/sections/${id}`, { data: { performedBy } });
 };
 
 export const softDeleteSection = async (id: string, performedBy: string) => {

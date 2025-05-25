@@ -25,6 +25,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -91,6 +99,29 @@ const FetchSubjects = () => {
 
   const [loading, setLoading] = useState(false);
   const [keepAdding, setKeepAdding] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
+  const filteredData = subjects.filter(
+    (subject) =>
+      subject.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subject.board.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subject.standard.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      subject.board?.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const fetchAllSubjects = async () => {
     setLoading(true);
@@ -206,11 +237,11 @@ const FetchSubjects = () => {
           <div className="flex justify-between items-center lg:w-[200px] border">
             <input
               placeholder="Search subjects..."
-              // value={searchQuery}
-              // onChange={(e) => {
-              //   setSearchQuery(e.target.value);
-              //   setCurrentPage(1); // reset to first page when search changes
-              // }}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
               className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
             />
 
@@ -336,7 +367,7 @@ const FetchSubjects = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subjects.map((subject) => (
+            {paginatedData.map((subject) => (
               <TableRow key={subject.id}>
                 <TableCell>
                   {subject.subjectJson[0]?.attributes?.displayName}
@@ -404,6 +435,35 @@ const FetchSubjects = () => {
             ))}
           </TableBody>
         </Table>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
