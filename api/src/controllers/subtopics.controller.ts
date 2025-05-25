@@ -146,7 +146,7 @@ export const activeSubtopic = async (req: Request, res: Response) => {
   }
 };
 
-// Set subtopic to active
+// Set subtopic to inactive
 export const deactiveSubtopic = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

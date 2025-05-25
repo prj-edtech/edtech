@@ -28,11 +28,17 @@ import QuestionPaper from "./_components/Admin/Question-Paper/FetchAllQuestionPa
 import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtopic";
 import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
+import EditorQuestionPaper from "./_components/Editor/Question-Paper/FetchAllQuestionPapers";
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated } = useAuth0();
 
-  if (isLoading) return <p>Loading...</p>;
+  // if (isLoading)
+  //   return (
+  //     <div className="flex justify-center items-center w-full min-h-screen">
+  //       <Loader2 className="w-6 h-6 animate-spin" />
+  //     </div>
+  //   );
 
   return (
     <Router>
@@ -44,6 +50,7 @@ function App() {
             isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
           }
         />
+        {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />}>
           <Route path="boards" element={<Boards />} />
           <Route path="standards" element={<Standards />} />
@@ -53,10 +60,11 @@ function App() {
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
           <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
-          <Route path="question-paper" element={<QuestionPaper />} />
+          <Route path="question-papers" element={<QuestionPaper />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
+        {/* Editor Routes */}
         <Route path="/editor" element={<EditorDashboard />}>
           <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
@@ -67,7 +75,9 @@ function App() {
             path="subtopics/view/:id"
             element={<EditorSingleSubtopics />}
           />
+          <Route path="question-papers" element={<EditorQuestionPaper />} />
         </Route>
+        {/* Reviewer Layout */}
         <Route path="/reviewer" element={<ReviewerDashboard />}>
           <Route path="subtopics" element={<FetchAllSubtopicsReview />} />
           <Route

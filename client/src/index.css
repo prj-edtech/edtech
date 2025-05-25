@@ -4,12 +4,12 @@
 
 @font-face {
   font-family: "Outfit";
-  src: url("./assets/fonts/Outfit.ttf");
+  src: url("./assets/fonts/Unbounded.ttf");
 }
 
 @font-face {
   font-family: "RedHat";
-  src: url("./assets/fonts/RedHat.ttf");
+  src: url("./assets/fonts/Nunito.ttf");
 }
 
 @theme {

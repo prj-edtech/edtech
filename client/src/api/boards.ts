@@ -28,6 +28,8 @@ export const softDeleteBoard = (
   return axios.patch(`${apiURL}/boards/${id}`, payload);
 };
 
-export const removeBoard = (id: string) => {
-  return axios.delete(`${apiURL}/boards/remove/${id}`);
+export const removeBoard = (id: string, performedBy: string) => {
+  return axios.delete(`${apiURL}/boards/remove/${id}`, {
+    data: { performedBy },
+  });
 };

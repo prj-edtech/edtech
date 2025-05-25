@@ -131,8 +131,6 @@ const AddSubtopics = () => {
         contentPath,
       });
 
-      alert("Subtopic created successfully!");
-
       // Reset
       setEditorContent("<p></p>");
       setForm({
@@ -148,7 +146,6 @@ const AddSubtopics = () => {
       navigate("/admin/subtopics");
     } catch (err) {
       console.error("Error adding subtopic:", err);
-      alert("Failed to add subtopic");
     } finally {
       setSubmitting(false);
     }
@@ -157,104 +154,108 @@ const AddSubtopics = () => {
   return (
     <div className="flex justify-start items-start flex-col font-redhat">
       <div className="flex justify-start items-start w-full flex-col lg:gap-y-6">
-        <Select
-          value={form.boardCode}
-          onValueChange={(value) => handleFieldChange("boardCode", value)}
-        >
-          <SelectTrigger className="w-full cursor-pointer">
-            <SelectValue placeholder="Select a board" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {boardData.map((board) => (
-                <SelectItem key={board.id} value={board.id}>
-                  {board.sortKey}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="flex justify-start items-start w-full lg:gap-x-6">
+          <Select
+            value={form.boardCode}
+            onValueChange={(value) => handleFieldChange("boardCode", value)}
+          >
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder="Select a board" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {boardData.map((board) => (
+                  <SelectItem key={board.id} value={board.id}>
+                    {board.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={form.standardCode}
-          onValueChange={(value) => handleFieldChange("standardCode", value)}
-        >
-          <SelectTrigger className="w-full cursor-pointer">
-            <SelectValue placeholder="Select a standard" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {standardData.map((standard) => (
-                <SelectItem key={standard.id} value={standard.id}>
-                  {standard.sortKey}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          <Select
+            value={form.standardCode}
+            onValueChange={(value) => handleFieldChange("standardCode", value)}
+          >
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder="Select a standard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {standardData.map((standard) => (
+                  <SelectItem key={standard.id} value={standard.id}>
+                    {standard.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={form.subjectName}
-          onValueChange={(value) => handleFieldChange("subjectName", value)}
-        >
-          <SelectTrigger className="w-full cursor-pointer">
-            <SelectValue placeholder="Select a subject" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {subjectData.map((subject) => (
-                <SelectItem key={subject.id} value={subject.sortKey}>
-                  {subject.sortKey}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          <Select
+            value={form.subjectName}
+            onValueChange={(value) => handleFieldChange("subjectName", value)}
+          >
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder="Select a subject" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {subjectData.map((subject) => (
+                  <SelectItem key={subject.id} value={subject.sortKey}>
+                    {subject.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select
-          value={form.sectionId}
-          onValueChange={(value) => handleFieldChange("sectionId", value)}
-        >
-          <SelectTrigger className="w-full cursor-pointer">
-            <SelectValue placeholder="Select a section" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {sectionData.map((section) => (
-                <SelectItem key={section.id} value={section.id}>
-                  {section.sectionJson.attributes.displayName}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="flex justify-start items-start w-full lg:gap-x-6">
+          <Select
+            value={form.sectionId}
+            onValueChange={(value) => handleFieldChange("sectionId", value)}
+          >
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder="Select a section" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {sectionData.map((section) => (
+                  <SelectItem key={section.id} value={section.id}>
+                    {section.sectionJson.attributes.displayName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={form.topicId}
-          onValueChange={(value) => handleFieldChange("topicId", value)}
-        >
-          <SelectTrigger className="w-full cursor-pointer">
-            <SelectValue placeholder="Select a topic" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {topicData.map((topic) => (
-                <SelectItem key={topic.id} value={topic.id}>
-                  {topic.topicJson.attributes.displayName}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          <Select
+            value={form.topicId}
+            onValueChange={(value) => handleFieldChange("topicId", value)}
+          >
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder="Select a topic" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {topicData.map((topic) => (
+                  <SelectItem key={topic.id} value={topic.id}>
+                    {topic.topicJson.attributes.displayName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-        <Input
-          type="text"
-          name="displayName"
-          value={form.displayName}
-          onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
-          placeholder="Display Name"
-          className="border p-2 w-full"
-        />
+          <Input
+            type="text"
+            name="displayName"
+            value={form.displayName}
+            onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
+            placeholder="Display Name"
+            className="border p-2 w-full"
+          />
+        </div>
 
         <Input
           type="number"
@@ -264,7 +265,7 @@ const AddSubtopics = () => {
             handleFieldChange(e.target.name, Number(e.target.value))
           }
           placeholder="Priority"
-          className="border p-2 w-full"
+          className="border p-2 lg:w-[520px]"
         />
 
         <div className="w-full">

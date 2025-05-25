@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllQuestionPaper, addQuestionPaper } from "@/api/questionPapers";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +37,43 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth0 } from "@auth0/auth0-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+interface QuestionPapers {
+  id: string;
+  year: string;
+  month: string;
+  totalMarks: number;
+  attributes: {
+    difficulty: string;
+    type: string;
+  };
+  isActive: boolean;
+  createdAt: string;
+  boardId: string;
+  standardId: string;
+  subjectId: string;
+  boardCode: string;
+  standardCode: string;
+  subjectName: string;
+  board: {
+    sortKey: string;
+    displayName: string;
+  };
+  standard: {
+    sortKey: string;
+  };
+  subject: {
+    sortKey: string;
+  };
+}
 
 interface Boards {
   id: string;
@@ -56,7 +92,9 @@ interface Subjects {
 
 const FetchAllQuestionPaper = () => {
   const [loading, setLoading] = useState(false);
-  const [questionPaperData, setQuestionPaperData] = useState<any[]>([]);
+  const [questionPaperData, setQuestionPaperData] = useState<QuestionPapers[]>(
+    []
+  );
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const [boardData, setBoardData] = useState<Boards[]>([]);
@@ -81,6 +119,36 @@ const FetchAllQuestionPaper = () => {
   const [type, setType] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [totalMarks, setTotalMarks] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
+  const filteredData = questionPaperData.filter(
+    (qp) =>
+      qp.attributes.difficulty
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      qp.attributes.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.month.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.year.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.board.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.board.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.standard.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.subject.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      qp.totalMarks
+        .toString()
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      qp.createdAt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const { user } = useAuth0();
 
@@ -173,16 +241,27 @@ const FetchAllQuestionPaper = () => {
   };
 
   return (
-    <div className="flex flex-col p-20 font-redhat">
-      <Card className="border shadow-md rounded-2xl p-6">
-        <div className="flex items-center justify-between p-4">
-          <h6 className="font-outfit text-xl font-medium">Question Papers</h6>
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search question papers..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500"
-              >
+              <Button className="rounded-none">
                 <Plus className="w-4 h-4 mr-2" /> Add Question Paper
               </Button>
             </DialogTrigger>
@@ -317,92 +396,122 @@ const FetchAllQuestionPaper = () => {
           </Dialog>
         </div>
 
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="w-6 h-6 animate-spin" />
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Board</TableHead>
-                  <TableHead>Standard</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Month/Year</TableHead>
-                  <TableHead>Marks</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Difficulty</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {questionPaperData.length > 0 ? (
-                  questionPaperData.map((qP) => (
-                    <TableRow key={qP.id}>
-                      <TableCell>{qP.board.displayName}</TableCell>
-                      <TableCell>{qP.standard.sortKey}</TableCell>
-                      <TableCell>{qP.subject.sortKey}</TableCell>
-                      <TableCell>
-                        {qP.month}/{qP.year}
-                      </TableCell>
-                      <TableCell>{qP.totalMarks}</TableCell>
-                      <TableCell>{qP.attributes.type}</TableCell>
-                      <TableCell>{qP.attributes.difficulty}</TableCell>
-                      <TableCell>
-                        {qP.isActive ? (
-                          <p className="text-green-600 font-semibold">Active</p>
-                        ) : (
-                          <p className="text-red-600 font-semibold">Inactive</p>
-                        )}
-                      </TableCell>
-                      <TableCell>{qP.createdAt.split("T")[0]}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-5 w-5" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEdit(qP)}>
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleActivate(qP.id)}
-                            >
-                              Activate
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDeactivate(qP.id)}
-                            >
-                              Deactivate
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleRemove(qP.id)}
-                              className="text-red-700"
-                            >
-                              <Trash className="w-4 h-4" /> Remove
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={10} className="text-center py-6">
-                      No question papers found.
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
+        ) : (
+          <Table className="border border-blue-800/20">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-bold">Board</TableHead>
+                <TableHead className="font-bold">Standard</TableHead>
+                <TableHead className="font-bold">Subject</TableHead>
+                <TableHead className="font-bold">Month</TableHead>
+                <TableHead className="font-bold">Year</TableHead>
+                <TableHead className="font-bold">Marks</TableHead>
+                <TableHead className="font-bold">Type</TableHead>
+                <TableHead className="font-bold">Difficulty</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="font-bold">Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {questionPaperData.length > 0 ? (
+                paginatedData.map((qP) => (
+                  <TableRow key={qP.id}>
+                    <TableCell>{qP.board.displayName}</TableCell>
+                    <TableCell>{qP.standard.sortKey}</TableCell>
+                    <TableCell>{qP.subject.sortKey}</TableCell>
+                    <TableCell>{qP.month}</TableCell>
+                    <TableCell>{qP.year}</TableCell>
+                    <TableCell>{qP.totalMarks}</TableCell>
+                    <TableCell>{qP.attributes.type}</TableCell>
+                    <TableCell>{qP.attributes.difficulty}</TableCell>
+                    <TableCell>
+                      {qP.isActive ? (
+                        <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                          Active
+                        </p>
+                      ) : (
+                        <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                          Inactive
+                        </p>
+                      )}
+                    </TableCell>
+                    <TableCell>{qP.createdAt.split("T")[0]}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-5 w-5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEdit(qP)}>
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleActivate(qP.id)}
+                          >
+                            Activate
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeactivate(qP.id)}
+                          >
+                            Deactivate
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRemove(qP.id)}
+                            className="text-red-700"
+                          >
+                            <Trash className="w-4 h-4" /> Remove
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={10} className="text-center py-6">
+                    No question papers found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };

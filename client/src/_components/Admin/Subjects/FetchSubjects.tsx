@@ -8,7 +8,6 @@ import {
   deactiveSubject,
 } from "@/api/subjects";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -25,6 +24,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -44,6 +51,31 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
+interface Subjects {
+  id: string;
+  partitionKey: string;
+  sortKey: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+  board: {
+    sortKey: string;
+    displayName: string;
+  };
+  standard: {
+    sortKey: string;
+  };
+  subjectJson: [
+    {
+      attributes: {
+        displayName: string;
+      };
+    }
+  ];
+}
+
 interface Boards {
   id: string;
   displayName: string;
@@ -55,7 +87,7 @@ interface Standards {
 }
 
 const FetchSubjects = () => {
-  const [subjects, setSubjects] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<Subjects[]>([]);
   const [boardData, setBoardData] = useState<Boards[]>([]);
   const [standardData, setStandardData] = useState<Standards[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -68,12 +100,38 @@ const FetchSubjects = () => {
   const [loading, setLoading] = useState(false);
   const [keepAdding, setKeepAdding] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
+  const filteredData = subjects.filter(
+    (subject) =>
+      subject.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subject.board.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subject.standard.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      subject.board?.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   const fetchAllSubjects = async () => {
+    setLoading(true);
     try {
       const response = await getAllSubjects();
       setSubjects(response.data.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,7 +184,7 @@ const FetchSubjects = () => {
   const handleRemoveSubject = async (id: string) => {
     setLoading(true);
     try {
-      await removeSubject(id);
+      await removeSubject(id, user?.sub!);
       fetchAllSubjects();
       console.log("Subject removed successfully");
     } catch (error) {
@@ -164,17 +222,36 @@ const FetchSubjects = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-20 font-redhat">
-      <Card className="border shadow-md rounded-2xl p-6">
-        <div className="flex items-center justify-between p-4">
-          <h6 className="font-outfit text-xl font-medium">Subjects</h6>
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search subjects..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-              >
+              <Button className="rounded-none">
                 <Plus className="w-4 h-4 mr-2" /> Add Subject
               </Button>
             </DialogTrigger>
@@ -249,17 +326,18 @@ const FetchSubjects = () => {
                 </div>
 
                 <div className="flex items-center gap-2 mt-2">
-                  <Checkbox
-                    id="keepAdding"
-                    checked={keepAdding}
-                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
-                  />
                   <Label
                     htmlFor="keepAdding"
                     className="font-medium cursor-pointer"
                   >
-                    Keep adding
+                    Keep adding on selected board and standard
                   </Label>
+                  <Checkbox
+                    className="border border-blue-800/40 cursor-pointer"
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
+                  />
                 </div>
 
                 <Button
@@ -277,93 +355,116 @@ const FetchSubjects = () => {
           </Dialog>
         </div>
 
-        <Table>
+        <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableCell>Subject</TableCell>
-              <TableCell>Board</TableCell>
-              <TableCell>Standard</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell className="font-bold">Subject</TableCell>
+              <TableCell className="font-bold">Board</TableCell>
+              <TableCell className="font-bold">Standard</TableCell>
+              <TableCell className="font-bold">Status</TableCell>
+              <TableCell className="font-bold">Created At</TableCell>
+              <TableCell className="font-bold">Actions</TableCell>
             </TableRow>
           </TableHeader>
-          {loading ? (
-            <TableBody className="flex justify-center items-center w-full">
-              <TableRow className="flex justify-center items-center w-full">
-                <TableCell className="flex justify-center items-center w-full">
-                  <Loader2 className="w-6 h-6 animate-spin" />
+          <TableBody>
+            {paginatedData.map((subject) => (
+              <TableRow key={subject.id}>
+                <TableCell>
+                  {subject.subjectJson[0]?.attributes?.displayName}
+                </TableCell>
+                <TableCell>
+                  {subject.board.sortKey} - {subject.board.displayName}
+                </TableCell>
+                <TableCell>{subject.standard.sortKey}</TableCell>
+
+                <TableCell>
+                  {subject.isActive ? (
+                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                      Active
+                    </p>
+                  ) : (
+                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                      Inactive
+                    </p>
+                  )}
+                </TableCell>
+                <TableCell>{subject.createdAt.split("T")[0]}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild className="cursor-pointer">
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="font-redhat font-semibold">
+                      <DropdownMenuItem
+                        onClick={() => handleActivateSubject(subject.id)}
+                        className="cursor-pointer"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "Activate"
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDeactivateSubject(subject.id)}
+                        className="cursor-pointer"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "Deactivate"
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleRemoveSubject(subject.id)}
+                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash className="w-4 h-4 text-red-700" />
+                        )}
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
-            </TableBody>
-          ) : (
-            <TableBody>
-              {subjects.map((subject) => (
-                <TableRow key={subject.id}>
-                  <TableCell>
-                    {subject.subjectJson[0]?.attributes?.displayName}
-                  </TableCell>
-                  <TableCell>
-                    {subject.board.sortKey} - {subject.board.displayName}
-                  </TableCell>
-                  <TableCell>{subject.standard.sortKey}</TableCell>
-
-                  <TableCell>
-                    {subject.isActive ? (
-                      <p className="text-green-600 font-semibold">Active</p>
-                    ) : (
-                      <p className="text-red-600 font-semibold">Inactive</p>
-                    )}
-                  </TableCell>
-                  <TableCell>{subject.createdAt.split("T")[0]}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild className="cursor-pointer">
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="font-redhat font-semibold">
-                        <DropdownMenuItem
-                          onClick={() => handleActivateSubject(subject.id)}
-                          className="cursor-pointer"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            "Activate"
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDeactivateSubject(subject.id)}
-                          className="cursor-pointer"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            "Deactivate"
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleRemoveSubject(subject.id)}
-                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Trash className="w-4 h-4 text-red-700" />
-                          )}
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          )}
+            ))}
+          </TableBody>
         </Table>
-      </Card>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };

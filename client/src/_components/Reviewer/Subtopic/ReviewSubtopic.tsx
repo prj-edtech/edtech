@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   getSubtopicById,
   approveSubtopic,
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface Subtopic {
   id: string;
@@ -33,56 +34,57 @@ const ReviewerSubtopic = () => {
   const [subtopic, setSubtopic] = useState<Subtopic | null>(null);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchSubtopic = async () => {
-      setLoading(true);
-      try {
-        const response = await getSubtopicById(id!);
-        console.log("Subtopic response:", response.data);
+  const { user } = useAuth0();
 
-        // response.data.data is an array, get the first element
-        const subtopicData = response.data.data;
+  const fetchSubtopic = async () => {
+    setLoading(true);
+    try {
+      const response = await getSubtopicById(id!);
+      console.log("Subtopic response:", response.data);
 
-        if (!subtopicData) {
-          console.warn("No subtopic found in response");
-          setSubtopic(null);
+      // response.data.data is an array, get the first element
+      const subtopicData = response.data.data;
+
+      if (!subtopicData) {
+        console.warn("No subtopic found in response");
+        setSubtopic(null);
+        setContent("");
+        return;
+      }
+
+      setSubtopic(subtopicData);
+
+      if (subtopicData.subtopicContentPath) {
+        const contentUrl = `${
+          import.meta.env.VITE_SUPABASE_URL
+        }/storage/v1/object/public/subtopics/${
+          subtopicData.subtopicContentPath
+        }`;
+        console.log("Content URL:", contentUrl);
+
+        const contentResponse = await fetch(contentUrl);
+        if (!contentResponse.ok) {
+          console.warn("Failed to fetch content from storage");
           setContent("");
           return;
         }
-
-        setSubtopic(subtopicData);
-
-        if (subtopicData.subtopicContentPath) {
-          const contentUrl = `${
-            import.meta.env.VITE_SUPABASE_URL
-          }/storage/v1/object/public/subtopics/${
-            subtopicData.subtopicContentPath
-          }`;
-          console.log("Content URL:", contentUrl);
-
-          const contentResponse = await fetch(contentUrl);
-          if (!contentResponse.ok) {
-            console.warn("Failed to fetch content from storage");
-            setContent("");
-            return;
-          }
-          const contentText = await contentResponse.text();
-          setContent(contentText);
-        } else {
-          console.warn("No subtopicContentPath found in subtopic data");
-          setContent("");
-        }
-      } catch (error) {
-        console.error("Failed to fetch subtopic:", error);
-        setSubtopic(null);
+        const contentText = await contentResponse.text();
+        setContent(contentText);
+      } else {
+        console.warn("No subtopicContentPath found in subtopic data");
         setContent("");
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch subtopic:", error);
+      setSubtopic(null);
+      setContent("");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (id) {
       fetchSubtopic();
     }
@@ -91,36 +93,36 @@ const ReviewerSubtopic = () => {
   const handleApprove = async (id: string) => {
     setLoading(true);
     try {
-      await approveSubtopic(id);
-      navigate("/reviewer/subtopics");
+      await approveSubtopic(id, user?.sub!);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+      fetchSubtopic();
     }
   };
 
   const handleReject = async (id: string) => {
     setLoading(true);
     try {
-      await rejectSubtopic(id);
-      navigate("/reviewer/subtopics");
+      await rejectSubtopic(id, user?.sub!);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+      fetchSubtopic();
     }
   };
 
   const handleReset = async (id: string) => {
     setLoading(true);
     try {
-      await resetSubtopic(id);
-      navigate("/reviewer/subtopics");
+      await resetSubtopic(id, user?.sub!);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+      fetchSubtopic();
     }
   };
 
@@ -133,32 +135,8 @@ const ReviewerSubtopic = () => {
   if (!subtopic) return <p className="p-6">Subtopic not found.</p>;
 
   return (
-    <div className="p-6 font-redhat">
-      <Card className="p-6 space-y-4">
-        <h2 className="text-2xl font-bold">
-          {subtopic.subTopicJson?.attributes?.displayName ||
-            "Untitled Subtopic"}
-        </h2>
-        <div
-          className="prose max-w-full"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
-      </Card>
-      <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:mt-10 font-redhat">
-        <div className="flex justify-center items-center lg:gap-x-2">
-          <h1 className="font-semibold lg:text-lg">Review Status:</h1>
-          <h3 className="lg:text-xs lg:px-3 lg:py-1 bg-black rounded shadow">
-            {subtopic.review === "PENDING" && (
-              <span className="text-stone-200">Pending</span>
-            )}
-            {subtopic.review === "APPROVED" && (
-              <span className="text-green-500">Approved</span>
-            )}
-            {subtopic.review === "REJECTED" && (
-              <span className="text-red-500">Rejected</span>
-            )}
-          </h3>
-        </div>
+    <div className="p-6 font-redhat w-full">
+      <div className="flex justify-between items-center w-full lg:mb-4">
         <Select
           onValueChange={(value) => {
             if (value === "Approve") handleApprove(subtopic.id);
@@ -177,7 +155,34 @@ const ReviewerSubtopic = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+
+        <div className="flex justify-start items-start flex-col font-redhat">
+          <div className="flex justify-center items-center lg:gap-x-2">
+            <h1 className="font-semibold lg:text-lg">Review Status:</h1>
+            <h3 className="lg:text-xs lg:px-3 lg:py-1 bg-black rounded shadow">
+              {subtopic.review === "PENDING" && (
+                <span className="text-stone-200">Pending</span>
+              )}
+              {subtopic.review === "APPROVED" && (
+                <span className="text-stone-200">Approved</span>
+              )}
+              {subtopic.review === "REJECTED" && (
+                <span className="text-stone-200">Rejected</span>
+              )}
+            </h3>
+          </div>
+        </div>
       </div>
+      <Card className="p-6 space-y-4">
+        <h2 className="text-2xl font-bold">
+          {subtopic.subTopicJson?.attributes?.displayName ||
+            "Untitled Subtopic"}
+        </h2>
+        <div
+          className="prose max-w-full"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </Card>
     </div>
   );
 };

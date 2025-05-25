@@ -17,7 +17,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -110,8 +109,8 @@ const FetchAllLogs = () => {
 
   return (
     <div className="p-6 font-redhat">
-      <div className="border rounded-2xl shadow p-4">
-        <h2 className="lg:text-2xl font-bold lg:mb-6">Audit Logs</h2>
+      <div className="p-4">
+        {/* <h2 className="lg:text-2xl font-bold lg:mb-6">Audit Logs</h2>
 
         <div className="mb-4">
           <Input
@@ -120,10 +119,23 @@ const FetchAllLogs = () => {
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="w-full max-w-md"
           />
+        </div> */}
+
+        <div className="flex justify-between items-center lg:w-[200px] border lg:mb-6">
+          <input
+            placeholder="Search audit logs..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+          />
+
+          <Button className="rounded-none" size="sm">
+            Search
+          </Button>
         </div>
 
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="border border-blue-800/20">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

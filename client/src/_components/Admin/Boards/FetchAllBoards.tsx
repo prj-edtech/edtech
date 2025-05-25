@@ -33,6 +33,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Switch } from "@/components/ui/switch";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Board {
   id: string;
@@ -65,7 +73,24 @@ const FetchAllBoards = () => {
     null
   );
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
   const { user } = useAuth0();
+
+  const filteredData = data.filter(
+    (board) =>
+      board.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      board.displayName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   useEffect(() => {
     const getBoards = async () => {
@@ -73,6 +98,7 @@ const FetchAllBoards = () => {
       try {
         const response = await fetchBoards();
         setData(response.data.data);
+        console.log(response.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -155,7 +181,7 @@ const FetchAllBoards = () => {
   const handleRemoveBoard = async (board: Board) => {
     setLoading(true);
     try {
-      await removeBoard(board.id);
+      await removeBoard(board.id, user?.sub!);
       const response = await fetchBoards();
       setData(response.data.data);
     } catch (error) {
@@ -175,18 +201,27 @@ const FetchAllBoards = () => {
 
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
-      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 border rounded-2xl shadow min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 p-3 w-full">
-          <h6 className="font-outfit lg:text-xl font-medium">
-            Education Boards
-          </h6>
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search boards..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-              >
+              <Button className="rounded-none">
                 <Plus className="w-4 h-4 mr-2" /> Add Board
               </Button>
             </DialogTrigger>
@@ -240,25 +275,29 @@ const FetchAllBoards = () => {
           </Dialog>
         </div>
 
-        <Table className="border-b">
+        <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Board</TableHead>
-              <TableHead></TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="font-bold">Board</TableHead>
+              <TableHead className="font-bold"></TableHead>
+              <TableHead className="font-bold">Status</TableHead>
+              <TableHead className="font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((board) => (
+            {paginatedData.map((board) => (
               <TableRow key={board.id}>
                 <TableCell>{board.sortKey}</TableCell>
                 <TableCell>{board.displayName}</TableCell>
                 <TableCell>
                   {board.isActive ? (
-                    <p className="text-green-600 font-semibold">Active</p>
+                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                      Active
+                    </p>
                   ) : (
-                    <p className="text-red-600 font-semibold">Inactive</p>
+                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                      Inactive
+                    </p>
                   )}
                 </TableCell>
                 <TableCell>
@@ -311,6 +350,35 @@ const FetchAllBoards = () => {
             )}
           </TableBody>
         </Table>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
 
       {/* Edit Dialog */}

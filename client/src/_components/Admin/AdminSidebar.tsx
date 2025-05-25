@@ -1,128 +1,119 @@
-import { Link } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
-  BookCopy,
-  BookOpenText,
-  BookCopyIcon,
-  GraduationCap,
-  LayoutDashboard,
-  Notebook,
-  NotebookPen,
-  School,
-  Scroll,
-  ScrollText,
-  ChevronUp,
-  ChevronDown,
-  BookType,
-  NotepadText,
-} from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
-const AdminSidebar = () => {
-  const { logout } = useAuth0();
-
+const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
   return (
-    <div className="lg:w-64 h-screen fixed top-0 left-0 bg-black text-stone-100 lg:flex hidden flex-col p-4 space-y-6 font-redhat z-50 overflow-y-auto">
-      <div className="flex justify-between items-center w-full">
-        <div className="flex justify-start items-center lg:gap-x-2">
-          <BookCopyIcon className="bg-violet-600 text-stone-200 stroke-[1.5] p-2 rounded-lg shadow-md w-8 h-8" />
-          <div className="flex flex-col">
-            <h3 className="font-redhat lg:text-xl font-bold">EdTech</h3>
-            <h3 className="font-redhat lg:text-sm font-bold opacity-50">
-              Admin
-            </h3>
-          </div>
-        </div>
-        <Dialog>
-          <DialogTrigger>
-            <div className="flex flex-col lg:px-4 lg:py-1.5 rounded-lg shadow hover:bg-stone-800 cursor-pointer">
-              <ChevronUp className="w-3 h-3" />
-              <ChevronDown className="w-3 h-3" />
-            </div>
-          </DialogTrigger>
-          <DialogContent className="font-redhat flex flex-col">
-            <p onClick={() => logout()}>Logout</p>
-          </DialogContent>
-        </Dialog>
-      </div>
-      <nav className="flex flex-col justify-start items-start lg:gap-y-3 text-lg w-full mt-2">
-        <Link
-          to="/dashboard"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <LayoutDashboard className="w-5 h-5 stroke-[1] text-violet-600" />
-          Dashboard
-        </Link>
-        <Link
-          to="/admin/boards"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <School className="w-5 h-5 stroke-[1] text-violet-600" />
-          Boards
-        </Link>
-        <Link
-          to="/admin/standards"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <GraduationCap className="w-5 h-5 stroke-[1] text-violet-600" />
-          Standards
-        </Link>
-        <Link
-          to="/admin/subjects"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <BookOpenText className="w-5 h-5 stroke-[1] text-violet-600" />
-          Subjects
-        </Link>
-        <Link
-          to="/admin/sections"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <BookCopy className="w-5 h-5 stroke-[1] text-violet-600" />
-          Sections
-        </Link>
-        <Link
-          to="/admin/topics"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <Notebook className="w-5 h-5 stroke-[1] text-violet-600" />
-          Topics
-        </Link>
-        <Link
-          to="/admin/subtopics"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <NotebookPen className="w-5 h-5 stroke-[1] text-violet-600" />
-          Subtopics
-        </Link>
-        <Link
-          to="/admin/question-paper"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <BookType className="w-5 h-5 stroke-[1] text-violet-600" />
-          Question Papers
-        </Link>
-        <Link
-          to="/admin/questions"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <NotepadText className="w-5 h-5 stroke-[1] text-violet-600" />
-          Questions
-        </Link>
-        <Link
-          to="/admin/audit-logs"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <Scroll className="w-5 h-5 stroke-[1] text-violet-600" />
-          Audit Logs
-        </Link>
-        <Link
-          to="/admin/change-logs"
-          className="flex items-center lg:gap-x-4 hover:bg-stone-600/20 lg:pr-8 lg:pl-2 lg:py-2 rounded-full cursor-pointer hover:text-violet-600"
-        >
-          <ScrollText className="w-5 h-5 stroke-[1] text-violet-600" />
-          Change Logs
-        </Link>
+    <div
+      className={`fixed h-screen flex-col p-4 space-y-6 font-redhat z-20 overflow-y-auto transition-all duration-300
+    ${isOpen ? "w-64" : "w-0"} 
+    lg:flex hidden`}
+    >
+      <nav className="flex flex-col justify-start items-start lg:gap-y-3 text-lg w-full lg:px-6 lg:w-64">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="font-semibold">
+              Most Used
+            </AccordionTrigger>
+            <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
+              <Link
+                to="/dashboard"
+                className="hover:underline underline-offset-2"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/admin/boards"
+                className="hover:underline underline-offset-2"
+              >
+                Boards
+              </Link>
+              <Link
+                to="/admin/standards"
+                className="hover:underline underline-offset-2"
+              >
+                Standards
+              </Link>
+              <Link
+                to="/admin/subjects"
+                className="hover:underline underline-offset-2"
+              >
+                Subjects
+              </Link>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="font-semibold">
+              Content
+            </AccordionTrigger>
+            <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
+              <Link
+                to="/admin/sections"
+                className="hover:underline underline-offset-2"
+              >
+                Sections
+              </Link>
+              <Link
+                to="/admin/topics"
+                className="hover:underline underline-offset-2"
+              >
+                Topics
+              </Link>
+              <Link
+                to="/admin/subtopics"
+                className="hover:underline underline-offset-2"
+              >
+                Subtopics
+              </Link>
+              <Link
+                to="/admin/subtopics/add"
+                className="hover:underline underline-offset-2"
+              >
+                Add Subtopic
+              </Link>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger className="font-semibold">Exams</AccordionTrigger>
+            <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
+              <Link
+                to="/admin/question-papers"
+                className="hover:underline underline-offset-2"
+              >
+                Question Paper
+              </Link>
+              <Link
+                to="/admin/question-papers/questions"
+                className="hover:underline underline-offset-2"
+              >
+                Questions
+              </Link>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionTrigger className="font-semibold">
+              System Logs
+            </AccordionTrigger>
+            <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
+              <Link
+                to="/admin/change-logs"
+                className="hover:underline underline-offset-2"
+              >
+                Change Logs
+              </Link>
+              <Link
+                to="/admin/audit-logs"
+                className="hover:underline underline-offset-2"
+              >
+                Audit Trail
+              </Link>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </nav>
     </div>
   );
