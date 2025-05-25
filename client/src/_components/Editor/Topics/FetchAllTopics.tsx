@@ -135,7 +135,7 @@ const FetchAllTopics = () => {
   const handleRemove = async (id: string) => {
     setLoading(true);
     try {
-      await removeTopic(id);
+      await removeTopic(id, user?.sub!);
       loadTopics();
     } catch (error: any) {
       console.error(error.message);
