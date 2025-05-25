@@ -13,7 +13,7 @@ import { Bell, Menu } from "lucide-react";
 
 const EditorNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
-  const roles = user && user["https://edtecheditor.dev/roles"];
+  const roles = user && user["https://edtechadmin.dev/roles"];
   console.log(roles);
   console.log(user);
   return (

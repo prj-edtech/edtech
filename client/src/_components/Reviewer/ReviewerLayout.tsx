@@ -1,15 +1,16 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Outlet } from "react-router-dom";
-import ReviewerSidebar from "./ReviewerSidebar";
 import ReviewerNavbar from "./ReviewerNavbar";
+import ReviewerSidebar from "./ReviewerSidebar";
 
 const ReviewerLayout = ({ children }: { children: ReactNode }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className="flex min-h-screen">
-      <ReviewerSidebar />
-      <div className="flex-1 flex flex-col lg:ml-64">
-        <ReviewerNavbar />
-        <main className="flex-1 p-6">
+    <div className="flex flex-col min-h-screen">
+      <ReviewerNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <div className="flex flex-1">
+        <ReviewerSidebar isOpen={isSidebarOpen} />
+        <main className="flex-1 p-6 overflow-y-auto ml-64">
           <Outlet />
           {children}
         </main>

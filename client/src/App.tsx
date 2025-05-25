@@ -50,6 +50,7 @@ function App() {
             isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
           }
         />
+        {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />}>
           <Route path="boards" element={<Boards />} />
           <Route path="standards" element={<Standards />} />
@@ -63,6 +64,7 @@ function App() {
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
+        {/* Editor Routes */}
         <Route path="/editor" element={<EditorDashboard />}>
           <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
@@ -75,6 +77,7 @@ function App() {
           />
           <Route path="question-papers" element={<EditorQuestionPaper />} />
         </Route>
+        {/* Reviewer Layout */}
         <Route path="/reviewer" element={<ReviewerDashboard />}>
           <Route path="subtopics" element={<FetchAllSubtopicsReview />} />
           <Route

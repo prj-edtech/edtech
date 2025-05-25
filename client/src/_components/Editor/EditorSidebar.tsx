@@ -17,9 +17,15 @@ const EditorSidebar = ({ isOpen }: { isOpen: boolean }) => {
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
             <AccordionTrigger className="font-semibold">
-              Content
+              Most Used
             </AccordionTrigger>
             <AccordionContent className="flex justify-start items-start flex-col lg:gap-y-4">
+              <Link
+                to="/dashboard"
+                className="hover:underline underline-offset-2"
+              >
+                Dashboard
+              </Link>
               <Link
                 to="/editor/sections"
                 className="hover:underline underline-offset-2"
