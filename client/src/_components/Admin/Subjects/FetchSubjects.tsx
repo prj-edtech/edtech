@@ -184,7 +184,7 @@ const FetchSubjects = () => {
   const handleRemoveSubject = async (id: string) => {
     setLoading(true);
     try {
-      await removeSubject(id);
+      await removeSubject(id, user?.sub!);
       fetchAllSubjects();
       console.log("Subject removed successfully");
     } catch (error) {
