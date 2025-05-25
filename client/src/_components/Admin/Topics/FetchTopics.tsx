@@ -6,7 +6,6 @@ import {
   removeTopic,
 } from "@/api/topics";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +43,38 @@ import {
 } from "@/components/ui/select";
 import { getAllActiveSubjects } from "@/api/subjects";
 import { getAllActiveSections } from "@/api/sections";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface Topics {
+  id: string;
+  partitionKey: string;
+  sortKey: string;
+  topicId: string;
+  sectionId: string;
+  priority: number;
+  isActive: boolean;
+  createdAt: string;
+  topicJson: {
+    attributes: {
+      displayName: string;
+    };
+  };
+  section: {
+    sectionJson: {
+      attributes: {
+        displayName: string;
+      };
+    };
+  };
+}
 
 interface Boards {
   id: string;
@@ -70,7 +101,7 @@ interface Sections {
 }
 
 const FetchAllTopics = () => {
-  const [topics, setTopics] = useState<any[]>([]);
+  const [topics, setTopics] = useState<Topics[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const [boardId, setBoardId] = useState("");
@@ -91,16 +122,42 @@ const FetchAllTopics = () => {
   const [editDisplayName, setEditDisplayName] = useState("");
   const [editIsActive, setEditIsActive] = useState("true");
 
+  const [keepAdding, setKeepAdding] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
+  const filteredData = topics.filter(
+    (topic) =>
+      topic.topicJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      topic.section.sectionJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      topic.createdAt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const { user } = useAuth0();
 
   const loadTopics = async () => {
+    setLoading(true);
     try {
       const response = await fetchAllTopics();
       setTopics(response.data.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,7 +192,7 @@ const FetchAllTopics = () => {
   const handleRemove = async (id: string) => {
     setLoading(true);
     try {
-      await removeTopic(id);
+      await removeTopic(id, user?.sub!);
       loadTopics();
     } catch (error: any) {
       console.error(error.message);
@@ -172,17 +229,20 @@ const FetchAllTopics = () => {
         createdBy: user?.sub || "",
       });
 
-      // Clear form fields
-      setBoardId("");
-      setStandardId("");
-      setSubjectId("");
-      setSectionId("");
-      setPriority("");
-      setDisplayName("");
-
-      // Close dialog and reload topics
-      setOpenAddDialog(false);
       loadTopics();
+      if (keepAdding) {
+        setPriority("");
+        setDisplayName("");
+      } else {
+        setBoardId("");
+        setStandardId("");
+        setSubjectId("");
+        setSectionId("");
+        setPriority("");
+        setDisplayName("");
+        setOpenAddDialog(false);
+        setKeepAdding(false);
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to add topic. Check console for details.");
@@ -224,17 +284,36 @@ const FetchAllTopics = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-20 font-redhat">
-      <Card className="border shadow-md rounded-2xl p-6">
-        <div className="flex items-center justify-between p-4">
-          <h6 className="font-outfit text-xl font-medium">Topics</h6>
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search topics..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-              >
+              <Button className="rounded-none">
                 <Plus className="w-4 h-4 mr-2" /> Add Topic
               </Button>
             </DialogTrigger>
@@ -353,11 +432,26 @@ const FetchAllTopics = () => {
                   />
                 </div>
                 <div className="flex justify-start items-start w-full flex-col gap-y-2">
-                  <Label>Display Name</Label>
+                  <Label>Topic Name</Label>
                   <Input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Label
+                    htmlFor="keepAdding"
+                    className="font-medium cursor-pointer"
+                  >
+                    Keep adding on selected board, standard, subject and section
+                  </Label>
+                  <Checkbox
+                    className="border border-blue-800/40 cursor-pointer"
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
                   />
                 </div>
 
@@ -377,78 +471,105 @@ const FetchAllTopics = () => {
           </Dialog>
         </div>
 
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Topic</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Partition Key</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topics.length > 0 ? (
-                topics.map((topic) => (
-                  <TableRow key={topic.id}>
-                    <TableCell>
-                      {topic.topicJson.attributes.displayName}
-                    </TableCell>
-                    <TableCell>
-                      {topic.section.sectionJson.attributes.displayName}
-                    </TableCell>
-                    <TableCell>{topic.priority}</TableCell>
-                    <TableCell>{topic.partitionKey}</TableCell>
-                    <TableCell>
-                      {topic.isActive ? (
-                        <p className="text-green-600 font-semibold">Active</p>
-                      ) : (
-                        <p className="text-red-600 font-semibold">Inactive</p>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => handleEditClick(topic)}
-                          >
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleRemove(topic.id)}
-                            disabled={loading}
-                            className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                          >
-                            {loading ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash className="w-4 h-4 text-red-700" />
-                            )}
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-6">
-                    No topics found.
+        <Table className="border border-blue-800/20">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-bold">Topic</TableHead>
+              <TableHead className="font-bold">Section</TableHead>
+              <TableHead className="font-bold">Status</TableHead>
+              <TableHead className="text-right font-bold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {topics.length > 0 ? (
+              paginatedData.map((topic) => (
+                <TableRow key={topic.id}>
+                  <TableCell>
+                    {topic.topicJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {topic.section.sectionJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {topic.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => handleEditClick(topic)}
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemove(topic.id)}
+                          disabled={loading}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash className="w-4 h-4 text-red-700" />
+                          )}
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6">
+                  No topics found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
       <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader className="lg:mb-6 font-outfit">
