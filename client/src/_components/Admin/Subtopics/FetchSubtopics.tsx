@@ -5,13 +5,20 @@ import {
   removeSubtopic,
 } from "@/api/subtopics";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -20,13 +27,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+interface Subtopics {
+  id: string;
+  subTopicId: string;
+  isActive: boolean;
+  createdAt: string;
+  review: string;
+  subTopicJson: {
+    attributes: {
+      displayName: string;
+    };
+  };
+  topic: {
+    topicJson: {
+      attributes: {
+        displayName: string;
+      };
+    };
+  };
+  section: {
+    sectionJson: {
+      attributes: {
+        displayName: string;
+      };
+    };
+  };
+}
 const FetchSubtopics = () => {
-  const [subtopics, setSubtopics] = useState<any[]>([]); // Store fetched subtopics
+  const [subtopics, setSubtopics] = useState<Subtopics[]>([]); // Store fetched subtopics
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth0();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
+
+  const filteredData = subtopics.filter(
+    (subtopic) =>
+      subtopic.subTopicJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      subtopic.topic.topicJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      subtopic.section.sectionJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      subtopic.review.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      subtopic.createdAt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   // Fetch subtopics from API
   const loadSubtopics = async () => {
@@ -49,7 +111,7 @@ const FetchSubtopics = () => {
   const handleDeactivate = async (id: string) => {
     setLoading(true);
     try {
-      await deactivateSubtopic(id);
+      await deactivateSubtopic(id, user?.sub!);
       loadSubtopics();
     } catch (error) {
       console.error(error);
@@ -61,7 +123,7 @@ const FetchSubtopics = () => {
   const handleActivate = async (id: string) => {
     setLoading(true);
     try {
-      await activateSubtopic(id);
+      await activateSubtopic(id, user?.sub!);
       loadSubtopics();
     } catch (error) {
       console.error(error);
@@ -73,7 +135,7 @@ const FetchSubtopics = () => {
   const handleRemove = async (id: string) => {
     setLoading(true);
     try {
-      await removeSubtopic(id);
+      await removeSubtopic(id, user?.sub!);
       loadSubtopics();
     } catch (error) {
       console.error(error);
@@ -82,55 +144,34 @@ const FetchSubtopics = () => {
     }
   };
 
-  if (subtopics.length === 0) {
+  if (loading) {
     return (
-      <div className="flex flex-col p-20 font-redhat">
-        <Card className="border shadow-md rounded-2xl p-6">
-          <div className="flex items-center justify-between p-4">
-            <h6 className="font-outfit text-xl font-medium">Subtopics</h6>
-            <Button
-              variant="outline"
-              className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-            >
-              <Link
-                to="/admin/subtopics/add"
-                className="flex items-center gap-x-2"
-              >
-                <Plus className="w-4 h-4 mr-2" /> Add Subtopic
-              </Link>
-            </Button>
-          </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Subtopic Name</TableHead>
-                <TableHead>Topic</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Content storage</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableCell>Subtopics data is empty</TableCell>
-            </TableBody>
-          </Table>
-        </Card>
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col p-20 font-redhat">
-      <Card className="border shadow-md rounded-2xl p-6">
-        <div className="flex items-center justify-between p-4">
-          <h6 className="font-outfit text-xl font-medium">Subtopics</h6>
-          <Button
-            variant="outline"
-            className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-          >
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search subtopics..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
+          <Button className="rounded-none">
             <Link
               to="/admin/subtopics/add"
               className="flex items-center gap-x-2"
@@ -139,20 +180,19 @@ const FetchSubtopics = () => {
             </Link>
           </Button>
         </div>
-        <Table>
+        <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Subtopic</TableHead>
-              <TableHead>Topic</TableHead>
-              <TableHead>Section</TableHead>
-              <TableHead>Review</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Content storage</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="font-bold">Subtopic</TableHead>
+              <TableHead className="font-bold">Topic</TableHead>
+              <TableHead className="font-bold">Section</TableHead>
+              <TableHead className="font-bold">Review</TableHead>
+              <TableHead className="font-bold">Status</TableHead>
+              <TableHead className="font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subtopics.map((subtopic) => (
+            {paginatedData.map((subtopic) => (
               <TableRow key={subtopic.subTopicId}>
                 <TableCell className="max-w-32 truncate">
                   {subtopic.subTopicJson.attributes.displayName}
@@ -163,26 +203,17 @@ const FetchSubtopics = () => {
                 <TableCell>
                   {subtopic.section.sectionJson.attributes.displayName}
                 </TableCell>
-                <TableCell>{subtopic.review}</TableCell>
+                <TableCell className="font-bold">{subtopic.review}</TableCell>
                 <TableCell>
                   {subtopic.isActive ? (
-                    <p className="text-green-600 font-semibold">Active</p>
+                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                      Active
+                    </p>
                   ) : (
-                    <p className="text-red-600 font-semibold">Inactive</p>
+                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                      Inactive
+                    </p>
                   )}
-                </TableCell>
-                <TableCell className="lg:max-w-32 truncate">
-                  <Link
-                    target="_blank"
-                    className="underline underline-offset-2 opacity-80 hover:opacity-100 transition duration-300"
-                    to={`${
-                      import.meta.env.VITE_SUPABASE_URL
-                    }/storage/v1/object/public/subtopics/${
-                      subtopic.subtopicContentPath
-                    }`}
-                  >
-                    {subtopic.subtopicContentPath}
-                  </Link>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -233,7 +264,36 @@ const FetchSubtopics = () => {
             ))}
           </TableBody>
         </Table>
-      </Card>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };
