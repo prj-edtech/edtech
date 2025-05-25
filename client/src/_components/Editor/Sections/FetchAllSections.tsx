@@ -20,7 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { fetchActiveBoards } from "@/api/boards";
 import { fetchActiveStandards } from "@/api/standards";
 import { getAllActiveSubjects } from "@/api/subjects";
@@ -39,6 +38,38 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface Sections {
+  id: string;
+  partitionKey: string;
+  sortKey: string;
+  priority: number;
+  isActive: true;
+  createdAt: string;
+  sectionJson: {
+    attributes: {
+      displayName: string;
+    };
+  };
+  board: {
+    sortKey: string;
+  };
+  standard: {
+    sortKey: string;
+  };
+  subject: {
+    sortKey: string;
+  };
+}
 
 interface Boards {
   id: string;
@@ -56,7 +87,7 @@ interface Subjects {
 }
 
 const FetchAllSections = () => {
-  const [sections, setSections] = useState<any[]>([]);
+  const [sections, setSections] = useState<Sections[]>([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [boardData, setBoardData] = useState<Boards[]>([]);
   const [standardData, setStandardData] = useState<Standards[]>([]);
@@ -77,7 +108,34 @@ const FetchAllSections = () => {
   const [editPriority, setEditPriority] = useState<number>(0);
   const [editIsActive, setEditIsActive] = useState(true);
 
+  const [keepAdding, setKeepAdding] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 1;
+
+  const filteredData = sections.filter(
+    (section) =>
+      section.sectionJson.attributes.displayName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      section.board.sortKey.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      section.standard?.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      section.subject?.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      section.createdAt.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const fetchAllSections = async () => {
     setLoading(true);
@@ -125,15 +183,22 @@ const FetchAllSections = () => {
         displayName,
         createdBy: user?.sub as string,
       });
-      setOpenAddDialog(false);
-      // Clear form values
-      setSortKey("");
-      setBoardId("");
-      setStandardId("");
-      setSubjectId("");
-      setPriority(0);
-      setDisplayName("");
+
       fetchAllSections();
+      if (keepAdding) {
+        setSortKey("");
+        setPriority(0);
+        setDisplayName("");
+      } else {
+        setSortKey("");
+        setPriority(0);
+        setDisplayName("");
+        setBoardId("");
+        setStandardId("");
+        setSubjectId("");
+        setOpenAddDialog(false);
+        setKeepAdding(false);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -168,17 +233,36 @@ const FetchAllSections = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-20 font-redhat">
-      <Card className="border shadow-md rounded-2xl p-6">
-        <div className="flex items-center justify-between p-4">
-          <h6 className="font-outfit text-xl font-medium">Sections</h6>
+    <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
+      <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
+        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+          <div className="flex justify-between items-center lg:w-[200px] border">
+            <input
+              placeholder="Search sections..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset to first page when search changes
+              }}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
+
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="lg:px-6 lg:py-1.5 font-outfit lg:text-base font-medium bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 hover:shadow-md cursor-pointer"
-              >
+              <Button className="rounded-none">
                 <Plus className="w-4 h-4 mr-2" /> Add Section
               </Button>
             </DialogTrigger>
@@ -188,16 +272,6 @@ const FetchAllSections = () => {
               </DialogHeader>
 
               <div className="flex flex-col gap-y-4 mt-4">
-                <div>
-                  <Label className="mb-2">Sort Key</Label>
-                  <Input
-                    type="text"
-                    value={sortKey}
-                    placeholder="eg. Mathematics"
-                    onChange={(e) => setSortKey(e.target.value)}
-                  />
-                </div>
-
                 <div>
                   <Label className="mb-2">Board</Label>
                   {/* <Input
@@ -277,6 +351,33 @@ const FetchAllSections = () => {
                 </div>
 
                 <div>
+                  <Label className="mb-2">Confirm Subject</Label>
+                  {/* <Input
+                    type="text"
+                    value={sortKey}
+                    placeholder="eg. Mathematics"
+                    onChange={(e) => setSortKey(e.target.value)}
+                  /> */}
+                  <Select
+                    value={sortKey}
+                    onValueChange={(value) => setSortKey(value)}
+                  >
+                    <SelectTrigger className="w-full cursor-pointer">
+                      <SelectValue placeholder="Select a subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {subjectData.map((subject) => (
+                          <SelectItem key={subject.id} value={subject.sortKey}>
+                            {subject.sortKey}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
                   <Label className="mb-2">Priority</Label>
                   <Input
                     type="number"
@@ -286,12 +387,27 @@ const FetchAllSections = () => {
                 </div>
 
                 <div>
-                  <Label className="mb-2">Display Name</Label>
+                  <Label className="mb-2">Section Name</Label>
                   <Input
                     type="text"
                     value={displayName}
                     placeholder="eg. Algebra"
                     onChange={(e) => setDisplayName(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Label
+                    htmlFor="keepAdding"
+                    className="font-medium cursor-pointer"
+                  >
+                    Keep adding on selected board, standard and subject
+                  </Label>
+                  <Checkbox
+                    className="border border-blue-800/40 cursor-pointer"
+                    id="keepAdding"
+                    checked={keepAdding}
+                    onCheckedChange={(checked) => setKeepAdding(!!checked)}
                   />
                 </div>
 
@@ -311,21 +427,20 @@ const FetchAllSections = () => {
           </Dialog>
         </div>
 
-        <Table>
+        <Table className="border border-blue-800/20">
           <TableHeader>
-            <TableRow>
-              <TableCell>Section Name</TableCell>
+            <TableRow className="font-bold">
+              <TableCell>Section</TableCell>
               <TableCell>Board</TableCell>
               <TableCell>Standard</TableCell>
               <TableCell>Subject</TableCell>
-              <TableCell>Priority</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sections.map((section) => (
+            {paginatedData.map((section) => (
               <TableRow key={section.id}>
                 <TableCell>
                   {section.sectionJson?.attributes?.displayName}
@@ -333,12 +448,15 @@ const FetchAllSections = () => {
                 <TableCell>{section.board.sortKey}</TableCell>
                 <TableCell>{section.standard.sortKey}</TableCell>
                 <TableCell>{section.subject.sortKey}</TableCell>
-                <TableCell>{section.sectionJson?.priority}</TableCell>
                 <TableCell>
                   {section.isActive ? (
-                    <p className="text-green-600 font-semibold">Active</p>
+                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                      Active
+                    </p>
                   ) : (
-                    <p className="text-red-600 font-semibold">Inactive</p>
+                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                      Inactive
+                    </p>
                   )}
                 </TableCell>
                 <TableCell>{section.createdAt.split("T")[0]}</TableCell>
@@ -367,6 +485,36 @@ const FetchAllSections = () => {
             ))}
           </TableBody>
         </Table>
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                // disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                // disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -395,7 +543,6 @@ const FetchAllSections = () => {
                 <Label>Is Active</Label>
                 <Switch
                   checked={editIsActive}
-                  disabled
                   onCheckedChange={() => setEditIsActive(!editIsActive)}
                 />
               </div>
@@ -412,7 +559,7 @@ const FetchAllSections = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </Card>
+      </div>
     </div>
   );
 };
