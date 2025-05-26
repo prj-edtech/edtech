@@ -204,12 +204,45 @@ model QuestionPaper {
   standard   Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
 
   subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  Question  Question[]
 
   @@unique([partitionKey, sortKey])
   @@index([partitionKey, sortKey])
   @@index([isActive])
   @@index([year])
+}
+
+model Question {
+  id                  String   @id @default(cuid())
+  partitionKey        String
+  sortKey             String
+  year                String
+  month               String
+  questionId          String   @unique
+  questionPaperId     String
+  sectionId           String
+  topicId             String
+  subTopicId          String
+  marks               Int
+  priority            Int
+  questionType        String
+  questionContentPath String
+  questionAnswerPath  String
+  attributes          Json
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  createdBy           String
+  updatedBy           String
+  questionJson        Json?
+
+  // Relations
+  questionPaper QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+
+  @@unique([partitionKey, sortKey])
+  @@index([partitionKey, sortKey])
+  @@index([questionPaperId])
 }
 
 model ChangeLog {
