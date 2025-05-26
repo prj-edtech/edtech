@@ -1,7 +1,6 @@
 import { createUser } from "@/api/user";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import ReviewLayout from "./ReviewerLayout";
 
 const ReviewerDashboard = () => {
   const addUser = async (
@@ -40,9 +39,9 @@ const ReviewerDashboard = () => {
   }, [user, roles]);
 
   return (
-    <ReviewLayout>
-      <div />
-    </ReviewLayout>
+    <div>
+      <h1>Reviewer</h1>
+    </div>
   );
 };
 

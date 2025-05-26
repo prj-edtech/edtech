@@ -1,7 +1,6 @@
 import { createUser } from "@/api/user";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import EditorLayout from "./EditorLayout";
 
 const EditorDashboard = () => {
   const addUser = async (
@@ -40,9 +39,9 @@ const EditorDashboard = () => {
   }, [user, roles]);
 
   return (
-    <EditorLayout>
-      <div />
-    </EditorLayout>
+    <div>
+      <h1>Editor</h1>
+    </div>
   );
 };
 

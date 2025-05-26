@@ -1,5 +1,4 @@
 import { createUser } from "@/api/user";
-import AdminLayout from "./AdminLayout";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -40,9 +39,9 @@ const AdminDashboard = () => {
   }, [user, roles]);
 
   return (
-    <AdminLayout>
-      <div />
-    </AdminLayout>
+    <div className="flex justify-center items-center w-full flex-col">
+      Hi there
+    </div>
   );
 };
 
