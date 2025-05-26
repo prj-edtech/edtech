@@ -261,6 +261,9 @@ export const getAllQuestions = async (isActive?: boolean) => {
   const questions = await prisma.question.findMany({
     where: isActive !== undefined ? { isActive } : {},
     orderBy: { createdAt: "desc" },
+    include: {
+      questionPaper: true,
+    },
   });
   return questions;
 };

@@ -87,7 +87,7 @@ const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
                 Question Paper
               </Link>
               <Link
-                to="/admin/question-papers/questions"
+                to="/admin/questions"
                 className="hover:underline underline-offset-2"
               >
                 Questions

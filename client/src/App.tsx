@@ -29,6 +29,7 @@ import ReviewerSubtopicReview from "./_components/Reviewer/Subtopic/ReviewSubtop
 import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
 import EditorQuestionPaper from "./_components/Editor/Question-Paper/FetchAllQuestionPapers";
+import Questions from "./_components/Admin/Question/FetchAllQuestions";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -61,6 +62,7 @@ function App() {
           <Route path="subtopics/add" element={<AddSubtopics />} />
           <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
           <Route path="question-papers" element={<QuestionPaper />} />
+          <Route path="questions" element={<Questions />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
