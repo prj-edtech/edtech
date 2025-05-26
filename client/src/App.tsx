@@ -32,6 +32,9 @@ import EditorQuestionPaper from "./_components/Editor/Question-Paper/FetchAllQue
 import Questions from "./_components/Admin/Question/FetchAllQuestions";
 import EditorFetchAllQuestions from "./_components/Editor/Question/FetchAllQuestions";
 import ReviewerFetchAllQuestions from "./_components/Reviewer/Question/FetchAllQuestions";
+import AdminLayout from "./_components/Admin/AdminLayout";
+import EditorLayout from "./_components/Editor/EditorLayout";
+import ReviewerLayout from "./_components/Reviewer/ReviewerLayout";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -54,7 +57,8 @@ function App() {
           }
         />
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboard />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
           <Route path="boards" element={<Boards />} />
           <Route path="standards" element={<Standards />} />
           <Route path="subjects" element={<Subjects />} />
@@ -69,7 +73,8 @@ function App() {
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
         {/* Editor Routes */}
-        <Route path="/editor" element={<EditorDashboard />}>
+        <Route path="/editor" element={<EditorLayout />}>
+          <Route index element={<EditorDashboard />} />
           <Route path="sections" element={<EditorSections />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="topics" element={<EditorTopics />} />
@@ -83,7 +88,8 @@ function App() {
           <Route path="questions" element={<EditorFetchAllQuestions />} />
         </Route>
         {/* Reviewer Layout */}
-        <Route path="/reviewer" element={<ReviewerDashboard />}>
+        <Route path="/reviewer" element={<ReviewerLayout />}>
+          <Route index element={<ReviewerDashboard />} />
           <Route path="subtopics" element={<FetchAllSubtopicsReview />} />
           <Route
             path="subtopics/review/:id"
