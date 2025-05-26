@@ -210,6 +210,32 @@ export const deleteQuestionPaper = async (req: Request, res: Response) => {
   }
 };
 
+// Activate Question Paper Controller
+export const activateQuestionPaper = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+
+    const questionPaper = await questionPaperService.activateQuestionPaper(
+      id,
+      performedBy
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Question paper activated successfully",
+      data: questionPaper,
+    });
+  } catch (error: any) {
+    console.error("Update QuestionPaper Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to activate question paper",
+      error: error.message,
+    });
+  }
+};
+
 // Delete Question Paper Controller
 export const getAllQuestionPaper = async (req: Request, res: Response) => {
   try {

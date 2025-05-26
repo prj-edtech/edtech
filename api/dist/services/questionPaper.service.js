@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllQuestionPaper = exports.removeQuestionPaper = exports.softDeleteQuestionPaper = exports.getQuestionPapersByBoardStandardSubject = exports.updateQuestionPaper = exports.createQuestionPaper = void 0;
+exports.getAllQuestionPaper = exports.activateQuestionPaper = exports.removeQuestionPaper = exports.softDeleteQuestionPaper = exports.getQuestionPapersByBoardStandardSubject = exports.updateQuestionPaper = exports.createQuestionPaper = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const base62_1 = require("../utils/base62");
 const auditTrail_service_1 = require("./auditTrail.service");
@@ -191,6 +191,34 @@ const removeQuestionPaper = (id, performedBy) => __awaiter(void 0, void 0, void 
     return questionPaper;
 });
 exports.removeQuestionPaper = removeQuestionPaper;
+const activateQuestionPaper = (id, performedBy) => __awaiter(void 0, void 0, void 0, function* () {
+    const questionPaper = yield db_1.default.questionPaper.update({
+        where: {
+            id,
+        },
+        data: {
+            isActive: true,
+        },
+    });
+    yield (0, auditTrail_service_1.createAuditLog)({
+        entityType: "QuestionPaper",
+        entityId: id,
+        action: "ACTIVATE",
+        performedBy: performedBy,
+        details: "Question paper activated",
+    });
+    yield (0, changeLog_service_1.createChangeLog)({
+        entityType: "QUESTION_PAPER",
+        entityId: id,
+        changeType: "ACTIVATE",
+        changeStatus: "AUTO_APPROVED",
+        submittedBy: performedBy,
+        createdBy: performedBy,
+        notes: "Question paper activated",
+    });
+    return questionPaper;
+});
+exports.activateQuestionPaper = activateQuestionPaper;
 const getAllQuestionPaper = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield db_1.default.questionPaper.findMany({
         include: {

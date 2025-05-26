@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllQuestionPaper = exports.deleteQuestionPaper = exports.softDeleteQuestionPaperController = exports.getQuestionPapersByBoardStandardSubjectController = exports.updateQuestionPaperController = exports.createQuestionPaperController = void 0;
+exports.getAllQuestionPaper = exports.activateQuestionPaper = exports.deleteQuestionPaper = exports.softDeleteQuestionPaperController = exports.getQuestionPapersByBoardStandardSubjectController = exports.updateQuestionPaperController = exports.createQuestionPaperController = void 0;
 const questionPaperService = __importStar(require("../services/questionPaper.service"));
 // Create Question Paper Controller
 const createQuestionPaperController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -202,6 +202,28 @@ const deleteQuestionPaper = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.deleteQuestionPaper = deleteQuestionPaper;
+// Activate Question Paper Controller
+const activateQuestionPaper = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { performedBy } = req.body;
+        const questionPaper = yield questionPaperService.activateQuestionPaper(id, performedBy);
+        res.status(200).json({
+            success: true,
+            message: "Question paper activated successfully",
+            data: questionPaper,
+        });
+    }
+    catch (error) {
+        console.error("Update QuestionPaper Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to activate question paper",
+            error: error.message,
+        });
+    }
+});
+exports.activateQuestionPaper = activateQuestionPaper;
 // Delete Question Paper Controller
 const getAllQuestionPaper = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

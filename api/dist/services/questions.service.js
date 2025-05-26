@@ -230,6 +230,9 @@ const getAllQuestions = (isActive) => __awaiter(void 0, void 0, void 0, function
     const questions = yield db_1.default.question.findMany({
         where: isActive !== undefined ? { isActive } : {},
         orderBy: { createdAt: "desc" },
+        include: {
+            questionPaper: true,
+        },
     });
     return questions;
 });

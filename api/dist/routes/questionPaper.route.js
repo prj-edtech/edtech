@@ -16,6 +16,8 @@ questionPaperRouter.get("/:boardId/:standardId/:subjectId", questionPaper_contro
 questionPaperRouter.delete("/:id", questionPaper_controller_1.softDeleteQuestionPaperController);
 // Hard delete a question paper by ID
 questionPaperRouter.delete("/:id/remove", questionPaper_controller_1.deleteQuestionPaper);
+// Hard delete a question paper by ID
+questionPaperRouter.patch("/:id/activate", questionPaper_controller_1.activateQuestionPaper);
 // Fetch all question papers
 questionPaperRouter.get("/", questionPaper_controller_1.getAllQuestionPaper);
 exports.default = questionPaperRouter;
