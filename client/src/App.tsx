@@ -30,6 +30,8 @@ import ReviewerDashboard from "./_components/Reviewer/ReviewerDashboard";
 import FetchAllSubtopicsReview from "./_components/Reviewer/Subtopic/FetchAllSubtopicsReview";
 import EditorQuestionPaper from "./_components/Editor/Question-Paper/FetchAllQuestionPapers";
 import Questions from "./_components/Admin/Question/FetchAllQuestions";
+import EditorFetchAllQuestions from "./_components/Editor/Question/FetchAllQuestions";
+import ReviewerFetchAllQuestions from "./_components/Reviewer/Question/FetchAllQuestions";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -78,6 +80,7 @@ function App() {
             element={<EditorSingleSubtopics />}
           />
           <Route path="question-papers" element={<EditorQuestionPaper />} />
+          <Route path="questions" element={<EditorFetchAllQuestions />} />
         </Route>
         {/* Reviewer Layout */}
         <Route path="/reviewer" element={<ReviewerDashboard />}>
@@ -86,8 +89,8 @@ function App() {
             path="subtopics/review/:id"
             element={<ReviewerSubtopicReview />}
           />
+          <Route path="questions" element={<ReviewerFetchAllQuestions />} />
         </Route>
-        Review
       </Routes>
     </Router>
   );

@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -127,14 +127,15 @@ const FetchAllSubtopicsReview = () => {
               Search
             </Button>
           </div>
-          <Button className="rounded-none">
+          {/* <Button className="rounded-none">
             <Link
               to="/admin/subtopics/add"
               className="flex items-center gap-x-2"
             >
               <Plus className="w-4 h-4 mr-2" /> Add Subtopic
             </Link>
-          </Button>
+          </Button> */}
+          <div />
         </div>
         <Table className="border border-blue-800/20">
           <TableHeader>
