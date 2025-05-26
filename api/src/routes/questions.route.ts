@@ -15,6 +15,18 @@ questionRouter.delete(
   questionControllers.deleteQuestionController
 );
 
+// Activate Question
+questionRouter.patch(
+  "/activate/:id",
+  questionControllers.activateQuestionController
+);
+
+// Deactivate Question
+questionRouter.patch(
+  "/deactivate/:id",
+  questionControllers.deactivateQuestionController
+);
+
 // Get All Questions (optional query: ?isActive=true)
 questionRouter.get("/", questionControllers.getAllQuestionsController);
 

@@ -59,6 +59,46 @@ export const deleteQuestionController = async (req: Request, res: Response) => {
 };
 
 /**
+ * Activate Question
+ * PATCH /api/questions/activate/:id
+ */
+export const activateQuestionController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+    const question = await questionServices.activateQuestion(id, performedBy);
+    res
+      .status(200)
+      .json({ success: true, message: "Question activated", data: question });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Deactivate Question
+ * PATCH /api/questions/deactivate/:id
+ */
+export const deactivateQuestionController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+    const question = await questionServices.deactivateQuestion(id, performedBy);
+    res
+      .status(200)
+      .json({ success: true, message: "Question deactivated", data: question });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
  * Get All Questions
  * GET /api/questions
  * Optional query: ?isActive=true

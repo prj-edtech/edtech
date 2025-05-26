@@ -85,7 +85,6 @@ export const createQuestion = async (data: any, performedBy: string) => {
 
   return question;
 };
-
 /**
  * Update an existing Question
  */
@@ -97,10 +96,27 @@ export const updateQuestion = async (
   const previous = await prisma.question.findUnique({ where: { id } });
   if (!previous) throw new Error("Question not found");
 
+  const {
+    marks,
+    priority,
+    questionType,
+    questionContentPath,
+    questionAnswerPath,
+    attributes,
+    isActive,
+  } = data;
+
   const question = await prisma.question.update({
     where: { id },
     data: {
-      ...data,
+      // Only allowed fields here
+      marks,
+      priority,
+      questionType,
+      questionContentPath,
+      questionAnswerPath,
+      attributes,
+      isActive,
       updatedBy: performedBy,
     },
   });
@@ -157,6 +173,82 @@ export const deleteQuestion = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Question hard deleted",
+  });
+
+  return question;
+};
+
+/**
+ * Activate a Question
+ */
+export const activateQuestion = async (id: string, performedBy: string) => {
+  const previous = await prisma.question.findUnique({ where: { id } });
+  if (!previous) throw new Error("Question not found");
+
+  const question = await prisma.question.update({
+    where: { id },
+    data: {
+      isActive: true,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    action: "ACTIVATE",
+    performedBy,
+    details: {
+      previousState: previous,
+      notes: "Activation performed",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    changeType: "ACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Activation performed",
+  });
+
+  return question;
+};
+
+/**
+ * Deactivate a Question
+ */
+export const deactivateQuestion = async (id: string, performedBy: string) => {
+  const previous = await prisma.question.findUnique({ where: { id } });
+  if (!previous) throw new Error("Question not found");
+
+  const question = await prisma.question.update({
+    where: { id },
+    data: {
+      isActive: false,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    action: "DEACTIVATE",
+    performedBy,
+    details: {
+      previousState: previous,
+      notes: "Deactivation performed",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    changeType: "DEACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Deactivation performed",
   });
 
   return question;
