@@ -235,6 +235,7 @@ model Question {
   updatedAt           DateTime @updatedAt
   createdBy           String
   updatedBy           String
+  questionJson        Json?
 
   // Relations
   questionPaper QuestionPaper @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)

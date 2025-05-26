@@ -24,6 +24,24 @@ export const createQuestion = async (data: any, performedBy: string) => {
     attributes,
   } = data;
 
+  const jsonData = {
+    partitionKey,
+    sortKey,
+    year,
+    month,
+    questionId,
+    questionPaperId,
+    sectionId,
+    topicId,
+    subTopicId,
+    marks,
+    priority,
+    questionType,
+    questionContentPath,
+    questionAnswerPath,
+    attributes,
+  };
+
   const question = await prisma.question.create({
     data: {
       partitionKey,
@@ -43,6 +61,7 @@ export const createQuestion = async (data: any, performedBy: string) => {
       attributes,
       createdBy: performedBy,
       updatedBy: performedBy,
+      questionJson: jsonData,
     },
   });
 
