@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { getAllQuestionPaper, addQuestionPaper } from "@/api/questionPapers";
+import {
+  getAllQuestionPaper,
+  addQuestionPaper,
+  removeQuestionPaper,
+  activateQuestionPaper,
+  deactivateQuestionPaper,
+  updateQuestionPaper,
+} from "@/api/questionPapers";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -120,6 +127,10 @@ const FetchAllQuestionPaper = () => {
   const [difficulty, setDifficulty] = useState("");
   const [totalMarks, setTotalMarks] = useState("");
 
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedQuestionPaper, setSelectedQuestionPaper] =
+    useState<QuestionPapers | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
@@ -186,20 +197,45 @@ const FetchAllQuestionPaper = () => {
     loadSubjects();
   }, []);
 
-  const handleRemove = (id: string) => {
-    console.log("Remove Question Paper:", id);
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeQuestionPaper(id, user?.sub!);
+      loadQuestionPapers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEdit = (qp: any) => {
-    console.log("Edit Question Paper:", qp);
+  const handleEdit = (qp: QuestionPapers) => {
+    setSelectedQuestionPaper(qp);
+    setOpenEditDialog(true);
   };
 
-  const handleActivate = (id: string) => {
-    console.log("Activate Question Paper:", id);
+  const handleActivate = async (id: string) => {
+    setLoading(true);
+    try {
+      await activateQuestionPaper(id, user?.sub!);
+      loadQuestionPapers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeactivate = (id: string) => {
-    console.log("Deactivate Question Paper:", id);
+  const handleDeactivate = async (id: string) => {
+    setLoading(true);
+    try {
+      await deactivateQuestionPaper(id, user?.sub!);
+      loadQuestionPapers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddQuestionPaper = async () => {
@@ -235,6 +271,32 @@ const FetchAllQuestionPaper = () => {
       setType("");
       setDifficulty("");
       setTotalMarks("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateQuestionPaper = async () => {
+    if (!selectedQuestionPaper) return;
+
+    const payload = {
+      month: selectedQuestionPaper.month,
+      totalMarks: selectedQuestionPaper.totalMarks,
+      attributes: {
+        displayName: selectedQuestionPaper.board.displayName,
+        notes: "", // you can add a notes input if needed
+        heading: "",
+        questionPaperInstruction: "",
+        type: selectedQuestionPaper.attributes.type,
+        difficulty: selectedQuestionPaper.attributes.difficulty,
+      },
+      updatedBy: user?.sub!,
+    };
+
+    try {
+      await updateQuestionPaper(selectedQuestionPaper.id, payload);
+      setOpenEditDialog(false);
+      loadQuestionPapers();
     } catch (err) {
       console.error(err);
     }
@@ -392,6 +454,78 @@ const FetchAllQuestionPaper = () => {
                   Submit
                 </Button>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Question Paper</DialogTitle>
+              </DialogHeader>
+
+              {selectedQuestionPaper && (
+                <div className="flex flex-col gap-y-6">
+                  <div>
+                    <Label>Month</Label>
+                    <Input
+                      value={selectedQuestionPaper.month}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          month: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Total Marks</Label>
+                    <Input
+                      value={selectedQuestionPaper.totalMarks}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          totalMarks: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Type</Label>
+                    <Input
+                      value={selectedQuestionPaper.attributes.type}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          attributes: {
+                            ...selectedQuestionPaper.attributes,
+                            type: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Difficulty</Label>
+                    <Input
+                      value={selectedQuestionPaper.attributes.difficulty}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          attributes: {
+                            ...selectedQuestionPaper.attributes,
+                            difficulty: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <Button onClick={handleUpdateQuestionPaper}>Update</Button>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
