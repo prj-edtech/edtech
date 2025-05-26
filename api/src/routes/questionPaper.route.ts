@@ -6,6 +6,7 @@ import {
   softDeleteQuestionPaperController,
   deleteQuestionPaper,
   getAllQuestionPaper,
+  activateQuestionPaper,
 } from "../controllers/questionPaper.controller";
 
 const questionPaperRouter = express.Router();
@@ -27,6 +28,9 @@ questionPaperRouter.delete("/:id", softDeleteQuestionPaperController);
 
 // Hard delete a question paper by ID
 questionPaperRouter.delete("/:id/remove", deleteQuestionPaper);
+
+// Hard delete a question paper by ID
+questionPaperRouter.patch("/:id/activate", activateQuestionPaper);
 
 // Fetch all question papers
 questionPaperRouter.get("/", getAllQuestionPaper);

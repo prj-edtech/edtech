@@ -239,6 +239,40 @@ export const removeQuestionPaper = async (id: string, performedBy: string) => {
   return questionPaper;
 };
 
+export const activateQuestionPaper = async (
+  id: string,
+  performedBy: string
+) => {
+  const questionPaper = await prisma.questionPaper.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QuestionPaper",
+    entityId: id,
+    action: "ACTIVATE",
+    performedBy: performedBy,
+    details: "Question paper activated",
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION_PAPER",
+    entityId: id,
+    changeType: "ACTIVATE",
+    changeStatus: "AUTO_APPROVED",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Question paper activated",
+  });
+
+  return questionPaper;
+};
+
 export const getAllQuestionPaper = async () => {
   return await prisma.questionPaper.findMany({
     include: {

@@ -105,7 +105,7 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                 <NavigationMenuContent className="min-w-[200px]">
                   <NavigationMenuLink
                     className="cursor-pointer"
-                    href="/admin/question-paper"
+                    href="/admin/question-papers"
                   >
                     Question Paper
                   </NavigationMenuLink>
