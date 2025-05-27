@@ -191,6 +191,11 @@ const FetchAllSubtopics = () => {
                           View
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to={`/editor/subtopics/edit/${subtopic.id}`}>
+                          Edit
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

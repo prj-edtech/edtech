@@ -82,22 +82,33 @@ const getSubTopicsByTopic = (topicId) => __awaiter(void 0, void 0, void 0, funct
     });
 });
 exports.getSubTopicsByTopic = getSubTopicsByTopic;
-const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ subTopicId, displayName, priority, contentPath, updatedBy, }) {
-    const existing = yield db_1.default.subTopic.findUnique({
-        where: { subTopicId },
+const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ id, displayName, priority, contentPath, updatedBy, }) {
+    console.log("[Service] updateSubTopic called with:", {
+        id,
+        displayName,
+        priority,
+        contentPath,
+        updatedBy,
     });
-    if (!existing)
+    const existing = yield db_1.default.subTopic.findUnique({
+        where: { id },
+    });
+    if (!existing) {
+        console.error(`[Service] SubTopic with id=${id} not found`);
         throw new Error("SubTopic not found");
-    // Update JSON
+    }
+    console.log("[Service] Existing subtopic found:", existing);
     const updatedJson = Object.assign(Object.assign({}, existing.subTopicJson), { subtopicContentPath: contentPath, priority, attributes: { displayName }, updatedAt: new Date().toISOString(), updatedBy });
+    console.log("[Service] Updated JSON to save:", updatedJson);
     const updatedSubTopic = yield db_1.default.subTopic.update({
-        where: { subTopicId },
+        where: { id },
         data: {
             priority,
             updatedBy,
             subTopicJson: updatedJson,
         },
     });
+    console.log("[Service] Updated SubTopic record:", updatedSubTopic);
     yield (0, auditTrail_service_1.createAuditLog)({
         entityType: "SubTopic",
         entityId: existing.id,
@@ -105,6 +116,7 @@ const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ subT
         performedBy: updatedBy,
         details: updatedJson,
     });
+    console.log("[Service] Audit log created");
     yield (0, changeLog_service_1.createChangeLog)({
         entityType: "SUBTOPIC",
         entityId: existing.id,
@@ -114,6 +126,7 @@ const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ subT
         createdBy: updatedBy,
         notes: "Subtopic updated",
     });
+    console.log("[Service] Change log created");
     return updatedSubTopic;
 });
 exports.updateSubTopic = updateSubTopic;

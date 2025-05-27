@@ -89,15 +89,15 @@ exports.getSubTopicsByTopic = getSubTopicsByTopic;
 // Update SubTopic
 const updateSubTopic = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { subTopicId } = req.params;
-        const { displayName, priority, contentPath, updatedBy } = req.body;
-        if (!subTopicId)
-            res.status(400).json({ message: "Missing subTopicId parameter" });
+        const { id } = req.params;
+        const { displayName, priority, subtopicContentPath, updatedBy } = req.body;
+        if (!id)
+            res.status(400).json({ message: "Missing id parameter" });
         const updatedSubTopic = yield subTopicService.updateSubTopic({
-            subTopicId,
+            id,
             displayName,
             priority,
-            contentPath,
+            contentPath: subtopicContentPath,
             updatedBy,
         });
         res.status(200).json(updatedSubTopic);

@@ -82,6 +82,7 @@ function App() {
           <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<EditorSubtopics />} />
           <Route path="subtopics/add" element={<EditorAddSubtopic />} />
+          <Route path="subtopics/edit/:subtopicId" element={<EditSubtopic />} />
           <Route
             path="subtopics/view/:id"
             element={<EditorSingleSubtopics />}

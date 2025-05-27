@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { downloadFromSupabaseStorage } from "@/utils/downloadFromSupabaseStorage";
 
-const EditSubtopic = () => {
+const EditSubtopicEditor = () => {
   const { subtopicId } = useParams();
   const { user } = useAuth0();
 
@@ -151,4 +151,4 @@ const EditSubtopic = () => {
   );
 };
 
-export default EditSubtopic;
+export default EditSubtopicEditor;
