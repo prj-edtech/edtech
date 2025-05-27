@@ -43,7 +43,7 @@ subtopicRouter.get("/topic/:topicId", subTopicController.getSubTopicsByTopic);
 // Get single SubTopic
 subtopicRouter.get("/:id/content", subTopicController.getSingleSubtopic);
 // Update SubTopic
-subtopicRouter.put("/:subTopicId", subTopicController.updateSubTopic);
+subtopicRouter.put("/:id", subTopicController.updateSubTopic);
 // Soft Delete SubTopic
 subtopicRouter.delete("/:subTopicId", subTopicController.softDeleteSubTopic);
 // Fetch all SubTopic

@@ -35,6 +35,7 @@ import ReviewerFetchAllQuestions from "./_components/Reviewer/Question/FetchAllQ
 import AdminLayout from "./_components/Admin/AdminLayout";
 import EditorLayout from "./_components/Editor/EditorLayout";
 import ReviewerLayout from "./_components/Reviewer/ReviewerLayout";
+import EditSubtopic from "./_components/Admin/Subtopics/EditSubtopic";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -66,6 +67,7 @@ function App() {
           <Route path="topics" element={<Topics />} />
           <Route path="subtopics" element={<Subtopics />} />
           <Route path="subtopics/add" element={<AddSubtopics />} />
+          <Route path="subtopics/edit/:subtopicId" element={<EditSubtopic />} />
           <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
           <Route path="question-papers" element={<QuestionPaper />} />
           <Route path="questions" element={<Questions />} />
@@ -80,6 +82,7 @@ function App() {
           <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<EditorSubtopics />} />
           <Route path="subtopics/add" element={<EditorAddSubtopic />} />
+          <Route path="subtopics/edit/:subtopicId" element={<EditSubtopic />} />
           <Route
             path="subtopics/view/:id"
             element={<EditorSingleSubtopics />}
