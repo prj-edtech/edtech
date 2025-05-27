@@ -95,25 +95,36 @@ export const getSubTopicsByTopic = async (topicId: string) => {
 };
 
 export const updateSubTopic = async ({
-  subTopicId,
+  id,
   displayName,
   priority,
   contentPath,
   updatedBy,
 }: {
-  subTopicId: string;
+  id: string;
   displayName: string;
   priority: number;
   contentPath: string;
   updatedBy: string;
 }) => {
-  const existing = await prisma.subTopic.findUnique({
-    where: { subTopicId },
+  console.log("[Service] updateSubTopic called with:", {
+    id,
+    displayName,
+    priority,
+    contentPath,
+    updatedBy,
   });
 
-  if (!existing) throw new Error("SubTopic not found");
+  const existing = await prisma.subTopic.findUnique({
+    where: { id },
+  });
 
-  // Update JSON
+  if (!existing) {
+    console.error(`[Service] SubTopic with id=${id} not found`);
+    throw new Error("SubTopic not found");
+  }
+  console.log("[Service] Existing subtopic found:", existing);
+
   const updatedJson = {
     ...(existing.subTopicJson as Record<string, any>),
     subtopicContentPath: contentPath,
@@ -123,14 +134,18 @@ export const updateSubTopic = async ({
     updatedBy,
   };
 
+  console.log("[Service] Updated JSON to save:", updatedJson);
+
   const updatedSubTopic = await prisma.subTopic.update({
-    where: { subTopicId },
+    where: { id },
     data: {
       priority,
       updatedBy,
       subTopicJson: updatedJson,
     },
   });
+
+  console.log("[Service] Updated SubTopic record:", updatedSubTopic);
 
   await createAuditLog({
     entityType: "SubTopic",
@@ -139,6 +154,7 @@ export const updateSubTopic = async ({
     performedBy: updatedBy,
     details: updatedJson,
   });
+  console.log("[Service] Audit log created");
 
   await createChangeLog({
     entityType: "SUBTOPIC",
@@ -149,6 +165,7 @@ export const updateSubTopic = async ({
     createdBy: updatedBy,
     notes: "Subtopic updated",
   });
+  console.log("[Service] Change log created");
 
   return updatedSubTopic;
 };

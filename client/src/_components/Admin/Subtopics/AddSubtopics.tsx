@@ -20,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import RichEditor from "@/_components/RichEditor";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Boards {
   id: string;
@@ -69,13 +70,14 @@ const AddSubtopics = () => {
 
   const { user } = useAuth0();
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
 
   const [boardData, setBoardData] = useState<Boards[]>([]);
   const [standardData, setStandardData] = useState<Standards[]>([]);
   const [subjectData, setSubjectData] = useState<Subjects[]>([]);
   const [sectionData, setSectionData] = useState<Sections[]>([]);
   const [topicData, setTopicData] = useState<Topics[]>([]);
+
+  const [keepAdding, setKeepAdding] = useState(false);
 
   const [editorContent, setEditorContent] = useState("<p></p>");
 
@@ -133,17 +135,29 @@ const AddSubtopics = () => {
 
       // Reset
       setEditorContent("<p></p>");
-      setForm({
-        boardCode: "",
-        standardCode: "",
-        subjectName: "",
-        sectionId: "",
-        topicId: "",
-        displayName: "",
-        priority: 0,
-        createdBy: user?.sub || "",
-      });
-      navigate("/admin/subtopics");
+      if (keepAdding) {
+        setForm({
+          boardCode: form.boardCode,
+          standardCode: form.standardCode,
+          subjectName: form.subjectName,
+          sectionId: form.sectionId,
+          topicId: form.topicId,
+          displayName: "",
+          priority: 0,
+          createdBy: user?.sub || "",
+        });
+      } else {
+        setForm({
+          boardCode: "",
+          standardCode: "",
+          subjectName: "",
+          sectionId: "",
+          topicId: "",
+          displayName: "",
+          priority: 0,
+          createdBy: user?.sub || "",
+        });
+      }
     } catch (err) {
       console.error("Error adding subtopic:", err);
     } finally {
@@ -257,16 +271,30 @@ const AddSubtopics = () => {
           />
         </div>
 
-        <Input
-          type="number"
-          name="priority"
-          value={form.priority}
-          onChange={(e) =>
-            handleFieldChange(e.target.name, Number(e.target.value))
-          }
-          placeholder="Priority"
-          className="border p-2 lg:w-[520px]"
-        />
+        <div className="flex justify-start items-start w-full lg:gap-x-6">
+          <Input
+            type="number"
+            name="priority"
+            value={form.priority}
+            onChange={(e) =>
+              handleFieldChange(e.target.name, Number(e.target.value))
+            }
+            placeholder="Priority"
+            className="border p-2 lg:w-[520px]"
+          />
+
+          <div className="flex items-center gap-2 mt-2">
+            <Label htmlFor="keepAdding" className="font-medium cursor-pointer">
+              Keep adding on selected board, standard, subject and topic
+            </Label>
+            <Checkbox
+              className="border border-blue-800/40 cursor-pointer"
+              id="keepAdding"
+              checked={keepAdding}
+              onCheckedChange={(checked) => setKeepAdding(!!checked)}
+            />
+          </div>
+        </div>
 
         <div className="w-full">
           <RichEditor

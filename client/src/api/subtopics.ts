@@ -13,6 +13,14 @@ interface Subtopics {
   createdBy: string;
 }
 
+interface UpdateSubTopic {
+  id: string;
+  displayName: string;
+  priority: number;
+  subtopicContentPath: string; // matches API field name
+  updatedBy: string;
+}
+
 export const getAllSubtopics = async () => {
   const response = await axios.get(`${apiURL}/subtopics`);
   return response.data.data; // Extract the array of subtopics
@@ -20,6 +28,10 @@ export const getAllSubtopics = async () => {
 
 export const addSubtopic = async (data: Subtopics) => {
   return await axios.post(`${apiURL}/subtopics`, data);
+};
+
+export const updateSubTopic = async (id: string, data: UpdateSubTopic) => {
+  return await axios.put(`${apiURL}/subtopics/${id}`, data);
 };
 
 export const removeSubtopic = async (id: string, performedBy: string) => {

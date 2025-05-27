@@ -60,17 +60,16 @@ export const getSubTopicsByTopic = async (req: Request, res: Response) => {
 // Update SubTopic
 export const updateSubTopic = async (req: Request, res: Response) => {
   try {
-    const { subTopicId } = req.params;
-    const { displayName, priority, contentPath, updatedBy } = req.body;
+    const { id } = req.params;
+    const { displayName, priority, subtopicContentPath, updatedBy } = req.body;
 
-    if (!subTopicId)
-      res.status(400).json({ message: "Missing subTopicId parameter" });
+    if (!id) res.status(400).json({ message: "Missing id parameter" });
 
     const updatedSubTopic = await subTopicService.updateSubTopic({
-      subTopicId,
+      id,
       displayName,
       priority,
-      contentPath,
+      contentPath: subtopicContentPath,
       updatedBy,
     });
 

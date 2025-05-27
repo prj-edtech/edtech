@@ -56,12 +56,14 @@ const SubtopicViewer = () => {
       setSubtopic(subtopicData);
 
       if (subtopicData.subtopicContentPath) {
+        // Add cache buster to force fresh fetch
         const contentUrl = `${
           import.meta.env.VITE_SUPABASE_URL
         }/storage/v1/object/public/subtopics/${
           subtopicData.subtopicContentPath
-        }`;
-        console.log("Content URL:", contentUrl);
+        }?t=${Date.now()}`;
+
+        console.log("Content URL with cache buster:", contentUrl);
 
         const contentResponse = await fetch(contentUrl);
         if (!contentResponse.ok) {
