@@ -4,6 +4,7 @@ import prisma from "../config/db";
 import { buildBoardJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 // Create Board
 export const createBoard = async (data: {
@@ -49,6 +50,15 @@ export const createBoard = async (data: {
     submittedBy: data.createdBy,
     createdBy: data.createdBy,
     notes: "Board created by admin",
+  });
+
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "BOARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: board.id,
+    title: "Board Created",
+    message: `New board created by`,
   });
 
   return board;

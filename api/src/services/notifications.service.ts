@@ -25,3 +25,14 @@ export const createNotification = async (data: {
     },
   });
 };
+
+export const getAllNotifications = async () => {
+  return await prisma.notification.findMany({
+    orderBy: {
+      createdAt: "asc",
+    },
+    include: {
+      User: true,
+    },
+  });
+};
