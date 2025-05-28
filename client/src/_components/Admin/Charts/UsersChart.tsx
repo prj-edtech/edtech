@@ -32,7 +32,7 @@ export function UserChart() {
   const totalVisitors = chartData[0].desktop + chartData[0].mobile;
 
   return (
-    <Card className="flex flex-col font-redhat">
+    <Card className="flex flex-col font-redhat max-w-[400px] max-h-[450px]">
       <CardHeader className="items-center pb-0">
         <CardTitle>Radial Chart - Stacked</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

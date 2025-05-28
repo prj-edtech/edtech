@@ -285,100 +285,103 @@ const FetchAllBoards = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((board) => (
-              <TableRow key={board.id}>
-                <TableCell>{board.sortKey}</TableCell>
-                <TableCell>{board.displayName}</TableCell>
-                <TableCell>
-                  {board.isActive ? (
-                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
-                      Active
-                    </p>
-                  ) : (
-                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
-                      Inactive
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="font-redhat font-semibold">
-                      <DropdownMenuItem
-                        onClick={() => openEditDialog(board)}
-                        className="cursor-pointer"
-                      >
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setBoardToSoftDelete(board);
-                          setSoftDeleteOpen(true);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        Deactivate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRemoveBoard(board)}
-                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                      >
-                        <Trash className="w-4 h-4 text-red-700" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-            {loading && (
+            {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell>
-                  <div className="flex justify-center items-center w-full">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  </div>
+                <TableCell colSpan={4} className="text-center lg:py-6">
+                  No boards found.
                 </TableCell>
               </TableRow>
+            ) : (
+              paginatedData.map((board) => (
+                <TableRow key={board.id}>
+                  <TableCell>{board.sortKey}</TableCell>
+                  <TableCell>{board.displayName}</TableCell>
+                  <TableCell>
+                    {board.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="cursor-pointer"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="font-redhat font-semibold">
+                        <DropdownMenuItem
+                          onClick={() => openEditDialog(board)}
+                          className="cursor-pointer"
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setBoardToSoftDelete(board);
+                            setSoftDeleteOpen(true);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          Deactivate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemoveBoard(board)}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          <Trash className="w-4 h-4 text-red-700" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
 
       {/* Edit Dialog */}

@@ -35,7 +35,7 @@ const chartConfig = {
 
 export function BoardsChart() {
   return (
-    <Card>
+    <Card className="max-w-[400px] max-h-[450px]">
       <CardHeader className="items-center pb-4 font-redhat">
         <CardTitle>Radar Chart - Grid Filled</CardTitle>
         <CardDescription>
