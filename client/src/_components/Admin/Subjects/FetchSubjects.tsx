@@ -1,5 +1,5 @@
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
+import { fetchStandardsByBoard } from "@/api/standards";
 import {
   getAllSubjects,
   addSubject,
@@ -138,17 +138,22 @@ const FetchSubjects = () => {
   useEffect(() => {
     fetchAllSubjects();
     loadBoards();
-    loadStandards();
   }, []);
+
+  useEffect(() => {
+    if (boardId) {
+      loadStandards(boardId);
+    }
+  }, [boardId]);
 
   const loadBoards = async () => {
     const response = await fetchActiveBoards();
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    setStandardData(response.data.data);
   };
 
   const handleAddSubject = async () => {

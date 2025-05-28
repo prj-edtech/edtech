@@ -5,6 +5,10 @@ export const fetchStandards = async () => {
   return axios.get(`${apiURL}/standards`);
 };
 
+export const fetchStandardsByBoard = async (boardId: string) => {
+  return axios.get(`${apiURL}/standards/${boardId}/board`);
+};
+
 export const fetchActiveStandards = async () => {
   return axios.get(`${apiURL}/standards/active`);
 };

@@ -283,3 +283,14 @@ export const deleteStandard = async (id: string, performedBy: string) => {
 
   return deletedStandard;
 };
+
+export const getStandardByBoard = async (boardId: string) => {
+  const standard = await prisma.standard.findMany({
+    where: {
+      boardId,
+      isActive: true,
+    },
+  });
+
+  return standard;
+};
