@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAuditLogs } from "@/api/auditTrail";
+import { deleteAllAuditLogs, fetchAuditLogs } from "@/api/auditTrail";
 import {
   useReactTable,
   getCoreRowModel,
@@ -36,20 +36,32 @@ const FetchAllLogs = () => {
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  useEffect(() => {
-    const getLogs = async () => {
-      try {
-        const response = await fetchAuditLogs();
-        setLogs(response.data.data);
-      } catch (error) {
-        console.error("Error fetching audit logs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getLogs = async () => {
+    try {
+      const response = await fetchAuditLogs();
+      setLogs(response.data.data);
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     getLogs();
   }, []);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteAllAuditLogs();
+      getLogs();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns: ColumnDef<AuditLog>[] = [
     {
@@ -121,16 +133,22 @@ const FetchAllLogs = () => {
           />
         </div> */}
 
-        <div className="flex justify-between items-center lg:w-[200px] border lg:mb-6">
-          <input
-            placeholder="Search audit logs..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
-          />
+        <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-center lg:w-[200px] border lg:mb-6">
+            <input
+              placeholder="Search audit logs..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
 
-          <Button className="rounded-none" size="sm">
-            Search
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
+
+          <Button onClick={handleDelete} className="rounded-none">
+            Delete All
           </Button>
         </div>
 

@@ -15,21 +15,26 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [{ month: "january", desktop: 1260, mobile: 570 }];
+const chartData = [{ month: "may", admin: 1260, editor: 570, reviewer: 300 }];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  admin: {
+    label: "Admin",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  editor: {
+    label: "Editor",
     color: "hsl(var(--chart-2))",
+  },
+  reviewer: {
+    label: "Reviewer",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
 export function UserChart() {
-  const totalVisitors = chartData[0].desktop + chartData[0].mobile;
+  const totalVisitors =
+    chartData[0].admin + chartData[0].editor + chartData[0].reviewer;
 
   return (
     <Card className="flex flex-col font-redhat max-w-[400px] max-h-[450px]">

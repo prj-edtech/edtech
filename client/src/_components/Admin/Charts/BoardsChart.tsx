@@ -1,5 +1,5 @@
-"use client";
-
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import { TrendingUp } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
@@ -17,30 +17,53 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 285 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 203 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 264 },
-];
+
+import { fetchActiveBoards } from "@/api/boards";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  boards: {
+    label: "Boards",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
 export function BoardsChart() {
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getBoards = async () => {
+      const response = await fetchActiveBoards();
+      const boards = response.data.data;
+
+      // Define months you want to track
+      const months = ["January", "February", "March", "April", "May", "June"];
+
+      // Initialize count object
+      const monthCounts = months.map((month) => ({
+        month,
+        boards: 0,
+      }));
+
+      // Count boards per month
+      boards.forEach((board: any) => {
+        const createdMonth = dayjs(board.createdAt).format("MMMM");
+        const monthEntry = monthCounts.find((m) => m.month === createdMonth);
+        if (monthEntry) {
+          monthEntry.boards += 1;
+        }
+      });
+
+      setChartData(monthCounts);
+    };
+
+    getBoards();
+  }, []);
+
   return (
     <Card className="max-w-[400px] max-h-[450px]">
       <CardHeader className="items-center pb-4 font-redhat">
-        <CardTitle>Radar Chart - Grid Filled</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardTitle>Boards Charts</CardTitle>
+        <CardDescription>Number of boards created per month</CardDescription>
       </CardHeader>
       <CardContent className="pb-0">
         <ChartContainer
@@ -54,7 +77,7 @@ export function BoardsChart() {
             />
             <PolarGrid className="fill-blue-300 opacity-20" />
             <PolarAngleAxis dataKey="month" />
-            <Radar dataKey="desktop" fill="navy" fillOpacity={0.5} />
+            <Radar dataKey="boards" fill="navy" fillOpacity={0.5} />
           </RadarChart>
         </ChartContainer>
       </CardContent>

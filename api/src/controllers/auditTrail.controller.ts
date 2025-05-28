@@ -32,3 +32,15 @@ export const getAuditLogByIdController = async (
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+// DELETE /api/audit-logs
+export const deleteAllAuditLogs = async (_req: Request, res: Response) => {
+  try {
+    const logs = await auditServices.deleteAllAuditLogs();
+    res
+      .status(200)
+      .json({ success: true, message: "All audit logs deleted", data: logs });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
