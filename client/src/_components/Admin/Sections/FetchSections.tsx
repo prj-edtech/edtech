@@ -27,8 +27,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
-import { getAllActiveSubjects } from "@/api/subjects";
+import { fetchStandardsByBoard } from "@/api/standards";
+import { getSubjectsByStandard } from "@/api/subjects";
 import { Select } from "@radix-ui/react-select";
 import {
   SelectContent,
@@ -160,22 +160,30 @@ const FetchSections = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
   useEffect(() => {
     fetchAllSections();
     loadBoards();
-    loadStandards();
-    loadSubjects();
   }, []);
+
+  useEffect(() => {
+    if (boardId) {
+      loadStandards(boardId);
+    }
+
+    if (standardId) {
+      loadSubjects(standardId);
+    }
+  }, [boardId, standardId]);
 
   const handleAddSection = async () => {
     setLoading(true);

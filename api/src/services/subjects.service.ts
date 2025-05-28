@@ -236,3 +236,12 @@ export const getAllActiveSubjects = async () => {
     },
   });
 };
+
+export const getSubjectsByStandard = async (standardId: string) => {
+  return await prisma.subject.findMany({
+    where: {
+      standardId,
+      isActive: true,
+    },
+  });
+};
