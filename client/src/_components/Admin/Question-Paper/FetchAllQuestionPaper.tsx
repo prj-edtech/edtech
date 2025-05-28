@@ -33,8 +33,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
-import { getAllActiveSubjects } from "@/api/subjects";
+import { fetchStandardsByBoard } from "@/api/standards";
+import { getSubjectsByStandard } from "@/api/subjects";
 import {
   Select,
   SelectContent,
@@ -180,22 +180,31 @@ const FetchAllQuestionPaper = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    console.log(response.data);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
   useEffect(() => {
     loadQuestionPapers();
     loadBoards();
-    loadStandards();
-    loadSubjects();
   }, []);
+
+  useEffect(() => {
+    if (board.id) {
+      loadStandards(board.id);
+    }
+
+    if (standard.id) {
+      loadSubjects(standard.id);
+    }
+  }, [standard.id, board.id]);
 
   const handleRemove = async (id: string) => {
     setLoading(true);
