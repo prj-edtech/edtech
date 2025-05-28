@@ -305,7 +305,7 @@ const FetchSections = () => {
                 <Plus className="w-4 h-4 mr-2" /> Add Section
               </Button>
             </DialogTrigger>
-            <DialogContent className="font-redhat">
+            <DialogContent className="font-redhat max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Section</DialogTitle>
               </DialogHeader>
