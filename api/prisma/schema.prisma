@@ -16,8 +16,9 @@ model User {
   picture   String?
   createdAt DateTime @default(now())
 
-  auditLogs AuditLog[]
-  ChangeLog ChangeLog[]
+  auditLogs    AuditLog[]
+  ChangeLog    ChangeLog[]
+  Notification Notification[]
 }
 
 model Board {
@@ -271,6 +272,21 @@ model ChangeLog {
 
   // Relation to the user who performed the action
   User User @relation(fields: [submittedBy], references: [auth0Id], onDelete: Cascade)
+}
+
+model Notification {
+  notificationId   String   @id @default(uuid())
+  userId           String
+  eventType        String
+  entityType       String
+  entityId         String
+  title            String
+  message          String
+  isRead           Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  notificationJson Json
+
+  User User @relation(fields: [userId], references: [auth0Id], onDelete: Cascade)
 }
 
 enum ReviewStatus {
