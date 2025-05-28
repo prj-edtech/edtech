@@ -192,112 +192,126 @@ const FetchSubtopics = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((subtopic) => (
-              <TableRow key={subtopic.subTopicId}>
-                <TableCell className="max-w-32 truncate">
-                  {subtopic.subTopicJson.attributes.displayName}
-                </TableCell>
-                <TableCell>
-                  {subtopic.topic.topicJson.attributes.displayName}
-                </TableCell>
-                <TableCell>
-                  {subtopic.section.sectionJson.attributes.displayName}
-                </TableCell>
-                <TableCell className="font-bold">{subtopic.review}</TableCell>
-                <TableCell>
-                  {subtopic.isActive ? (
-                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
-                      Active
-                    </p>
-                  ) : (
-                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
-                      Inactive
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                      >
-                        <MoreHorizontal className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="font-redhat font-semibold"
-                    >
-                      <DropdownMenuItem>
-                        <Link to={`/admin/subtopics/view-edit/${subtopic.id}`}>
-                          Review
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link to={`/admin/subtopics/edit/${subtopic.id}`}>
-                          Edit
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleActivate(subtopic.id)}
-                      >
-                        Activate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDeactivate(subtopic.id)}
-                      >
-                        Deactivate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRemove(subtopic.id)}
-                        disabled={loading}
-                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash className="w-4 h-4 text-red-700" />
-                        )}
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center lg:py-6">
+                  No subtopics found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedData.map((subtopic) => (
+                <TableRow key={subtopic.subTopicId}>
+                  <TableCell className="max-w-32 truncate">
+                    {subtopic.subTopicJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {subtopic.topic.topicJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {subtopic.section.sectionJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell className="font-bold">{subtopic.review}</TableCell>
+                  <TableCell>
+                    {subtopic.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="cursor-pointer"
+                        >
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="font-redhat font-semibold"
+                      >
+                        <DropdownMenuItem>
+                          <Link
+                            to={`/admin/subtopics/view-edit/${subtopic.id}`}
+                          >
+                            Review
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link to={`/admin/subtopics/edit/${subtopic.id}`}>
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleActivate(subtopic.id)}
+                        >
+                          Activate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeactivate(subtopic.id)}
+                        >
+                          Deactivate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemove(subtopic.id)}
+                          disabled={loading}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash className="w-4 h-4 text-red-700" />
+                          )}
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );

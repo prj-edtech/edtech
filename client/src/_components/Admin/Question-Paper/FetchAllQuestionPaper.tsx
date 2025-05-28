@@ -548,7 +548,7 @@ const FetchAllQuestionPaper = () => {
                 <TableHead className="font-bold">Difficulty</TableHead>
                 <TableHead className="font-bold">Status</TableHead>
                 <TableHead className="font-bold">Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="font-bold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -621,7 +621,7 @@ const FetchAllQuestionPaper = () => {
             </TableBody>
           </Table>
         )}
-        {!loading && (
+        {paginatedData.length !== 0 && (
           <Pagination className="mt-6">
             <PaginationContent>
               <PaginationItem>

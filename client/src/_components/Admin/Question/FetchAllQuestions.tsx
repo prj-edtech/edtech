@@ -331,7 +331,7 @@ const FetchAllQuestions = () => {
       )}
 
       {/* Pagination */}
-      {!loading && (
+      {paginatedQuestions.length !== 0 && (
         <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>
