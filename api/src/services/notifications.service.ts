@@ -31,8 +31,19 @@ export const getAllNotifications = async () => {
     orderBy: {
       createdAt: "asc",
     },
+    where: {
+      isRead: false,
+    },
     include: {
       User: true,
+    },
+  });
+};
+
+export const markAllAsRead = async () => {
+  return await prisma.notification.updateMany({
+    data: {
+      isRead: true,
     },
   });
 };

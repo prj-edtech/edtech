@@ -9,7 +9,8 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Bell, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import Notification from "../Notification";
 
 const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
@@ -147,7 +148,7 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
       </div>
       <div className="flex justify-start items-center lg:gap-x-2 lg:mr-2">
         <ModeToggle />
-        <Bell className="w-4 h-4 cursor-pointer" />
+        <Notification />
         {/* <Button
           
           variant="outline"
