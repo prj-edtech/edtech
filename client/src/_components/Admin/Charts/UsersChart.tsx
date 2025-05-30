@@ -42,15 +42,21 @@ const UsersChart = () => {
         <ul className="space-y-3 mt-2 font-medium text-sm text-muted-foreground">
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Admins</span>
-            <span className="font-bold text-foreground">{adminTotal}</span>
+            <span className="font-bold text-foreground">
+              {adminTotal ? adminTotal : 0}
+            </span>
           </li>
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Editors</span>
-            <span className="font-bold text-foreground">{editorTotal}</span>
+            <span className="font-bold text-foreground">
+              {editorTotal ? editorTotal : 0}
+            </span>
           </li>
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Reviewers</span>
-            <span className="font-bold text-foreground">{reviewerTotal}</span>
+            <span className="font-bold text-foreground">
+              {reviewerTotal ? reviewerTotal : 0}
+            </span>
           </li>
         </ul>
       </CardContent>

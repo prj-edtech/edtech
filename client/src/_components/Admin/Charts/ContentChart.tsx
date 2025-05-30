@@ -1,7 +1,38 @@
+import { apiURL } from "@/api/apiURL";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import axios from "axios";
 import { Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const ContentChart = () => {
+  const [sectionTotal, setSectionTotal] = useState(0);
+  const [topicTotal, setTopicTotal] = useState(0);
+  const [subtopicTotal, setSubtopicTotal] = useState(0);
+
+  const loadSections = async () => {
+    const response = await axios.get(`${apiURL}/sections`);
+    console.log(response.data.total);
+    setSectionTotal(response.data.total);
+  };
+
+  const loadTopics = async () => {
+    const response = await axios.get(`${apiURL}/topics`);
+    console.log(response.data.total);
+    setTopicTotal(response.data.total);
+  };
+
+  const loadSubtopics = async () => {
+    const response = await axios.get(`${apiURL}/subtopics`);
+    console.log(response.data.length);
+    setSubtopicTotal(response.data.length);
+  };
+
+  useEffect(() => {
+    loadSections();
+    loadTopics();
+    loadSubtopics();
+  }, []);
+
   return (
     <Card className="w-full max-w-xs border rounded-2xl shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -12,15 +43,15 @@ const ContentChart = () => {
         <ul className="space-y-3 mt-2 font-medium text-sm text-muted-foreground">
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Sections</span>
-            <span className="font-bold text-foreground">24</span>
+            <span className="font-bold text-foreground">{sectionTotal}</span>
           </li>
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Topics</span>
-            <span className="font-bold text-foreground">15</span>
+            <span className="font-bold text-foreground">{topicTotal}</span>
           </li>
           <li className="flex justify-between items-center">
             <span className="text-base text-foreground">Subtopics</span>
-            <span className="font-bold text-foreground">15</span>
+            <span className="font-bold text-foreground">{subtopicTotal}</span>
           </li>
         </ul>
       </CardContent>
