@@ -2,8 +2,8 @@ import { createUser } from "@/api/user";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import UserChart from "./Charts/UsersChart";
-import { AllChart } from "./Charts/AllChart";
 import Overview from "./Charts/Overview";
+import SubmissionRates from "./Charts/SubmissionRates";
 
 const AdminDashboard = () => {
   const addUser = async (
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
       </div>
       <div className="flex justify-start items-start lg:gap-x-6 w-full">
         <Overview />
-        <UserChart />
+        <SubmissionRates />
       </div>
     </div>
   );

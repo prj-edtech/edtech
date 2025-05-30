@@ -100,7 +100,7 @@ const Notification = () => {
             ))}
             <Button
               disabled={loading}
-              className="w-full rounded-none"
+              className="w-full"
               onClick={handleReadAll}
             >
               Read All

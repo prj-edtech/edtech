@@ -21,6 +21,15 @@ subtopicRouter.delete("/:subTopicId", subTopicController.softDeleteSubTopic);
 // Fetch all SubTopic
 subtopicRouter.get("/", subTopicController.fetchAllSubtopics);
 
+// Fetch all Approved SubTopic
+subtopicRouter.get("/approved", subTopicController.fetchAllSubtopicsApproved);
+
+// Fetch all Rejected SubTopic
+subtopicRouter.get("/rejected", subTopicController.fetchAllSubtopicsRejected);
+
+// Fetch all Pending SubTopic
+subtopicRouter.get("/pending", subTopicController.fetchAllSubtopicsPending);
+
 // Hard Delete SubTopic
 subtopicRouter.delete("/:id/remove", subTopicController.removeSubtopic);
 

@@ -1,3 +1,4 @@
+import { ReviewStatus } from "@prisma/client";
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
@@ -249,6 +250,30 @@ export const getAllSubtopics = async () => {
     include: {
       topic: true,
       section: true,
+    },
+  });
+};
+
+export const getAllApprovedSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.APPROVED,
+    },
+  });
+};
+
+export const getAllRejectedSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.REJECTED,
+    },
+  });
+};
+
+export const getAllPendingSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.PENDING,
     },
   });
 };
