@@ -2,6 +2,7 @@ import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 export const createTopic = async (data: {
   boardId: string;
@@ -75,6 +76,15 @@ export const createTopic = async (data: {
     notes: "Topic created by user",
   });
 
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: topic.topicId,
+    title: "Topic Created",
+    message: `New topic created`,
+  });
+
   return topic;
 };
 
@@ -130,6 +140,15 @@ export const updateTopic = async (
     notes: "Topic updated by user",
   });
 
+  await createNotification({
+    userId: data.updatedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: topic.topicId,
+    title: "Topic Updated",
+    message: `New topic updated`,
+  });
+
   return updatedTopic;
 };
 
@@ -180,6 +199,15 @@ export const softDeleteTopic = async (topicId: string, deletedBy: string) => {
     notes: "Topic soft deleted by user",
   });
 
+  await createNotification({
+    userId: deletedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: topic.topicId,
+    title: "Topic Deactivated",
+    message: `New topic deactivated`,
+  });
+
   return deletedTopic;
 };
 
@@ -225,6 +253,15 @@ export const removeTopic = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Topic soft deleted by user",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Topic Deleted",
+    message: `New topic deleted`,
   });
 
   return topic;

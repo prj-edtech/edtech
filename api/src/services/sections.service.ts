@@ -4,6 +4,7 @@ import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 type SectionJson = {
   partitionKey: string;
@@ -137,6 +138,15 @@ export const createSection = async (data: {
     notes: "Section created without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "SECTION",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: section.id,
+    title: "Section Created",
+    message: `New section created`,
+  });
+
   return section;
 };
 
@@ -200,6 +210,15 @@ export const updateSection = async (data: {
     submittedBy: data.updatedBy,
     createdBy: data.updatedBy,
     notes: "Section updated without needing to be reviewed",
+  });
+
+  await createNotification({
+    userId: data.updatedBy,
+    eventType: "SECTION",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: section.id,
+    title: "Section Updated",
+    message: `New section updated`,
   });
 
   return updatedSection;
@@ -277,6 +296,15 @@ export const softDeleteSection = async (
     notes: "Section soft deleted without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "SECTION",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: section.id,
+    title: "Section Deactivated",
+    message: `New section deactivated`,
+  });
+
   return updatedSection;
 };
 
@@ -302,6 +330,15 @@ export const removeSection = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Section hard deleted without needing to be reviewed",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "SECTION",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: section.id,
+    title: "Section Deleted",
+    message: `New section deleted`,
   });
 
   return section;
