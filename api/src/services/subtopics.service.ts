@@ -153,6 +153,7 @@ export const updateSubTopic = async ({
       priority,
       updatedBy,
       subTopicJson: updatedJson,
+      review: ReviewStatus.PENDING,
     },
   });
 
@@ -183,7 +184,7 @@ export const updateSubTopic = async ({
     eventType: "TOPIC",
     entityType: "SUBMISSION_FOR_REVIEW ",
     entityId: existing.id,
-    title: "Subtopic updated",
+    title: "Review updated subtopic",
     message: `New subtopic updated`,
   });
 
