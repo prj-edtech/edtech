@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import UserChart from "./Charts/UsersChart";
 import { AllChart } from "./Charts/AllChart";
+import Overview from "./Charts/Overview";
 
 const AdminDashboard = () => {
   const addUser = async (
@@ -47,8 +48,9 @@ const AdminDashboard = () => {
         <UserChart />
         <UserChart />
       </div>
-      <div className="w-full">
-        <AllChart />
+      <div className="flex justify-start items-start lg:gap-x-6 w-full">
+        <Overview />
+        <UserChart />
       </div>
     </div>
   );

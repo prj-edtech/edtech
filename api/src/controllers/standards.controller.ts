@@ -129,7 +129,7 @@ export const getStandardByBoard = async (req: Request, res: Response) => {
     const { boardId } = req.params;
 
     const standard = await standardService.getStandardByBoard(boardId);
-    res.status(200).json({ data: standard, total: standard.length });
+    res.status(200).json({ data: standard });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
