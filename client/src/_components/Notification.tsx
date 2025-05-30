@@ -6,9 +6,17 @@ import dayjs from "dayjs";
 import { Bell, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+interface Notifications {
+  title: string;
+  createdAt: string;
+  User: {
+    name: string;
+  };
+}
+
 const Notification = () => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Notifications[]>([]);
 
   const loadNotifications = async () => {
     setLoading(true);
