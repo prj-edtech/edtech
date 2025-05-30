@@ -266,7 +266,7 @@ const FetchAllQuestionPaper = () => {
       createdBy: user?.sub!,
       updatedBy: user?.sub!,
     };
-
+    setLoading(true);
     try {
       await addQuestionPaper(payload);
       setOpenAddDialog(false);
@@ -282,6 +282,8 @@ const FetchAllQuestionPaper = () => {
       setTotalMarks("");
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -341,8 +343,8 @@ const FetchAllQuestionPaper = () => {
                 <DialogTitle>Add New Question Paper</DialogTitle>
               </DialogHeader>
 
-              <div className="flex flex-col gap-y-6">
-                <div>
+              <div className="flex flex-col gap-y-6 lg:mt-4">
+                <div className="flex flex-col gap-y-2">
                   <Label>Board</Label>
                   <Select
                     value={board.id}
@@ -370,7 +372,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Standard</Label>
                   <Select
                     value={standard.id}
@@ -398,7 +400,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Subject</Label>
                   <Select
                     value={subject.id}
@@ -423,35 +425,35 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Year</Label>
                   <Input
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Month</Label>
                   <Input
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Total Marks</Label>
                   <Input
                     value={totalMarks}
                     onChange={(e) => setTotalMarks(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Type</Label>
                   <Input
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Difficulty</Label>
                   <Input
                     value={difficulty}
@@ -460,7 +462,11 @@ const FetchAllQuestionPaper = () => {
                 </div>
 
                 <Button onClick={handleAddQuestionPaper} className="mt-4">
-                  Submit
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </div>
             </DialogContent>

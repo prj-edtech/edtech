@@ -1,7 +1,7 @@
 import { apiURL } from "@/api/apiURL";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-import { Users } from "lucide-react";
+import { NotebookPen, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ContentChart = () => {
@@ -23,8 +23,8 @@ const ContentChart = () => {
 
   const loadSubtopics = async () => {
     const response = await axios.get(`${apiURL}/subtopics`);
-    console.log(response.data.length);
-    setSubtopicTotal(response.data.length);
+    console.log(response.data.total);
+    setSubtopicTotal(response.data.total);
   };
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const ContentChart = () => {
     <Card className="w-full max-w-xs border rounded-2xl shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg font-semibold">Contents Chart</CardTitle>
-        <Users className="w-5 h-5 text-muted-foreground" />
+        <NotebookPen className="w-5 h-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <ul className="space-y-3 mt-2 font-medium text-sm text-muted-foreground">

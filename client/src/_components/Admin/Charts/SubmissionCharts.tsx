@@ -1,7 +1,7 @@
 import { apiURL } from "@/api/apiURL";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-import { Users } from "lucide-react";
+import { CloudDownload } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const SubmissionsChart = () => {
@@ -31,7 +31,7 @@ const SubmissionsChart = () => {
         <CardTitle className="text-lg font-semibold">
           Submissions Chart
         </CardTitle>
-        <Users className="w-5 h-5 text-muted-foreground" />
+        <CloudDownload className="w-5 h-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         <ul className="space-y-3 mt-2 font-medium text-sm text-muted-foreground">

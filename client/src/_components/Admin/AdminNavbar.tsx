@@ -11,6 +11,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { Menu } from "lucide-react";
 import Notification from "../Notification";
+import { Link } from "react-router-dom";
 
 const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
@@ -26,9 +27,12 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
             onClick={toggleSidebar}
           />
           <Menu className="w-6 h-6 cursor-pointer lg:hidden" />
-          <h1 className="font-medium lg:text-4xl font-outfit text-blue-600">
+          <Link
+            to={"/"}
+            className="font-medium lg:text-4xl font-outfit text-blue-600"
+          >
             edtech
-          </h1>
+          </Link>
         </div>
         <ul className="font-semibold lg:flex hidden items-center w-full lg:gap-x-2">
           <NavigationMenu>
