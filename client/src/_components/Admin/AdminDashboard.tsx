@@ -4,6 +4,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import UserChart from "./Charts/UsersChart";
 import Overview from "./Charts/Overview";
 import SubmissionRates from "./Charts/SubmissionRates";
+import AuditChart from "./Charts/AuditChart";
+import SubmissionsChart from "./Charts/SubmissionCharts";
+import ContentChart from "./Charts/ContentChart";
 
 const AdminDashboard = () => {
   const addUser = async (
@@ -45,12 +48,15 @@ const AdminDashboard = () => {
     <div className="flex justify-center items-center w-full flex-col lg:gap-y-10">
       <div className="flex justify-center items-center w-full lg:gap-x-4">
         <UserChart />
-        <UserChart />
-        <UserChart />
+        <SubmissionsChart />
+        <ContentChart />
       </div>
       <div className="flex justify-start items-start lg:gap-x-6 w-full">
         <Overview />
         <SubmissionRates />
+      </div>
+      <div className="w-full">
+        <AuditChart />
       </div>
     </div>
   );
