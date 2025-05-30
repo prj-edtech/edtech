@@ -112,7 +112,7 @@ export const removeSubject = async (req: Request, res: Response) => {
 export const fetchAllSubjects = async (_req: Request, res: Response) => {
   try {
     const subjects = await subjectService.getAllSubjects();
-    res.status(200).json({ data: subjects });
+    res.status(200).json({ data: subjects, total: subjects.length });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }

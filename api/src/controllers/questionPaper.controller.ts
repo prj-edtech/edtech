@@ -243,6 +243,7 @@ export const getAllQuestionPaper = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
+      total: questionPapers.length,
       data: questionPapers,
     });
   } catch (error: any) {
