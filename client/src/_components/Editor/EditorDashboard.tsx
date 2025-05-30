@@ -43,7 +43,7 @@ const EditorDashboard = () => {
 
   return (
     <div className="flex justify-center items-center w-full flex-col lg:gap-y-10">
-      <div className="flex justify-start items-center w-full lg:gap-x-20">
+      {/* <div className="flex justify-start items-center w-full lg:gap-x-20">
         <UserChart />
         <BoardsChart />
         <UserChart />
@@ -51,7 +51,7 @@ const EditorDashboard = () => {
       </div>
       <div className="w-full">
         <AllChart />
-      </div>
+      </div> */}
     </div>
   );
 };
