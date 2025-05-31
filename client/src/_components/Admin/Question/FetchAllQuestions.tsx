@@ -34,6 +34,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 interface Question {
   id: string;
@@ -213,37 +214,10 @@ const FetchAllQuestions = () => {
         <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
             <Button className="rounded-none">
-              <Plus className="w-4 h-4 mr-2" /> Add Question
+              <Plus className="w-4 h-4 mr-2" />
+              <Link to="/admin/questions/add">Add Question</Link>
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Question</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-y-4">
-              <Label>Question Text</Label>
-              <Input
-                value={newQuestionText}
-                onChange={(e) => setNewQuestionText(e.target.value)}
-              />
-              <Label>Marks</Label>
-              <Input
-                value={newMarks}
-                onChange={(e) => setNewMarks(e.target.value)}
-              />
-              <Label>Type</Label>
-              <Input
-                value={newType}
-                onChange={(e) => setNewType(e.target.value)}
-              />
-              <Label>Difficulty</Label>
-              <Input
-                value={newDifficulty}
-                onChange={(e) => setNewDifficulty(e.target.value)}
-              />
-              <Button onClick={handleAddQuestion}>Submit</Button>
-            </div>
-          </DialogContent>
         </Dialog>
       </div>
 

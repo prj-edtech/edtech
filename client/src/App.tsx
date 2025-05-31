@@ -36,6 +36,7 @@ import AdminLayout from "./_components/Admin/AdminLayout";
 import EditorLayout from "./_components/Editor/EditorLayout";
 import ReviewerLayout from "./_components/Reviewer/ReviewerLayout";
 import EditSubtopic from "./_components/Admin/Subtopics/EditSubtopic";
+import AddQuestions from "./_components/Admin/Question/AddQuestions";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -71,6 +72,7 @@ function App() {
           <Route path="subtopics/view-edit/:id" element={<SubtopicViewer />} />
           <Route path="question-papers" element={<QuestionPaper />} />
           <Route path="questions" element={<Questions />} />
+          <Route path="questions/add" element={<AddQuestions />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="change-logs" element={<ChangeLogs />} />
         </Route>
