@@ -28,3 +28,31 @@ export const downloadFromSupabaseStorage = async (path: string) => {
   console.log("[Storage] Downloaded content length:", text.length);
   return text;
 };
+
+export const uploadJsonToSupabase = async (
+  data: object,
+  filename: string,
+  bucket = "questions"
+): Promise<string | null> => {
+  const file = new Blob([JSON.stringify(data)], {
+    type: "application/json",
+  });
+
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from(bucket)
+    .upload(`json/${filename}.json`, file, {
+      upsert: true,
+      contentType: "application/json",
+    });
+
+  if (uploadError) {
+    console.error("Upload Error:", uploadError);
+    return null;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(uploadData.path);
+
+  return publicUrlData?.publicUrl || null;
+};

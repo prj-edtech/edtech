@@ -5,6 +5,7 @@ import { fetchActiveStandards } from "@/api/standards";
 import { getAllSubjects } from "@/api/subjects";
 import { getAllSubtopics } from "@/api/subtopics";
 import { fetchAllActiveTopics } from "@/api/topics";
+import { uploadJsonToSupabase } from "@/utils/downloadFromSupabaseStorage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,32 +18,79 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 
+import { addQuestions } from "@/api/questions";
+import { toast } from "sonner";
+
+type AddQuestionsType = {
+  boardId: string;
+  standardId: string;
+  subjectId: string;
+  sectionId: string;
+  topicId: string;
+  subTopicId: string;
+  qpId: string;
+  month: string;
+  year: string;
+  questionType: string;
+  marks: number;
+  priority: number;
+  questionContentPath: string;
+  questionAnswerPath: string;
+  performedBy: string;
+  boardCode: string;
+  standardCode: string;
+  subject: string;
+  section: string;
+  topic: string;
+  subTopic: string;
+};
+
 const AddQuestions = () => {
   const [loading, setLoading] = useState(false);
 
-  const [boardData, setBoardData] = useState([]);
+  const [boardData, setBoardData] = useState<any[]>([]);
   const [boardId, setBoardId] = useState("");
-  const [standardCode, setStandardCode] = useState([]);
+
+  const [standardCode, setStandardCode] = useState<any[]>([]);
   const [standardId, setStandardId] = useState("");
-  const [subject, setSubject] = useState([]);
+
+  const [subject, setSubject] = useState<any[]>([]);
   const [subjectId, setSubjectId] = useState("");
-  const [qp, setQp] = useState([]);
+
+  const [qp, setQp] = useState<any[]>([]);
   const [qpId, setQpId] = useState("");
-  const [topicData, setTopicData] = useState([]);
+
+  const [topicData, setTopicData] = useState<any[]>([]);
   const [topicId, setTopicId] = useState("");
-  const [sectionData, setSectionData] = useState([]);
+
+  const [sectionData, setSectionData] = useState<any[]>([]);
   const [sectionId, setSectionId] = useState("");
-  const [subtopicData, setSubtopicData] = useState([]);
-  const [subTopicId, setsubTopicId] = useState("");
+
+  const [subtopicData, setSubtopicData] = useState<any[]>([]);
+  const [subTopicId, setSubTopicId] = useState("");
+
+  // NEW: Month, Year, QuestionType, Marks, Priority state
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [questionType, setQuestionType] = useState("");
+  const [marks, setMarks] = useState("");
+  const [priority, setPriority] = useState("");
+
+  const [questionText, setQuestionText] = useState("");
+  const [answerText, setAnswerText] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correctOptionIndex, setCorrectOptionIndex] = useState<number | null>(
+    null
+  );
 
   const loadBoards = async () => {
     setLoading(true);
     try {
       const response = await fetchActiveBoards();
       setBoardData(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load boards");
     } finally {
       setLoading(false);
     }
@@ -53,9 +101,9 @@ const AddQuestions = () => {
     try {
       const response = await fetchActiveStandards();
       setStandardCode(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load standards");
     } finally {
       setLoading(false);
     }
@@ -66,9 +114,9 @@ const AddQuestions = () => {
     try {
       const response = await getAllSubjects();
       setSubject(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load subjects");
     } finally {
       setLoading(false);
     }
@@ -79,9 +127,9 @@ const AddQuestions = () => {
     try {
       const response = await getAllQuestionPaper();
       setQp(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load question papers");
     } finally {
       setLoading(false);
     }
@@ -92,9 +140,9 @@ const AddQuestions = () => {
     try {
       const response = await fetchAllActiveTopics();
       setTopicData(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load topics");
     } finally {
       setLoading(false);
     }
@@ -105,9 +153,9 @@ const AddQuestions = () => {
     try {
       const response = await getAllActiveSections();
       setSectionData(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load sections");
     } finally {
       setLoading(false);
     }
@@ -117,10 +165,10 @@ const AddQuestions = () => {
     setLoading(true);
     try {
       const response = await getAllSubtopics();
-      setSubtopicData(response);
-      console.log(response);
+      setSubtopicData(response.data.data || response.data || response); // adjusted to your data shape
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load subtopics");
     } finally {
       setLoading(false);
     }
@@ -139,259 +187,409 @@ const AddQuestions = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
+  const handleSubmit = async () => {
+    // Validate required fields
+    if (
+      !boardId ||
+      !standardId ||
+      !subjectId ||
+      !sectionId ||
+      !topicId ||
+      !subTopicId ||
+      !qpId ||
+      !month ||
+      !year ||
+      !questionType ||
+      !marks ||
+      !priority
+    ) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    // Define JSON strictly as object
+    let questionContentJson: object;
+    let questionAnswerJson: object;
+
+    if (questionType === "MCQ") {
+      if (
+        !questionText ||
+        options.some((o) => !o) ||
+        correctOptionIndex === null
+      ) {
+        toast.error("Please complete the MCQ fields");
+        return;
+      }
+
+      questionContentJson = {
+        question: questionText,
+        options,
+      };
+
+      questionAnswerJson = {
+        answer: correctOptionIndex,
+      };
+    } else if (questionType === "Descriptive") {
+      if (!questionText || !answerText) {
+        toast.error("Please complete the descriptive fields");
+        return;
+      }
+
+      questionContentJson = {
+        question: questionText,
+      };
+
+      questionAnswerJson = {
+        answer: answerText,
+      };
+    } else {
+      toast.error("Invalid question type");
+      return;
+    }
+
+    const timestamp = Date.now();
+
+    const questionContentPath = await uploadJsonToSupabase(
+      questionContentJson,
+      `question-${timestamp}`
+    );
+
+    const questionAnswerPath = await uploadJsonToSupabase(
+      questionAnswerJson,
+      `answer-${timestamp}`
+    );
+
+    if (!questionContentPath || !questionAnswerPath) {
+      toast.error("Failed to upload question or answer JSON.");
+      return;
+    }
+
+    const payload: AddQuestionsType = {
+      boardId,
+      standardId,
+      subjectId,
+      sectionId,
+      topicId,
+      subTopicId,
+      qpId,
+      month,
+      year,
+      questionType,
+      marks: Number(marks),
+      priority: Number(priority),
+      questionContentPath,
+      questionAnswerPath,
+
+      // ✅ Add missing fields
+      performedBy: "admin", // replace with actual user
+      boardCode: "", // fill from context/state
+      standardCode: "",
+      subject: "",
+      section: "",
+      topic: "",
+      subTopic: "",
+    };
+
+    try {
+      setLoading(true);
+      await addQuestions(payload);
+      toast.success("Question added successfully!");
+      // Optional: clear form
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add question");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:px-10">
+      {/* Boards, Standards, Subjects */}
       <div className="flex justify-between items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Board</Label>
-            <Select
-              value={boardId}
-              onValueChange={(value) => setBoardId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a board" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {boardData.map((board) => (
-                    <SelectItem key={board.id} value={board.sortKey}>
-                      {board.sortKey}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Board</Label>
+          <Select value={boardId} onValueChange={setBoardId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a board" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {boardData.map((board) => (
+                  <SelectItem key={board.id} value={board.sortKey}>
+                    {board.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Standard</Label>
-            <Select
-              value={standardId}
-              onValueChange={(value) => setStandardId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a standard" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {standardCode.map((standard) => (
-                    <SelectItem key={standard.id} value={standard.sortKey}>
-                      {standard.sortKey}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Standard</Label>
+          <Select value={standardId} onValueChange={setStandardId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a standard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {standardCode.map((standard) => (
+                  <SelectItem key={standard.id} value={standard.sortKey}>
+                    {standard.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Subject</Label>
-            <Select
-              value={subjectId}
-              onValueChange={(value) => setSubjectId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a subject" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {subject.map((sbj) => (
-                    <SelectItem key={sbj.id} value={sbj.sortKey}>
-                      {sbj.sortKey}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Subject</Label>
+          <Select value={subjectId} onValueChange={setSubjectId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a subject" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {subject.map((sbj) => (
+                  <SelectItem key={sbj.id} value={sbj.sortKey}>
+                    {sbj.sortKey}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
+      {/* Section, Topic, Subtopic */}
       <div className="flex justify-between items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Section</Label>
-            <Select
-              value={sectionId}
-              onValueChange={(value) => setSectionId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a section" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {sectionData.map((section) => (
-                    <SelectItem key={section.id} value={section.sortKey}>
-                      {section.sectionJson.attributes.displayName}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Section</Label>
+          <Select value={sectionId} onValueChange={setSectionId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a section" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {sectionData.map((section) => (
+                  <SelectItem key={section.id} value={section.sortKey}>
+                    {section.sectionJson.attributes.displayName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Topic</Label>
-            <Select
-              value={topicId}
-              onValueChange={(value) => setTopicId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a topic" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {topicData.map((topic) => (
-                    <SelectItem key={topic.id} value={topic.sortKey}>
-                      {topic.topicJson.attributes.displayName}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Topic</Label>
+          <Select value={topicId} onValueChange={setTopicId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a topic" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {topicData.map((topic) => (
+                  <SelectItem key={topic.id} value={topic.sortKey}>
+                    {topic.topicJson.attributes.displayName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Subtopic</Label>
-            <Select
-              value={subTopicId}
-              onValueChange={(value) => setsubTopicId(value)}
-            >
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a subtopic" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {subtopicData.map((subtopic) => (
-                    <SelectItem key={subtopic.id} value={subtopic.sortKey}>
-                      {subtopic.subTopicJson.attributes.displayName}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Subtopic</Label>
+          <Select value={subTopicId} onValueChange={setSubTopicId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a subtopic" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {subtopicData.map((subtopic) => (
+                  <SelectItem
+                    key={subtopic.id}
+                    value={subtopic.sortKey || subtopic.id}
+                  >
+                    {subtopic.subtopicJson?.attributes?.displayName ||
+                      subtopic.name ||
+                      "N/A"}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
+      {/* Question Paper, Month, Year */}
       <div className="flex justify-between items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Question Paper</Label>
-            <Select value={qpId} onValueChange={(value) => setQpId(value)}>
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a question paper" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {qp.map((questionPapers) => (
-                    <SelectItem
-                      key={questionPapers.id}
-                      value={questionPapers.id}
-                    >
-                      {questionPapers.attributes.type}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Question Paper</Label>
+          <Select value={qpId} onValueChange={setQpId}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select a question paper" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {qp.map((qpItem) => (
+                  <SelectItem key={qpItem.id} value={qpItem.id}>
+                    {qpItem.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
+
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Month</Label>
-            <Select>
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="JAN">January</SelectItem>
-                  <SelectItem value="FEB">February</SelectItem>
-                  <SelectItem value="MAR">March</SelectItem>
-                  <SelectItem value="APR">April</SelectItem>
-                  <SelectItem value="MAY">May</SelectItem>
-                  <SelectItem value="JUN">June</SelectItem>
-                  <SelectItem value="JUL">July</SelectItem>
-                  <SelectItem value="AUG">August</SelectItem>
-                  <SelectItem value="SEP">September</SelectItem>
-                  <SelectItem value="OCT">October</SelectItem>
-                  <SelectItem value="NOV">November</SelectItem>
-                  <SelectItem value="DEC">December</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Month</Label>
+          <Select value={month} onValueChange={setMonth}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select month" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {[
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ].map((m) => (
+                  <SelectItem key={m} value={m}>
+                    {m}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
+
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Year</Label>
-            <Select>
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select a year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="2025">2025</SelectItem>
-                  <SelectItem value="2026">2026</SelectItem>
-                  <SelectItem value="2027">2027</SelectItem>
-                  <SelectItem value="2029">2029</SelectItem>
-                  <SelectItem value="2029">2029</SelectItem>
-                  <SelectItem value="2030">2030</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Year</Label>
+          <Select value={year} onValueChange={setYear}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {[2020, 2021, 2022, 2023, 2024, 2025].map((y) => (
+                  <SelectItem key={y} value={y.toString()}>
+                    {y}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
+
+      {/* Question Type, Marks, Priority */}
       <div className="flex justify-between items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Question Type</Label>
-            <Select>
-              <SelectTrigger className="lg:w-[240px] cursor-pointer">
-                <SelectValue placeholder="Select question type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="DESCRIPTIVE">Descriptive</SelectItem>
-                  <SelectItem value="MULTIPLE_CHOICE">MCQ</SelectItem>
-                  <SelectItem value="SINGLE_CHOICE">Single Choice</SelectItem>
-                  <SelectItem value="TRUE_FALSE">True or False</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label className="mb-2">Question Type</Label>
+          <Select value={questionType} onValueChange={setQuestionType}>
+            <SelectTrigger className="lg:w-[240px] cursor-pointer">
+              <SelectValue placeholder="Select question type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {["MCQ", "Descriptive", "True/False"].map((qt) => (
+                  <SelectItem key={qt} value={qt}>
+                    {qt}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
+
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Marks</Label>
-            <Input
-              type="text"
-              value={subjectId}
-              className="lg:w-[240px]"
-              placeholder="Enter marks"
-              onChange={(e) => setSubjectId(e.target.value)}
-            />
-          </div>
+          <Label className="mb-2">Marks</Label>
+          <Input
+            type="number"
+            value={marks}
+            onChange={(e) => setMarks(e.target.value)}
+            placeholder="Enter marks"
+            className="lg:w-[240px]"
+          />
         </div>
+
         <div className="flex flex-col gap-y-4 mt-4">
-          <div>
-            <Label className="mb-2">Priority</Label>
-            <Input
-              type="text"
-              value={subjectId}
-              className="lg:w-[240px]"
-              placeholder="Enter priority"
-              onChange={(e) => setSubjectId(e.target.value)}
-            />
-          </div>
+          <Label className="mb-2">Priority</Label>
+          <Input
+            type="number"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            placeholder="Enter priority"
+            className="lg:w-[240px]"
+          />
         </div>
       </div>
+
+      {questionType === "MCQ" && (
+        <div className="flex flex-col w-full gap-4 mt-4">
+          <Label>Question</Label>
+          <Input
+            value={questionText}
+            onChange={(e) => setQuestionText(e.target.value)}
+            placeholder="Enter the question"
+          />
+
+          <Label className="mt-4">Options</Label>
+          {options.map((opt, idx) => (
+            <div key={idx} className="flex gap-2 items-center">
+              <Input
+                value={opt}
+                onChange={(e) => {
+                  const newOptions = [...options];
+                  newOptions[idx] = e.target.value;
+                  setOptions(newOptions);
+                }}
+                placeholder={`Option ${idx + 1}`}
+              />
+              <input
+                type="radio"
+                checked={correctOptionIndex === idx}
+                onChange={() => setCorrectOptionIndex(idx)}
+              />
+              <Label>Select as correct</Label>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {questionType === "Descriptive" && (
+        <div className="flex flex-col gap-4 mt-4 w-full">
+          <Label>Question</Label>
+          <Input
+            value={questionText}
+            onChange={(e) => setQuestionText(e.target.value)}
+            placeholder="Enter the question"
+          />
+
+          <Label>Answer</Label>
+          <Input
+            value={answerText}
+            onChange={(e) => setAnswerText(e.target.value)}
+            placeholder="Enter the answer"
+          />
+        </div>
+      )}
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmit}
+        className="mt-6 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Add Question
+      </button>
     </div>
   );
 };
