@@ -12,9 +12,7 @@ export const createQuestionController = async (req: Request, res: Response) => {
       req.body,
       performedBy
     );
-    res
-      .status(200)
-      .json({ success: true, message: "Question created", data: question });
+    res.status(200).json({ success: true, data: question });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }
