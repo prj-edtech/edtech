@@ -268,7 +268,13 @@ export const getAllQuestions = async (isActive?: boolean) => {
     where: isActive !== undefined ? { isActive } : {},
     orderBy: { createdAt: "desc" },
     include: {
-      questionPaper: true,
+      questionPaper: {
+        include: {
+          board: true,
+          standard: true,
+          subject: true,
+        },
+      },
     },
   });
   return questions;

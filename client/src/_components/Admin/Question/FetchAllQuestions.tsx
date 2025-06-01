@@ -50,8 +50,14 @@ interface Question {
     questionInstruction: string;
   };
   questionPaper: {
-    attributes: {
-      displayName: string;
+    board: {
+      sortKey: string;
+    };
+    standard: {
+      sortKey: string;
+    };
+    subject: {
+      sortKey: string;
     };
   };
 }
@@ -71,8 +77,16 @@ const FetchAllQuestions = () => {
 
   const filteredQuestions = questions.filter(
     (q) =>
-      q.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.questionType.toLowerCase().includes(searchQuery.toLowerCase())
+      q.questionType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.board.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.standard.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.subject.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   const paginatedQuestions = filteredQuestions.slice(
@@ -201,6 +215,9 @@ const FetchAllQuestions = () => {
             <TableRow>
               <TableHead>Type</TableHead>
               <TableHead>Marks</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead>Standard</TableHead>
+              <TableHead>Subject</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -212,6 +229,9 @@ const FetchAllQuestions = () => {
                 <TableRow key={q.id}>
                   <TableCell>{q.questionType}</TableCell>
                   <TableCell>{q.marks}</TableCell>
+                  <TableCell>{q.questionPaper.board.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.standard.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.subject.sortKey}</TableCell>
                   <TableCell>
                     {q.isActive ? (
                       <p className="text-green-200 bg-green-700 px-3 py-1 w-min rounded-sm">
