@@ -69,16 +69,9 @@ const FetchAllQuestions = () => {
   const itemsPerPage = 10;
   const { user } = useAuth0();
 
-  const [newQuestionText, setNewQuestionText] = useState("");
-  const [newMarks, setNewMarks] = useState("");
-  const [newType, setNewType] = useState("");
-  const [newDifficulty, setNewDifficulty] = useState("");
-
   const filteredQuestions = questions.filter(
     (q) =>
-      q.questionPaper.attributes.displayName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
+      q.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.questionType.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -105,30 +98,6 @@ const FetchAllQuestions = () => {
   useEffect(() => {
     loadQuestions();
   }, []);
-
-  const handleAddQuestion = async () => {
-    const payload = {
-      text: newQuestionText,
-      marks: Number(newMarks),
-      type: newType,
-      difficulty: newDifficulty,
-      isActive: false,
-      createdBy: user?.sub!,
-      updatedBy: user?.sub!,
-    };
-    console.log(payload);
-    try {
-      //   await addQuestion(payload);
-      setOpenAddDialog(false);
-      loadQuestions();
-      setNewQuestionText("");
-      setNewMarks("");
-      setNewType("");
-      setNewDifficulty("");
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleRemove = async (id: string) => {
     setLoading(true);
@@ -230,9 +199,8 @@ const FetchAllQuestions = () => {
         <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Question Paper</TableHead>
-              <TableHead>Marks</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Marks</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -242,13 +210,8 @@ const FetchAllQuestions = () => {
             {questions.length > 0 ? (
               paginatedQuestions.map((q) => (
                 <TableRow key={q.id}>
-                  <TableCell>
-                    {q.questionPaper.attributes.displayName}
-                  </TableCell>
+                  <TableCell>{q.questionType}</TableCell>
                   <TableCell>{q.marks}</TableCell>
-                  <TableCell>
-                    {q.questionType} - {q.attributes.heading}
-                  </TableCell>
                   <TableCell>
                     {q.isActive ? (
                       <p className="text-green-200 bg-green-700 px-3 py-1 w-min rounded-sm">

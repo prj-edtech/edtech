@@ -20,33 +20,35 @@ import { useEffect, useState } from "react";
 
 import { addQuestions } from "@/api/questions";
 import { toast } from "sonner";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Loader2 } from "lucide-react";
 
 type AddQuestionsType = {
-  boardId: string;
-  standardId: string;
-  subjectId: string;
-  sectionId: string;
-  topicId: string;
-  subTopicId: string;
-  qpId: string;
-  month: string;
-  year: string;
-  questionType: string;
-  marks: number;
-  priority: number;
-  questionContentPath: string;
-  questionAnswerPath: string;
   performedBy: string;
   boardCode: string;
   standardCode: string;
   subject: string;
-  section: string;
-  topic: string;
-  subTopic: string;
+  year: string;
+  month: string;
+  questionId: string;
+  questionPaperId: string;
+  sectionId: string;
+  topicId: string;
+  subTopicId: string;
+  marks: number;
+  priority: number;
+  questionType: string;
+  questionContentPath: string;
+  questionAnswerPath: string;
+  attributes: {
+    notes: string;
+  };
 };
 
 const AddQuestions = () => {
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth0();
 
   const [boardData, setBoardData] = useState<any[]>([]);
   const [boardId, setBoardId] = useState("");
@@ -165,7 +167,7 @@ const AddQuestions = () => {
     setLoading(true);
     try {
       const response = await getAllSubtopics();
-      setSubtopicData(response.data.data || response.data || response); // adjusted to your data shape
+      setSubtopicData(response);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load subtopics");
@@ -185,7 +187,11 @@ const AddQuestions = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   }
   const handleSubmit = async () => {
     // Validate required fields
@@ -211,7 +217,7 @@ const AddQuestions = () => {
     let questionContentJson: object;
     let questionAnswerJson: object;
 
-    if (questionType === "MCQ") {
+    if (questionType === "MULTIPLE_CHOICE") {
       if (
         !questionText ||
         options.some((o) => !o) ||
@@ -229,7 +235,7 @@ const AddQuestions = () => {
       questionAnswerJson = {
         answer: correctOptionIndex,
       };
-    } else if (questionType === "Descriptive") {
+    } else if (questionType === "DESCRIPTIVE") {
       if (!questionText || !answerText) {
         toast.error("Please complete the descriptive fields");
         return;
@@ -265,29 +271,25 @@ const AddQuestions = () => {
     }
 
     const payload: AddQuestionsType = {
-      boardId,
-      standardId,
-      subjectId,
+      attributes: {
+        notes: "This is questions needs to be reviewed",
+      },
+      boardCode: boardId,
+      standardCode: standardId,
+      subject: subjectId,
       sectionId,
       topicId,
       subTopicId,
-      qpId,
+      questionPaperId: qpId,
+      questionId: "ABCDHEFFASDSADA",
       month,
       year,
-      questionType,
       marks: Number(marks),
       priority: Number(priority),
+      performedBy: user?.sub!,
       questionContentPath,
       questionAnswerPath,
-
-      // ✅ Add missing fields
-      performedBy: "admin", // replace with actual user
-      boardCode: "", // fill from context/state
-      standardCode: "",
-      subject: "",
-      section: "",
-      topic: "",
-      subTopic: "",
+      questionType,
     };
 
     try {
@@ -405,13 +407,8 @@ const AddQuestions = () => {
             <SelectContent>
               <SelectGroup>
                 {subtopicData.map((subtopic) => (
-                  <SelectItem
-                    key={subtopic.id}
-                    value={subtopic.sortKey || subtopic.id}
-                  >
-                    {subtopic.subtopicJson?.attributes?.displayName ||
-                      subtopic.name ||
-                      "N/A"}
+                  <SelectItem key={subtopic.id} value={subtopic.sortKey}>
+                    {subtopic.subTopicJson.attributes.displayName}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -432,7 +429,7 @@ const AddQuestions = () => {
               <SelectGroup>
                 {qp.map((qpItem) => (
                   <SelectItem key={qpItem.id} value={qpItem.id}>
-                    {qpItem.name}
+                    {qpItem.attributes.type}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -479,7 +476,7 @@ const AddQuestions = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {[2020, 2021, 2022, 2023, 2024, 2025].map((y) => (
+                {[2025, 2026, 2027, 2028, 2029, 2030].map((y) => (
                   <SelectItem key={y} value={y.toString()}>
                     {y}
                   </SelectItem>
@@ -500,7 +497,7 @@ const AddQuestions = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {["MCQ", "Descriptive", "True/False"].map((qt) => (
+                {["MULTIPLE_CHOICE", "DECRIPTIVE", "TRUE_FALSE"].map((qt) => (
                   <SelectItem key={qt} value={qt}>
                     {qt}
                   </SelectItem>
@@ -533,7 +530,7 @@ const AddQuestions = () => {
         </div>
       </div>
 
-      {questionType === "MCQ" && (
+      {questionType === "MULTIPLE_CHOICE" && (
         <div className="flex flex-col w-full gap-4 mt-4">
           <Label>Question</Label>
           <Input
@@ -565,7 +562,7 @@ const AddQuestions = () => {
         </div>
       )}
 
-      {questionType === "Descriptive" && (
+      {questionType === "DESCRIPTIVE" && (
         <div className="flex flex-col gap-4 mt-4 w-full">
           <Label>Question</Label>
           <Input

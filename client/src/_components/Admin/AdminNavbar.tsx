@@ -120,6 +120,9 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   >
                     Questions
                   </NavigationMenuLink>
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/questions/add">Add Question</Link>
+                  </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>
