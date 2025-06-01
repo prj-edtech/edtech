@@ -22,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2, MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -56,8 +55,6 @@ interface Subtopics {
 const FetchAllSubtopicsReview = () => {
   const [subtopics, setSubtopics] = useState<Subtopics[]>([]); // Store fetched subtopics
   const [loading, setLoading] = useState(false);
-
-  const { user } = useAuth0();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");

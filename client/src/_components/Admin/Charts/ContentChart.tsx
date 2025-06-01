@@ -1,7 +1,7 @@
 import { apiURL } from "@/api/apiURL";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-import { NotebookPen, Users } from "lucide-react";
+import { NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ContentChart = () => {
