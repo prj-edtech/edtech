@@ -37,6 +37,7 @@ import EditorLayout from "./_components/Editor/EditorLayout";
 import ReviewerLayout from "./_components/Reviewer/ReviewerLayout";
 import EditSubtopic from "./_components/Admin/Subtopics/EditSubtopic";
 import AddQuestions from "./_components/Admin/Question/AddQuestions";
+import EditorAddQuestions from "./_components/Editor/Question/AddQuestion";
 
 function App() {
   const { isAuthenticated } = useAuth0();
@@ -91,6 +92,7 @@ function App() {
           />
           <Route path="question-papers" element={<EditorQuestionPaper />} />
           <Route path="questions" element={<EditorFetchAllQuestions />} />
+          <Route path="questions/add" element={<EditorAddQuestions />} />
         </Route>
         {/* Reviewer Layout */}
         <Route path="/reviewer" element={<ReviewerLayout />}>

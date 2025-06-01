@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getAllQuestionPaper, addQuestionPaper } from "@/api/questionPapers";
+import {
+  getAllQuestionPaper,
+  addQuestionPaper,
+  updateQuestionPaper,
+} from "@/api/questionPapers";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,8 +30,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
-import { getAllActiveSubjects } from "@/api/subjects";
+import { fetchStandardsByBoard } from "@/api/standards";
+import { getSubjectsByStandard } from "@/api/subjects";
 import {
   Select,
   SelectContent,
@@ -120,6 +124,10 @@ const FetchAllQuestionPaper = () => {
   const [difficulty, setDifficulty] = useState("");
   const [totalMarks, setTotalMarks] = useState("");
 
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedQuestionPaper, setSelectedQuestionPaper] =
+    useState<QuestionPapers | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
@@ -169,22 +177,36 @@ const FetchAllQuestionPaper = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    console.log(response.data);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
   useEffect(() => {
     loadQuestionPapers();
     loadBoards();
-    loadStandards();
-    loadSubjects();
   }, []);
+
+  useEffect(() => {
+    if (board.id) {
+      loadStandards(board.id);
+    }
+
+    if (standard.id) {
+      loadSubjects(standard.id);
+    }
+  }, [standard.id, board.id]);
+
+  const handleEdit = (qp: QuestionPapers) => {
+    setSelectedQuestionPaper(qp);
+    setOpenEditDialog(true);
+  };
 
   const handleAddQuestionPaper = async () => {
     const payload = {
@@ -205,7 +227,7 @@ const FetchAllQuestionPaper = () => {
       createdBy: user?.sub!,
       updatedBy: user?.sub!,
     };
-
+    setLoading(true);
     try {
       await addQuestionPaper(payload);
       setOpenAddDialog(false);
@@ -219,6 +241,34 @@ const FetchAllQuestionPaper = () => {
       setType("");
       setDifficulty("");
       setTotalMarks("");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateQuestionPaper = async () => {
+    if (!selectedQuestionPaper) return;
+
+    const payload = {
+      month: selectedQuestionPaper.month,
+      totalMarks: selectedQuestionPaper.totalMarks,
+      attributes: {
+        displayName: selectedQuestionPaper.board.displayName,
+        notes: "", // you can add a notes input if needed
+        heading: "",
+        questionPaperInstruction: "",
+        type: selectedQuestionPaper.attributes.type,
+        difficulty: selectedQuestionPaper.attributes.difficulty,
+      },
+      updatedBy: user?.sub!,
+    };
+
+    try {
+      await updateQuestionPaper(selectedQuestionPaper.id, payload);
+      setOpenEditDialog(false);
+      loadQuestionPapers();
     } catch (err) {
       console.error(err);
     }
@@ -254,8 +304,8 @@ const FetchAllQuestionPaper = () => {
                 <DialogTitle>Add New Question Paper</DialogTitle>
               </DialogHeader>
 
-              <div className="flex flex-col gap-y-6">
-                <div>
+              <div className="flex flex-col gap-y-6 lg:mt-4">
+                <div className="flex flex-col gap-y-2">
                   <Label>Board</Label>
                   <Select
                     value={board.id}
@@ -283,7 +333,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Standard</Label>
                   <Select
                     value={standard.id}
@@ -311,7 +361,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Subject</Label>
                   <Select
                     value={subject.id}
@@ -336,35 +386,35 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Year</Label>
                   <Input
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Month</Label>
                   <Input
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Total Marks</Label>
                   <Input
                     value={totalMarks}
                     onChange={(e) => setTotalMarks(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Type</Label>
                   <Input
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Difficulty</Label>
                   <Input
                     value={difficulty}
@@ -373,9 +423,85 @@ const FetchAllQuestionPaper = () => {
                 </div>
 
                 <Button onClick={handleAddQuestionPaper} className="mt-4">
-                  Submit
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Question Paper</DialogTitle>
+              </DialogHeader>
+
+              {selectedQuestionPaper && (
+                <div className="flex flex-col gap-y-6">
+                  <div>
+                    <Label>Month</Label>
+                    <Input
+                      value={selectedQuestionPaper.month}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          month: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Total Marks</Label>
+                    <Input
+                      value={selectedQuestionPaper.totalMarks}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          totalMarks: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Type</Label>
+                    <Input
+                      value={selectedQuestionPaper.attributes.type}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          attributes: {
+                            ...selectedQuestionPaper.attributes,
+                            type: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Difficulty</Label>
+                    <Input
+                      value={selectedQuestionPaper.attributes.difficulty}
+                      onChange={(e) =>
+                        setSelectedQuestionPaper({
+                          ...selectedQuestionPaper,
+                          attributes: {
+                            ...selectedQuestionPaper.attributes,
+                            difficulty: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <Button onClick={handleUpdateQuestionPaper}>Update</Button>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
@@ -398,7 +524,7 @@ const FetchAllQuestionPaper = () => {
                 <TableHead className="font-bold">Difficulty</TableHead>
                 <TableHead className="font-bold">Status</TableHead>
                 <TableHead className="font-bold">Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="font-bold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -432,8 +558,13 @@ const FetchAllQuestionPaper = () => {
                             <MoreHorizontal className="h-5 w-5" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuContent
+                          className="font-redhat font-semibold"
+                          align="end"
+                        >
+                          <DropdownMenuItem onClick={() => handleEdit(qP)}>
+                            Edit
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -449,34 +580,38 @@ const FetchAllQuestionPaper = () => {
             </TableBody>
           </Table>
         )}
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );

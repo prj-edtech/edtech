@@ -46,7 +46,7 @@ type AddQuestionsType = {
   };
 };
 
-const AddQuestions = () => {
+const EditorAddQuestions = () => {
   const [loading, setLoading] = useState(false);
 
   const { user } = useAuth0();
@@ -589,4 +589,4 @@ const AddQuestions = () => {
   );
 };
 
-export default AddQuestions;
+export default EditorAddQuestions;

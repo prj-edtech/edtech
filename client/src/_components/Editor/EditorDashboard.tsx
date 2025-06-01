@@ -1,9 +1,8 @@
 import { createUser } from "@/api/user";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { UserChart } from "../Admin/Charts/UsersChart";
-import { BoardsChart } from "../Admin/Charts/BoardsChart";
 import { AllChart } from "../Admin/Charts/AllChart";
+import UsersChart from "../Admin/Charts/UsersChart";
 
 const EditorDashboard = () => {
   const addUser = async (
@@ -43,15 +42,12 @@ const EditorDashboard = () => {
 
   return (
     <div className="flex justify-center items-center w-full flex-col lg:gap-y-10">
-      {/* <div className="flex justify-start items-center w-full lg:gap-x-20">
-        <UserChart />
-        <BoardsChart />
-        <UserChart />
-        <UserChart />
+      <div className="flex justify-start items-center w-full lg:gap-x-20">
+        <UsersChart />
       </div>
       <div className="w-full">
         <AllChart />
-      </div> */}
+      </div>
     </div>
   );
 };

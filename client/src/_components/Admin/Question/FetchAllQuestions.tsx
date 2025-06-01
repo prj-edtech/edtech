@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getAllQuestions } from "@/api/questions";
+import {
+  activateQuestion,
+  deactivateQuestion,
+  deleteQuestion,
+  getAllQuestions,
+} from "@/api/questions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,6 +49,7 @@ interface Question {
   questionType: string;
   isActive: boolean;
   createdAt: string;
+  review: string;
   attributes: {
     notes: string;
     heading: string;
@@ -117,18 +123,13 @@ const FetchAllQuestions = () => {
     setLoading(true);
     console.log(id);
     try {
-      //   await removeQuestion(id, user?.sub!);
+      await deleteQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (q: Question) => {
-    setSelectedQuestion(q);
-    setOpenEditDialog(true);
   };
 
   const handleUpdateQuestion = async () => {
@@ -154,7 +155,7 @@ const FetchAllQuestions = () => {
     setLoading(true);
     console.log(id);
     try {
-      //   await activateQuestion(id, user?.sub!);
+      await activateQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
@@ -167,7 +168,7 @@ const FetchAllQuestions = () => {
     setLoading(true);
     console.log(id);
     try {
-      //   await deactivateQuestion(id, user?.sub!);
+      await deactivateQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
@@ -175,6 +176,14 @@ const FetchAllQuestions = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="animate-spin w-6 h-6" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-y-6 w-full">
@@ -218,6 +227,7 @@ const FetchAllQuestions = () => {
               <TableHead>Board</TableHead>
               <TableHead>Standard</TableHead>
               <TableHead>Subject</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -232,6 +242,7 @@ const FetchAllQuestions = () => {
                   <TableCell>{q.questionPaper.board.sortKey}</TableCell>
                   <TableCell>{q.questionPaper.standard.sortKey}</TableCell>
                   <TableCell>{q.questionPaper.subject.sortKey}</TableCell>
+                  <TableCell className="font-semibold">{q.review}</TableCell>
                   <TableCell>
                     {q.isActive ? (
                       <p className="text-green-200 bg-green-700 px-3 py-1 w-min rounded-sm">
@@ -252,9 +263,6 @@ const FetchAllQuestions = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(q)}>
-                          Edit
-                        </DropdownMenuItem>
                         <DropdownMenuItem>Review</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleActivate(q.id)}>
                           Activate

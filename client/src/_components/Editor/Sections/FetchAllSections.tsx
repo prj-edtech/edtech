@@ -21,8 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
-import { getAllActiveSubjects } from "@/api/subjects";
+import { fetchStandardsByBoard } from "@/api/standards";
+import { getSubjectsByStandard } from "@/api/subjects";
 import { Select } from "@radix-ui/react-select";
 import {
   SelectContent,
@@ -113,7 +113,7 @@ const FetchAllSections = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const itemsPerPage = 1;
+  const itemsPerPage = 10;
 
   const filteredData = sections.filter(
     (section) =>
@@ -154,22 +154,30 @@ const FetchAllSections = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
   useEffect(() => {
     fetchAllSections();
     loadBoards();
-    loadStandards();
-    loadSubjects();
   }, []);
+
+  useEffect(() => {
+    if (boardId) {
+      loadStandards(boardId);
+    }
+
+    if (standardId) {
+      loadSubjects(standardId);
+    }
+  }, [boardId, standardId]);
 
   const handleAddSection = async () => {
     setLoading(true);
@@ -266,7 +274,7 @@ const FetchAllSections = () => {
                 <Plus className="w-4 h-4 mr-2" /> Add Section
               </Button>
             </DialogTrigger>
-            <DialogContent className="font-redhat">
+            <DialogContent className="font-redhat max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Section</DialogTitle>
               </DialogHeader>
@@ -440,80 +448,92 @@ const FetchAllSections = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((section) => (
-              <TableRow key={section.id}>
-                <TableCell>
-                  {section.sectionJson?.attributes?.displayName}
-                </TableCell>
-                <TableCell>{section.board.sortKey}</TableCell>
-                <TableCell>{section.standard.sortKey}</TableCell>
-                <TableCell>{section.subject.sortKey}</TableCell>
-                <TableCell>
-                  {section.isActive ? (
-                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
-                      Active
-                    </p>
-                  ) : (
-                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
-                      Inactive
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell>{section.createdAt.split("T")[0]}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild className="cursor-pointer">
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="font-redhat font-semibold">
-                      <DropdownMenuItem
-                        onClick={() => handleEditOpen(section)}
-                        className="cursor-pointer"
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Edit"
-                        )}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center lg:py-6">
+                  No sections found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedData.map((section) => (
+                <TableRow key={section.id}>
+                  <TableCell>
+                    {section.sectionJson?.attributes?.displayName}
+                  </TableCell>
+                  <TableCell>{section.board.sortKey}</TableCell>
+                  <TableCell>{section.standard.sortKey}</TableCell>
+                  <TableCell>{section.subject.sortKey}</TableCell>
+                  <TableCell>
+                    {section.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>{section.createdAt.split("T")[0]}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild className="cursor-pointer">
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="font-redhat font-semibold">
+                        <DropdownMenuItem
+                          onClick={() => handleEditOpen(section)}
+                          className="cursor-pointer"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Edit"
+                          )}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
 
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent>

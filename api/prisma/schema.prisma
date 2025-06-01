@@ -215,25 +215,26 @@ model QuestionPaper {
 }
 
 model Question {
-  id                  String   @id @default(cuid())
+  id                  String       @id @default(cuid())
   partitionKey        String
   sortKey             String
   year                String
   month               String
-  questionId          String   @unique
+  questionId          String       @unique
   questionPaperId     String
   sectionId           String
   topicId             String
   subTopicId          String
+  review              ReviewStatus @default(PENDING)
   marks               Int
   priority            Int
   questionType        String
   questionContentPath String
   questionAnswerPath  String
   attributes          Json
-  isActive            Boolean  @default(true)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  isActive            Boolean      @default(true)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
   createdBy           String
   updatedBy           String
   questionJson        Json?

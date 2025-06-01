@@ -30,3 +30,17 @@ export const getAllQuestions = async () => {
 export const addQuestions = async (data: AddQuestions) => {
   return axios.post(`${apiURL}/questions`, data);
 };
+
+export const activateQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/activate/${id}`, { performedBy });
+};
+
+export const deactivateQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/deactivate/${id}`, { performedBy });
+};
+
+export const deleteQuestion = async (id: string, performedBy: string) => {
+  return axios.delete(`${apiURL}/questions/remove/${id}`, {
+    data: { performedBy },
+  });
+};
