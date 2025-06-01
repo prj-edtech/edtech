@@ -12,9 +12,7 @@ export const createQuestionController = async (req: Request, res: Response) => {
       req.body,
       performedBy
     );
-    res
-      .status(200)
-      .json({ success: true, message: "Question created", data: question });
+    res.status(200).json({ success: true, data: question });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -114,7 +112,7 @@ export const getAllQuestionsController = async (
     const questions = await questionServices.getAllQuestions(isActive);
     res
       .status(200)
-      .json({ success: true, message: "Questions fetched", data: questions });
+      .json({ success: true, total: questions.length, data: questions });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -154,7 +152,7 @@ export const getQuestionsByPaperController = async (
     );
     res
       .status(200)
-      .json({ success: true, message: "Questions fetched", data: questions });
+      .json({ success: true, total: questions.length, data: questions });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }

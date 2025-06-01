@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetSubtopic = exports.rejectSubtopic = exports.approveSubtopic = exports.getSingleSubtopic = exports.deactiveSubtopic = exports.activeSubtopic = exports.removeSubtopic = exports.getAllSubtopics = exports.softDeleteSubTopic = exports.updateSubTopic = exports.getSubTopicsByTopic = exports.createSubTopic = void 0;
+exports.resetSubtopic = exports.rejectSubtopic = exports.approveSubtopic = exports.getSingleSubtopic = exports.deactiveSubtopic = exports.activeSubtopic = exports.removeSubtopic = exports.getAllPendingSubtopics = exports.getAllRejectedSubtopics = exports.getAllApprovedSubtopics = exports.getAllSubtopics = exports.softDeleteSubTopic = exports.updateSubTopic = exports.getSubTopicsByTopic = exports.createSubTopic = void 0;
+const client_1 = require("@prisma/client");
 const db_1 = __importDefault(require("../config/db"));
 const base62_1 = require("../utils/base62");
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 const createSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ boardCode, standardCode, subjectName, sectionId, topicId, displayName, priority, contentPath, createdBy, }) {
     // Generate Base62 subtopic ID
     const subTopicId = (0, base62_1.base62Encode)();
@@ -72,6 +74,14 @@ const createSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ boar
         createdBy: createdBy,
         notes: "Subtopic created and waiting to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: createdBy,
+        eventType: "TOPIC",
+        entityType: "SUBMISSION_FOR_REVIEW ",
+        entityId: subTopic.id,
+        title: "Subtopic Created",
+        message: `New subtopic created`,
+    });
     return subTopic;
 });
 exports.createSubTopic = createSubTopic;
@@ -106,6 +116,7 @@ const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ id, 
             priority,
             updatedBy,
             subTopicJson: updatedJson,
+            review: client_1.ReviewStatus.PENDING,
         },
     });
     console.log("[Service] Updated SubTopic record:", updatedSubTopic);
@@ -127,6 +138,14 @@ const updateSubTopic = (_a) => __awaiter(void 0, [_a], void 0, function* ({ id, 
         notes: "Subtopic updated",
     });
     console.log("[Service] Change log created");
+    yield (0, notifications_service_1.createNotification)({
+        userId: updatedBy,
+        eventType: "TOPIC",
+        entityType: "SUBMISSION_FOR_REVIEW ",
+        entityId: existing.id,
+        title: "Review updated subtopic",
+        message: `New subtopic updated`,
+    });
     return updatedSubTopic;
 });
 exports.updateSubTopic = updateSubTopic;
@@ -162,6 +181,14 @@ const softDeleteSubTopic = (subTopicId, performedBy) => __awaiter(void 0, void 0
         createdBy: performedBy,
         notes: "Subtopic deactivated",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: existing.id,
+        title: "Subtopic Deactivated",
+        message: `New subtopic deactivated`,
+    });
 });
 exports.softDeleteSubTopic = softDeleteSubTopic;
 const getAllSubtopics = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -173,6 +200,30 @@ const getAllSubtopics = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getAllSubtopics = getAllSubtopics;
+const getAllApprovedSubtopics = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.subTopic.findMany({
+        where: {
+            review: client_1.ReviewStatus.APPROVED,
+        },
+    });
+});
+exports.getAllApprovedSubtopics = getAllApprovedSubtopics;
+const getAllRejectedSubtopics = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.subTopic.findMany({
+        where: {
+            review: client_1.ReviewStatus.REJECTED,
+        },
+    });
+});
+exports.getAllRejectedSubtopics = getAllRejectedSubtopics;
+const getAllPendingSubtopics = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.subTopic.findMany({
+        where: {
+            review: client_1.ReviewStatus.PENDING,
+        },
+    });
+});
+exports.getAllPendingSubtopics = getAllPendingSubtopics;
 const removeSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, function* () {
     const deletedSubtopic = yield db_1.default.subTopic.delete({
         where: {
@@ -194,6 +245,14 @@ const removeSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, fu
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Subtopic hard deleted by admin",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subtopic Deleted",
+        message: `New subtopic deleted`,
     });
     return deletedSubtopic;
 });
@@ -223,6 +282,14 @@ const activeSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, fu
         createdBy: performedBy,
         notes: "Subtopic hard deleted by admin",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subtopic activated",
+        message: `New subtopic Activated`,
+    });
     return subtopic;
 });
 exports.activeSubtopic = activeSubtopic;
@@ -250,6 +317,14 @@ const deactiveSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, 
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Subtopic hard deleted by admin",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subtopic deactivated",
+        message: `New subtopic Deactivated`,
     });
     return subtopic;
 });
@@ -288,6 +363,14 @@ const approveSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, f
         createdBy: performedBy,
         notes: "Request was approved",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "REVIEW_FEEDBACK",
+        entityId: id,
+        title: "Subtopic Approved",
+        message: `New subtopic approved`,
+    });
     return subtopic;
 });
 exports.approveSubtopic = approveSubtopic;
@@ -317,6 +400,14 @@ const rejectSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, fu
         createdBy: performedBy,
         notes: "Request was disapproved",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "REVIEW_FEEDBACK",
+        entityId: id,
+        title: "Subtopic Rejected",
+        message: `New subtopic rejected`,
+    });
     return subtopic;
 });
 exports.rejectSubtopic = rejectSubtopic;
@@ -345,6 +436,14 @@ const resetSubtopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, fun
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Waiting for Approval",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "REVIEW_FEEDBACK",
+        entityId: id,
+        title: "Subtopic Pending to review",
+        message: `New subtopic pending to review`,
     });
     return subtopic;
 });

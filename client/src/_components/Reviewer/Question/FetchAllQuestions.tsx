@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -15,13 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Loader2, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,6 +28,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 interface Question {
   id: string;
@@ -42,14 +38,21 @@ interface Question {
   questionType: string;
   isActive: boolean;
   createdAt: string;
+  review: string;
   attributes: {
     notes: string;
     heading: string;
     questionInstruction: string;
   };
   questionPaper: {
-    attributes: {
-      displayName: string;
+    board: {
+      sortKey: string;
+    };
+    standard: {
+      sortKey: string;
+    };
+    subject: {
+      sortKey: string;
     };
   };
 }
@@ -57,6 +60,7 @@ interface Question {
 const ReviewerFetchAllQuestions = () => {
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null
@@ -68,10 +72,16 @@ const ReviewerFetchAllQuestions = () => {
 
   const filteredQuestions = questions.filter(
     (q) =>
-      q.questionPaper.attributes.displayName
+      q.questionType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.board.sortKey
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      q.questionType.toLowerCase().includes(searchQuery.toLowerCase())
+      q.questionPaper.standard.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.subject.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   const paginatedQuestions = filteredQuestions.slice(
@@ -98,48 +108,6 @@ const ReviewerFetchAllQuestions = () => {
     loadQuestions();
   }, []);
 
-  //   const handleAddQuestion = async () => {
-  //     const payload = {
-  //       text: newQuestionText,
-  //       marks: Number(newMarks),
-  //       type: newType,
-  //       difficulty: newDifficulty,
-  //       isActive: false,
-  //       createdBy: user?.sub!,
-  //       updatedBy: user?.sub!,
-  //     };
-  //     console.log(payload);
-  //     try {
-  //       //   await addQuestion(payload);
-  //       setOpenAddDialog(false);
-  //       loadQuestions();
-  //       setNewQuestionText("");
-  //       setNewMarks("");
-  //       setNewType("");
-  //       setNewDifficulty("");
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-
-  //   const handleRemove = async (id: string) => {
-  //     setLoading(true);
-  //     console.log(id);
-  //     try {
-  //       //   await removeQuestion(id, user?.sub!);
-  //       loadQuestions();
-  //     } catch (err) {
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   const handleEdit = (q: Question) => {
-  //     setSelectedQuestion(q);
-  //     setOpenEditDialog(true);
-  //   };
-
   const handleUpdateQuestion = async () => {
     if (!selectedQuestion) return;
     const payload = {
@@ -159,31 +127,13 @@ const ReviewerFetchAllQuestions = () => {
     }
   };
 
-  //   const handleActivate = async (id: string) => {
-  //     setLoading(true);
-  //     console.log(id);
-  //     try {
-  //       //   await activateQuestion(id, user?.sub!);
-  //       loadQuestions();
-  //     } catch (err) {
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   const handleDeactivate = async (id: string) => {
-  //     setLoading(true);
-  //     console.log(id);
-  //     try {
-  //       //   await deactivateQuestion(id, user?.sub!);
-  //       loadQuestions();
-  //     } catch (err) {
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="animate-spin w-6 h-6" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-y-6 w-full">
@@ -203,42 +153,14 @@ const ReviewerFetchAllQuestions = () => {
             Search
           </Button>
         </div>
-        {/* <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
+        <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
             <Button className="rounded-none">
-              <Plus className="w-4 h-4 mr-2" /> Add Question
+              <Plus className="w-4 h-4 mr-2" />
+              <Link to="/admin/questions/add">Add Question</Link>
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Question</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-y-4">
-              <Label>Question Text</Label>
-              <Input
-                value={newQuestionText}
-                onChange={(e) => setNewQuestionText(e.target.value)}
-              />
-              <Label>Marks</Label>
-              <Input
-                value={newMarks}
-                onChange={(e) => setNewMarks(e.target.value)}
-              />
-              <Label>Type</Label>
-              <Input
-                value={newType}
-                onChange={(e) => setNewType(e.target.value)}
-              />
-              <Label>Difficulty</Label>
-              <Input
-                value={newDifficulty}
-                onChange={(e) => setNewDifficulty(e.target.value)}
-              />
-              <Button onClick={handleAddQuestion}>Submit</Button>
-            </div>
-          </DialogContent>
-        </Dialog> */}
-        <div />
+        </Dialog>
       </div>
 
       {/* Table */}
@@ -250,25 +172,26 @@ const ReviewerFetchAllQuestions = () => {
         <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Question Paper</TableHead>
-              <TableHead>Marks</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Marks</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead>Standard</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {questions.length > 0 ? (
               paginatedQuestions.map((q) => (
                 <TableRow key={q.id}>
-                  <TableCell>
-                    {q.questionPaper.attributes.displayName}
-                  </TableCell>
+                  <TableCell>{q.questionType}</TableCell>
                   <TableCell>{q.marks}</TableCell>
-                  <TableCell>
-                    {q.questionType} - {q.attributes.heading}
-                  </TableCell>
+                  <TableCell>{q.questionPaper.board.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.standard.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.subject.sortKey}</TableCell>
+                  <TableCell className="font-semibold">{q.review}</TableCell>
                   <TableCell>
                     {q.isActive ? (
                       <p className="text-green-200 bg-green-700 px-3 py-1 w-min rounded-sm">
@@ -281,18 +204,6 @@ const ReviewerFetchAllQuestions = () => {
                     )}
                   </TableCell>
                   <TableCell>{q.createdAt.split("T")[0]}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Review</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -307,7 +218,7 @@ const ReviewerFetchAllQuestions = () => {
       )}
 
       {/* Pagination */}
-      {!loading && (
+      {paginatedQuestions.length !== 0 && (
         <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>

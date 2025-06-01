@@ -18,6 +18,7 @@ const db_1 = __importDefault(require("../config/db"));
 const jsonBuilder_1 = require("../utils/jsonBuilder");
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 // Create Board
 const createBoard = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const timestamp = new Date().toISOString();
@@ -54,6 +55,14 @@ const createBoard = (data) => __awaiter(void 0, void 0, void 0, function* () {
         submittedBy: data.createdBy,
         createdBy: data.createdBy,
         notes: "Board created by admin",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.createdBy,
+        eventType: "BOARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: board.id,
+        title: "Board Created",
+        message: `New board created`,
     });
     return board;
 });
@@ -125,6 +134,14 @@ const updateBoard = (id, data) => __awaiter(void 0, void 0, void 0, function* ()
         createdBy: data.updatedBy,
         notes: "Board updated by admin",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.updatedBy,
+        eventType: "BOARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Board Updated",
+        message: `New board updated`,
+    });
     return updatedBoard;
 });
 exports.updateBoard = updateBoard;
@@ -172,6 +189,14 @@ const deleteBoard = (id, performedBy) => __awaiter(void 0, void 0, void 0, funct
         createdBy: performedBy,
         notes: "Board soft deleted by admin",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "BOARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: board.id,
+        title: "Board Deactivated",
+        message: `New board deactivated`,
+    });
     return deletedBoard;
 });
 exports.deleteBoard = deleteBoard;
@@ -200,6 +225,14 @@ const removeBoard = (id, performedBy) => __awaiter(void 0, void 0, void 0, funct
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Board hard deleted by admin",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "BOARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: board.id,
+        title: "Board Deleted",
+        message: `New board deleted`,
     });
 });
 exports.removeBoard = removeBoard;

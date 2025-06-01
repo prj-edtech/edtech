@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserByIdController = exports.createUserController = exports.getUserByIdController = exports.getAllUsersController = void 0;
+exports.deleteUserByIdController = exports.createUserController = exports.getAllReviewersController = exports.getAllEditorsController = exports.getAllAdminsController = exports.getUserByIdController = exports.getAllUsersController = void 0;
 const userServices = __importStar(require("../services/users.service"));
 // Get all users
 const getAllUsersController = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,6 +70,39 @@ const getUserByIdController = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getUserByIdController = getUserByIdController;
+// Get all admins
+const getAllAdminsController = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield userServices.getAllAdmins();
+        res.status(200).json({ success: true, total: users.length, data: users });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+exports.getAllAdminsController = getAllAdminsController;
+// Get all editors
+const getAllEditorsController = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield userServices.getAllEditor();
+        res.status(200).json({ success: true, total: users.length, data: users });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+exports.getAllEditorsController = getAllEditorsController;
+// Get all reviewer
+const getAllReviewersController = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield userServices.getAllReviewer();
+        res.status(200).json({ success: true, total: users.length, data: users });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+exports.getAllReviewersController = getAllReviewersController;
 // Create new user (from Auth0 webhook)
 const createUserController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

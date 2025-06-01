@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteStandard = exports.activateStandard = exports.deactivateStandard = exports.updateStandard = exports.getStandardById = exports.getAllActiveStandards = exports.getAllStandards = exports.createStandard = void 0;
+exports.getStandardByBoard = exports.deleteStandard = exports.activateStandard = exports.deactivateStandard = exports.updateStandard = exports.getStandardById = exports.getAllActiveStandards = exports.getAllStandards = exports.createStandard = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 // Utility to validate Roman numerals (I to XII)
 const isRomanNumeral = (value) => /^(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII)$/.test(value);
 // Type guard for JsonObject
@@ -84,6 +85,14 @@ const createStandard = (data) => __awaiter(void 0, void 0, void 0, function* () 
         submittedBy: data.createdBy,
         createdBy: data.createdBy,
         notes: "Standard created without needing to be reviewed",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.createdBy,
+        eventType: "STANDARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: newStandard.id,
+        title: "Standard Created",
+        message: `New standard created`,
     });
     return newStandard;
 });
@@ -162,6 +171,14 @@ const updateStandard = (id, data) => __awaiter(void 0, void 0, void 0, function*
         createdBy: data.updatedBy,
         notes: "Standard updated without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.updatedBy,
+        eventType: "STANDARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: updatedStandard.id,
+        title: "Standard Updated",
+        message: `New standard updated`,
+    });
     return updatedStandard;
 });
 exports.updateStandard = updateStandard;
@@ -191,6 +208,14 @@ const deactivateStandard = (id, performedBy) => __awaiter(void 0, void 0, void 0
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Standard soft deleted without needing to be reviewed",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "STANDARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: standard.id,
+        title: "Standard Deactivated",
+        message: `New standard deactivated`,
     });
     return standard;
 });
@@ -222,6 +247,14 @@ const activateStandard = (id, performedBy) => __awaiter(void 0, void 0, void 0, 
         createdBy: performedBy,
         notes: "Standard activated without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "STANDARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: standard.id,
+        title: "Standard Activated",
+        message: `New standard activated`,
+    });
     return standard;
 });
 exports.activateStandard = activateStandard;
@@ -247,6 +280,24 @@ const deleteStandard = (id, performedBy) => __awaiter(void 0, void 0, void 0, fu
         createdBy: performedBy,
         notes: "Standard hard deleted without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "STANDARD",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Standard Deleted",
+        message: `New standard deleted`,
+    });
     return deletedStandard;
 });
 exports.deleteStandard = deleteStandard;
+const getStandardByBoard = (boardId) => __awaiter(void 0, void 0, void 0, function* () {
+    const standard = yield db_1.default.standard.findMany({
+        where: {
+            boardId,
+            isActive: true,
+        },
+    });
+    return standard;
+});
+exports.getStandardByBoard = getStandardByBoard;

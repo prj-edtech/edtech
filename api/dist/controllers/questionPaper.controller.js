@@ -230,6 +230,7 @@ const getAllQuestionPaper = (req, res) => __awaiter(void 0, void 0, void 0, func
         const questionPapers = yield questionPaperService.getAllQuestionPaper();
         res.status(200).json({
             success: true,
+            total: questionPapers.length,
             data: questionPapers,
         });
     }

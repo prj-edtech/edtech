@@ -22,7 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal } from "lucide-react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Loader2, MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -55,6 +56,8 @@ interface Subtopics {
 const FetchAllSubtopicsReview = () => {
   const [subtopics, setSubtopics] = useState<Subtopics[]>([]); // Store fetched subtopics
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth0();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -127,15 +130,14 @@ const FetchAllSubtopicsReview = () => {
               Search
             </Button>
           </div>
-          {/* <Button className="rounded-none">
+          <Button className="rounded-none">
             <Link
               to="/admin/subtopics/add"
               className="flex items-center gap-x-2"
             >
               <Plus className="w-4 h-4 mr-2" /> Add Subtopic
             </Link>
-          </Button> */}
-          <div />
+          </Button>
         </div>
         <Table className="border border-blue-800/20">
           <TableHeader>
@@ -149,85 +151,99 @@ const FetchAllSubtopicsReview = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((subtopic) => (
-              <TableRow key={subtopic.subTopicId}>
-                <TableCell className="max-w-32 truncate">
-                  {subtopic.subTopicJson.attributes.displayName}
-                </TableCell>
-                <TableCell>
-                  {subtopic.topic.topicJson.attributes.displayName}
-                </TableCell>
-                <TableCell>
-                  {subtopic.section.sectionJson.attributes.displayName}
-                </TableCell>
-                <TableCell className="font-bold">{subtopic.review}</TableCell>
-                <TableCell>
-                  {subtopic.isActive ? (
-                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
-                      Active
-                    </p>
-                  ) : (
-                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
-                      Inactive
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                      >
-                        <MoreHorizontal className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="font-redhat font-semibold"
-                    >
-                      <DropdownMenuItem>
-                        <Link to={`/reviewer/subtopics/review/${subtopic.id}`}>
-                          Review
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center lg:py-6">
+                  No subtopics found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedData.map((subtopic) => (
+                <TableRow key={subtopic.subTopicId}>
+                  <TableCell className="max-w-32 truncate">
+                    {subtopic.subTopicJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {subtopic.topic.topicJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell>
+                    {subtopic.section.sectionJson.attributes.displayName}
+                  </TableCell>
+                  <TableCell className="font-bold">{subtopic.review}</TableCell>
+                  <TableCell>
+                    {subtopic.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="cursor-pointer"
+                        >
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="font-redhat font-semibold"
+                      >
+                        <DropdownMenuItem>
+                          <Link
+                            to={`/reviewer/subtopics/review/${subtopic.id}`}
+                          >
+                            Review
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );

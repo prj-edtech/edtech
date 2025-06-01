@@ -34,6 +34,10 @@ export const fetchAllActiveTopics = () => {
   return axios.get(`${apiURL}/topics/active`);
 };
 
+export const getTopicsBySection = (sectionId: string) => {
+  return axios.get(`${apiURL}/topics/section/${sectionId}`);
+};
+
 export const removeTopic = async (id: string, performedBy: string) => {
   return axios.delete(`${apiURL}/topics/${id}/remove`, {
     data: { performedBy },

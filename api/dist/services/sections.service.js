@@ -18,6 +18,7 @@ const db_1 = __importDefault(require("../config/db"));
 const base62_1 = require("../utils/base62");
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 // Helper to generate Section JSON
 const generateSectionJson = (partitionKey, sortKey, sectionId, priority, displayName, isActive, createdAt, updatedAt, createdBy, updatedBy) => {
     return {
@@ -96,6 +97,14 @@ const createSection = (data) => __awaiter(void 0, void 0, void 0, function* () {
         createdBy: data.createdBy,
         notes: "Section created without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.createdBy,
+        eventType: "SECTION",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: section.id,
+        title: "Section Created",
+        message: `New section created`,
+    });
     return section;
 });
 exports.createSection = createSection;
@@ -141,6 +150,14 @@ const updateSection = (data) => __awaiter(void 0, void 0, void 0, function* () {
         submittedBy: data.updatedBy,
         createdBy: data.updatedBy,
         notes: "Section updated without needing to be reviewed",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.updatedBy,
+        eventType: "SECTION",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: section.id,
+        title: "Section Updated",
+        message: `New section updated`,
     });
     return updatedSection;
 });
@@ -204,6 +221,14 @@ const softDeleteSection = (sectionId, performedBy) => __awaiter(void 0, void 0, 
         createdBy: performedBy,
         notes: "Section soft deleted without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "SECTION",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: section.id,
+        title: "Section Deactivated",
+        message: `New section deactivated`,
+    });
     return updatedSection;
 });
 exports.softDeleteSection = softDeleteSection;
@@ -227,6 +252,14 @@ const removeSection = (id, performedBy) => __awaiter(void 0, void 0, void 0, fun
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Section hard deleted without needing to be reviewed",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "SECTION",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: section.id,
+        title: "Section Deleted",
+        message: `New section deleted`,
     });
     return section;
 });

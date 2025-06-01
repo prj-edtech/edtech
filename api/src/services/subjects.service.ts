@@ -5,6 +5,7 @@ import prisma from "../config/db";
 import { generateSubjectJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 // Create Subject
 export const createSubject = async (data: {
@@ -77,6 +78,15 @@ export const createSubject = async (data: {
     notes: "Subject created without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "SUBJECT",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: subject.id,
+    title: "Subject Created",
+    message: `New subject created`,
+  });
+
   return subject;
 };
 
@@ -140,6 +150,15 @@ export const updateSubject = async (
     notes: "Subject updated without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: data.updatedBy,
+    eventType: "SUBJECT",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subject Updated",
+    message: `New subject updated`,
+  });
+
   return updatedSubject;
 };
 
@@ -187,6 +206,15 @@ export const softDeleteSubject = async (id: string, performedBy: string) => {
     notes: "Subject soft deleted without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "SUBJECT",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subject Deactivated",
+    message: `New subject deactivated`,
+  });
+
   return updatedSubject;
 };
 
@@ -217,6 +245,15 @@ export const removeSubject = async (id: string, performedBy: string) => {
     notes: "Subject hard deleted without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "SUBJECT",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subject Deleted",
+    message: `New subject deleted`,
+  });
+
   return deletedSubject;
 };
 
@@ -232,6 +269,15 @@ export const getAllSubjects = async () => {
 export const getAllActiveSubjects = async () => {
   return await prisma.subject.findMany({
     where: {
+      isActive: true,
+    },
+  });
+};
+
+export const getSubjectsByStandard = async (standardId: string) => {
+  return await prisma.subject.findMany({
+    where: {
+      standardId,
       isActive: true,
     },
   });

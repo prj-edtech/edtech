@@ -14,6 +14,33 @@ export const getUserById = async (auth0Id: string) => {
   });
 };
 
+// Get admin
+export const getAllAdmins = async () => {
+  return await prisma.user.findMany({
+    where: {
+      role: "admin",
+    },
+  });
+};
+
+// Get editor
+export const getAllEditor = async () => {
+  return await prisma.user.findMany({
+    where: {
+      role: "editor",
+    },
+  });
+};
+
+// Get reviewer
+export const getAllReviewer = async () => {
+  return await prisma.user.findMany({
+    where: {
+      role: "reviewer",
+    },
+  });
+};
+
 // Create a new user (from Auth0 webhook)
 export const createUser = async (data: {
   auth0Id: string;

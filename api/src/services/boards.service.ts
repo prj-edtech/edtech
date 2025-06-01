@@ -4,6 +4,7 @@ import prisma from "../config/db";
 import { buildBoardJson } from "../utils/jsonBuilder";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 // Create Board
 export const createBoard = async (data: {
@@ -49,6 +50,15 @@ export const createBoard = async (data: {
     submittedBy: data.createdBy,
     createdBy: data.createdBy,
     notes: "Board created by admin",
+  });
+
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "BOARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: board.id,
+    title: "Board Created",
+    message: `New board created`,
   });
 
   return board;
@@ -135,6 +145,15 @@ export const updateBoard = async (
     notes: "Board updated by admin",
   });
 
+  await createNotification({
+    userId: data.updatedBy,
+    eventType: "BOARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Board Updated",
+    message: `New board updated`,
+  });
+
   return updatedBoard;
 };
 
@@ -187,6 +206,15 @@ export const deleteBoard = async (id: string, performedBy: string) => {
     notes: "Board soft deleted by admin",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "BOARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: board.id,
+    title: "Board Deactivated",
+    message: `New board deactivated`,
+  });
+
   return deletedBoard;
 };
 
@@ -217,5 +245,14 @@ export const removeBoard = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Board hard deleted by admin",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "BOARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: board.id,
+    title: "Board Deleted",
+    message: `New board deleted`,
   });
 };

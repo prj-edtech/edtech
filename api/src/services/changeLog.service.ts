@@ -43,3 +43,7 @@ export const fetchAllChangeLog = async () => {
     },
   });
 };
+
+export const deleteAllChangeLog = async () => {
+  return await prisma.changeLog.deleteMany();
+};

@@ -122,3 +122,15 @@ export const removeStandard = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Controller to get all standards by a board
+export const getStandardByBoard = async (req: Request, res: Response) => {
+  try {
+    const { boardId } = req.params;
+
+    const standard = await standardService.getStandardByBoard(boardId);
+    res.status(200).json({ data: standard });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

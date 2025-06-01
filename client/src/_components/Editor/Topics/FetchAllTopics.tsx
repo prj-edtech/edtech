@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useAuth0 } from "@auth0/auth0-react";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
+import { fetchStandardsByBoard } from "@/api/standards";
 import {
   Select,
   SelectContent,
@@ -36,8 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllActiveSubjects } from "@/api/subjects";
-import { getAllActiveSections } from "@/api/sections";
+import { getSubjectsByStandard } from "@/api/subjects";
+import { getSectionBySubject } from "@/api/sections";
 import {
   Pagination,
   PaginationContent,
@@ -161,28 +161,39 @@ const FetchAllTopics = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
-  const loadSections = async () => {
-    const response = await getAllActiveSections();
-    setSectiontData(response.data.data);
+  const loadSections = async (subjectId: string) => {
+    const response = await getSectionBySubject(subjectId);
+    setSectiontData(response.data.sections);
   };
 
   useEffect(() => {
     loadTopics();
     loadBoards();
-    loadStandards();
-    loadSubjects();
-    loadSections();
   }, []);
+
+  useEffect(() => {
+    if (boardId) {
+      loadStandards(boardId);
+    }
+
+    if (standardId) {
+      loadSubjects(standardId);
+    }
+
+    if (subjectId) {
+      loadSections(subjectId);
+    }
+  }, [boardId, standardId, subjectId]);
 
   //  Handle Add Topic Submit
   const handleAddTopic = async () => {
@@ -300,8 +311,8 @@ const FetchAllTopics = () => {
                 <Plus className="w-4 h-4 mr-2" /> Add Topic
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto">
-              <DialogHeader className="lg:mb-10 font-outfit">
+            <DialogContent className="max-h-[90vh] overflow-y-auto font-redhat">
+              <DialogHeader className="lg:mb-10">
                 <DialogTitle>Add New Topic</DialogTitle>
               </DialogHeader>
 
@@ -512,34 +523,38 @@ const FetchAllTopics = () => {
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
       <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">

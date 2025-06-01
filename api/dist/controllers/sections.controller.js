@@ -156,7 +156,7 @@ exports.removeSection = removeSection;
 const fetchAllSections = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sections = yield sectionService.getAllSections();
-        res.status(200).json({ data: sections });
+        res.status(200).json({ data: sections, total: sections.length });
     }
     catch (error) {
         res.status(400).json({ message: error.message });

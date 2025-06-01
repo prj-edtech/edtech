@@ -43,7 +43,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAuditLogByIdController = exports.getAllAuditLogsController = void 0;
+exports.deleteAllAuditLogs = exports.getAuditLogByIdController = exports.getAllAuditLogsController = void 0;
 const auditServices = __importStar(require("../services/auditTrail.service"));
 // GET /api/audit-logs
 const getAllAuditLogsController = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -71,3 +71,16 @@ const getAuditLogByIdController = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.getAuditLogByIdController = getAuditLogByIdController;
+// DELETE /api/audit-logs
+const deleteAllAuditLogs = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const logs = yield auditServices.deleteAllAuditLogs();
+        res
+            .status(200)
+            .json({ success: true, message: "All audit logs deleted", data: logs });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+exports.deleteAllAuditLogs = deleteAllAuditLogs;

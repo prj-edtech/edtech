@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeStandard = exports.activateStandard = exports.deactivateStandard = exports.updateStandard = exports.getStandardById = exports.getAllActiveStandards = exports.getAllStandards = exports.createStandard = void 0;
+exports.getStandardByBoard = exports.removeStandard = exports.activateStandard = exports.deactivateStandard = exports.updateStandard = exports.getStandardById = exports.getAllActiveStandards = exports.getAllStandards = exports.createStandard = void 0;
 const standardService = __importStar(require("../services/standards.service"));
 // Controller to create a new standard
 const createStandard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -164,3 +164,15 @@ const removeStandard = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.removeStandard = removeStandard;
+// Controller to get all standards by a board
+const getStandardByBoard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { boardId } = req.params;
+        const standard = yield standardService.getStandardByBoard(boardId);
+        res.status(200).json({ data: standard });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.getStandardByBoard = getStandardByBoard;

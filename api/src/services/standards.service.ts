@@ -2,6 +2,7 @@ import { JsonValue } from "@prisma/client/runtime/library";
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 // Utility to validate Roman numerals (I to XII)
 const isRomanNumeral = (value: string) =>
@@ -90,6 +91,15 @@ export const createStandard = async (data: {
     submittedBy: data.createdBy,
     createdBy: data.createdBy,
     notes: "Standard created without needing to be reviewed",
+  });
+
+  await createNotification({
+    userId: data.createdBy,
+    eventType: "STANDARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: newStandard.id,
+    title: "Standard Created",
+    message: `New standard created`,
   });
 
   return newStandard;
@@ -187,6 +197,15 @@ export const updateStandard = async (
     notes: "Standard updated without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: data.updatedBy,
+    eventType: "STANDARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: updatedStandard.id,
+    title: "Standard Updated",
+    message: `New standard updated`,
+  });
+
   return updatedStandard;
 };
 
@@ -218,6 +237,15 @@ export const deactivateStandard = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Standard soft deleted without needing to be reviewed",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "STANDARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: standard.id,
+    title: "Standard Deactivated",
+    message: `New standard deactivated`,
   });
 
   return standard;
@@ -253,6 +281,15 @@ export const activateStandard = async (id: string, performedBy: string) => {
     notes: "Standard activated without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "STANDARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: standard.id,
+    title: "Standard Activated",
+    message: `New standard activated`,
+  });
+
   return standard;
 };
 
@@ -281,5 +318,25 @@ export const deleteStandard = async (id: string, performedBy: string) => {
     notes: "Standard hard deleted without needing to be reviewed",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "STANDARD",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Standard Deleted",
+    message: `New standard deleted`,
+  });
+
   return deletedStandard;
+};
+
+export const getStandardByBoard = async (boardId: string) => {
+  const standard = await prisma.standard.findMany({
+    where: {
+      boardId,
+      isActive: true,
+    },
+  });
+
+  return standard;
 };

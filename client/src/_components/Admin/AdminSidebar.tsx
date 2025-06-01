@@ -92,6 +92,12 @@ const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
               >
                 Questions
               </Link>
+              <Link
+                to="/admin/questions/add"
+                className="hover:underline underline-offset-2"
+              >
+                Add Question
+              </Link>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-4">

@@ -302,93 +302,105 @@ const FetchAllStandards = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((standard) => (
-              <TableRow key={standard.id}>
-                <TableCell>{standard.sortKey}</TableCell>
-                <TableCell>{standard.board?.sortKey || "-"}</TableCell>
-                <TableCell>{standard.board?.displayName || "-"}</TableCell>
-                <TableCell>
-                  {standard.isActive ? (
-                    <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
-                      Active
-                    </p>
-                  ) : (
-                    <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
-                      Inactive
-                    </p>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild className="cursor-pointer">
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="font-redhat font-semibold">
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => handleActivate(standard.id)}
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Activate"
-                        )}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => handleSoftDelete(standard.id)}
-                      >
-                        {loading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Deactivate"
-                        )}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRemoveStandard(standard.id)}
-                        className="cursor-pointer flex items-center gap-x-4 text-red-700"
-                      >
-                        <Trash className="w-4 h-4 text-red-700" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center lg:py-6">
+                  No standards found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              paginatedData.map((standard) => (
+                <TableRow key={standard.id}>
+                  <TableCell>{standard.sortKey}</TableCell>
+                  <TableCell>{standard.board?.sortKey || "-"}</TableCell>
+                  <TableCell>{standard.board?.displayName || "-"}</TableCell>
+                  <TableCell>
+                    {standard.isActive ? (
+                      <p className="text-green-200 font-semibold bg-green-700 w-min px-3 py-1 rounded-sm">
+                        Active
+                      </p>
+                    ) : (
+                      <p className="text-red-200 font-semibold bg-red-700 w-min px-3 py-1 rounded-sm">
+                        Inactive
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild className="cursor-pointer">
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="font-redhat font-semibold">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleActivate(standard.id)}
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Activate"
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleSoftDelete(standard.id)}
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Deactivate"
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemoveStandard(standard.id)}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          <Trash className="w-4 h-4 text-red-700" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                // disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
+        {paginatedData.length !== 0 && (
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  // disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                // disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    isActive={currentPage === index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  // disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );

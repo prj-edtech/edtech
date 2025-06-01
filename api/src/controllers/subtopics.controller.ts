@@ -103,7 +103,49 @@ export const fetchAllSubtopics = async (_req: Request, res: Response) => {
   try {
     const subtopics = await subTopicService.getAllSubtopics();
 
-    res.status(200).json({ data: subtopics });
+    res.status(200).json({ data: subtopics, total: subtopics.length });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Get all subtopics approved
+export const fetchAllSubtopicsApproved = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const subtopics = await subTopicService.getAllApprovedSubtopics();
+
+    res.status(200).json({ data: subtopics, total: subtopics.length });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Get all subtopics rejected
+export const fetchAllSubtopicsRejected = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const subtopics = await subTopicService.getAllRejectedSubtopics();
+
+    res.status(200).json({ data: subtopics, total: subtopics.length });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Get all subtopics pending
+export const fetchAllSubtopicsPending = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const subtopics = await subTopicService.getAllPendingSubtopics();
+
+    res.status(200).json({ data: subtopics, total: subtopics.length });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }

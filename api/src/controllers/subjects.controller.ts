@@ -112,7 +112,7 @@ export const removeSubject = async (req: Request, res: Response) => {
 export const fetchAllSubjects = async (_req: Request, res: Response) => {
   try {
     const subjects = await subjectService.getAllSubjects();
-    res.status(200).json({ data: subjects });
+    res.status(200).json({ data: subjects, total: subjects.length });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -121,6 +121,16 @@ export const fetchAllSubjects = async (_req: Request, res: Response) => {
 export const fetchAllActiveSubjects = async (_req: Request, res: Response) => {
   try {
     const subjects = await subjectService.getAllActiveSubjects();
+    res.status(200).json({ data: subjects });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const fetchSubjectsByStandard = async (req: Request, res: Response) => {
+  try {
+    const { standardId } = req.params;
+    const subjects = await subjectService.getSubjectsByStandard(standardId);
     res.status(200).json({ data: subjects });
   } catch (error: any) {
     res.status(400).json({ message: error.message });

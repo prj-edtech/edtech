@@ -43,6 +43,8 @@ subjectRouter.post("/", subjectsController.createSubject);
 subjectRouter.get("/", subjectsController.fetchAllSubjects);
 // Get all active Subjects
 subjectRouter.get("/active", subjectsController.fetchAllSubjects);
+// Get all Subjects by Standard
+subjectRouter.get("/:standardId/standard", subjectsController.fetchSubjectsByStandard);
 // Get Subjects by Board + Standard
 subjectRouter.get("/:boardId/:standardId", subjectsController.getSubjectsByBoardStandard);
 // Update Subject (toggle isActive etc.)

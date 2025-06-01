@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getAllQuestions } from "@/api/questions";
+import {
+  activateQuestion,
+  deactivateQuestion,
+  deleteQuestion,
+  getAllQuestions,
+} from "@/api/questions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,6 +39,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 interface Question {
   id: string;
@@ -43,14 +49,21 @@ interface Question {
   questionType: string;
   isActive: boolean;
   createdAt: string;
+  review: string;
   attributes: {
     notes: string;
     heading: string;
     questionInstruction: string;
   };
   questionPaper: {
-    attributes: {
-      displayName: string;
+    board: {
+      sortKey: string;
+    };
+    standard: {
+      sortKey: string;
+    };
+    subject: {
+      sortKey: string;
     };
   };
 }
@@ -68,17 +81,18 @@ const FetchAllQuestions = () => {
   const itemsPerPage = 10;
   const { user } = useAuth0();
 
-  const [newQuestionText, setNewQuestionText] = useState("");
-  const [newMarks, setNewMarks] = useState("");
-  const [newType, setNewType] = useState("");
-  const [newDifficulty, setNewDifficulty] = useState("");
-
   const filteredQuestions = questions.filter(
     (q) =>
-      q.questionPaper.attributes.displayName
+      q.questionType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.board.sortKey
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      q.questionType.toLowerCase().includes(searchQuery.toLowerCase())
+      q.questionPaper.standard.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      q.questionPaper.subject.sortKey
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   const paginatedQuestions = filteredQuestions.slice(
@@ -105,46 +119,17 @@ const FetchAllQuestions = () => {
     loadQuestions();
   }, []);
 
-  const handleAddQuestion = async () => {
-    const payload = {
-      text: newQuestionText,
-      marks: Number(newMarks),
-      type: newType,
-      difficulty: newDifficulty,
-      isActive: false,
-      createdBy: user?.sub!,
-      updatedBy: user?.sub!,
-    };
-    console.log(payload);
-    try {
-      //   await addQuestion(payload);
-      setOpenAddDialog(false);
-      loadQuestions();
-      setNewQuestionText("");
-      setNewMarks("");
-      setNewType("");
-      setNewDifficulty("");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleRemove = async (id: string) => {
     setLoading(true);
     console.log(id);
     try {
-      //   await removeQuestion(id, user?.sub!);
+      await deleteQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (q: Question) => {
-    setSelectedQuestion(q);
-    setOpenEditDialog(true);
   };
 
   const handleUpdateQuestion = async () => {
@@ -170,7 +155,7 @@ const FetchAllQuestions = () => {
     setLoading(true);
     console.log(id);
     try {
-      //   await activateQuestion(id, user?.sub!);
+      await activateQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
@@ -183,7 +168,7 @@ const FetchAllQuestions = () => {
     setLoading(true);
     console.log(id);
     try {
-      //   await deactivateQuestion(id, user?.sub!);
+      await deactivateQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
@@ -191,6 +176,14 @@ const FetchAllQuestions = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <Loader2 className="animate-spin w-6 h-6" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-y-6 w-full">
@@ -213,37 +206,10 @@ const FetchAllQuestions = () => {
         <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
             <Button className="rounded-none">
-              <Plus className="w-4 h-4 mr-2" /> Add Question
+              <Plus className="w-4 h-4 mr-2" />
+              <Link to="/admin/questions/add">Add Question</Link>
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Question</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-y-4">
-              <Label>Question Text</Label>
-              <Input
-                value={newQuestionText}
-                onChange={(e) => setNewQuestionText(e.target.value)}
-              />
-              <Label>Marks</Label>
-              <Input
-                value={newMarks}
-                onChange={(e) => setNewMarks(e.target.value)}
-              />
-              <Label>Type</Label>
-              <Input
-                value={newType}
-                onChange={(e) => setNewType(e.target.value)}
-              />
-              <Label>Difficulty</Label>
-              <Input
-                value={newDifficulty}
-                onChange={(e) => setNewDifficulty(e.target.value)}
-              />
-              <Button onClick={handleAddQuestion}>Submit</Button>
-            </div>
-          </DialogContent>
         </Dialog>
       </div>
 
@@ -256,9 +222,12 @@ const FetchAllQuestions = () => {
         <Table className="border border-blue-800/20">
           <TableHeader>
             <TableRow>
-              <TableHead>Question Paper</TableHead>
-              <TableHead>Marks</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Marks</TableHead>
+              <TableHead>Board</TableHead>
+              <TableHead>Standard</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Review</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -268,13 +237,12 @@ const FetchAllQuestions = () => {
             {questions.length > 0 ? (
               paginatedQuestions.map((q) => (
                 <TableRow key={q.id}>
-                  <TableCell>
-                    {q.questionPaper.attributes.displayName}
-                  </TableCell>
+                  <TableCell>{q.questionType}</TableCell>
                   <TableCell>{q.marks}</TableCell>
-                  <TableCell>
-                    {q.questionType} - {q.attributes.heading}
-                  </TableCell>
+                  <TableCell>{q.questionPaper.board.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.standard.sortKey}</TableCell>
+                  <TableCell>{q.questionPaper.subject.sortKey}</TableCell>
+                  <TableCell className="font-semibold">{q.review}</TableCell>
                   <TableCell>
                     {q.isActive ? (
                       <p className="text-green-200 bg-green-700 px-3 py-1 w-min rounded-sm">
@@ -295,9 +263,6 @@ const FetchAllQuestions = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(q)}>
-                          Edit
-                        </DropdownMenuItem>
                         <DropdownMenuItem>Review</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleActivate(q.id)}>
                           Activate
@@ -331,7 +296,7 @@ const FetchAllQuestions = () => {
       )}
 
       {/* Pagination */}
-      {!loading && (
+      {paginatedQuestions.length !== 0 && (
         <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>

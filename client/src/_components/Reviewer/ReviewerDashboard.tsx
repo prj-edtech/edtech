@@ -1,8 +1,7 @@
 import { createUser } from "@/api/user";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { UserChart } from "../Admin/Charts/UsersChart";
-import { BoardsChart } from "../Admin/Charts/BoardsChart";
+import UsersChart from "../Admin/Charts/UsersChart";
 import { AllChart } from "../Admin/Charts/AllChart";
 
 const ReviewerDashboard = () => {
@@ -44,10 +43,7 @@ const ReviewerDashboard = () => {
   return (
     <div className="flex justify-center items-center w-full flex-col lg:gap-y-10">
       <div className="flex justify-start items-center w-full lg:gap-x-20">
-        <UserChart />
-        <BoardsChart />
-        <UserChart />
-        <UserChart />
+        <UsersChart />
       </div>
       <div className="w-full">
         <AllChart />

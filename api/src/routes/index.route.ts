@@ -10,6 +10,7 @@ import subtopicRouter from "./subtopics.route";
 import questionPaperRouter from "./questionPaper.route";
 import changeLogRouter from "./changeLog.route";
 import questionRouter from "./questions.route";
+import notificationRouter from "./notifications.route";
 
 const mainRouter = Router();
 
@@ -24,5 +25,6 @@ mainRouter.use("/subtopics", subtopicRouter);
 mainRouter.use("/question-papers", questionPaperRouter);
 mainRouter.use("/questions", questionRouter);
 mainRouter.use("/change-logs", changeLogRouter);
+mainRouter.use("/notifications", notificationRouter);
 
 export default mainRouter;

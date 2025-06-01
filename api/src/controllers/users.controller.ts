@@ -25,6 +25,39 @@ export const getUserByIdController = async (req: Request, res: Response) => {
   }
 };
 
+// Get all admins
+export const getAllAdminsController = async (_req: Request, res: Response) => {
+  try {
+    const users = await userServices.getAllAdmins();
+    res.status(200).json({ success: true, total: users.length, data: users });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Get all editors
+export const getAllEditorsController = async (_req: Request, res: Response) => {
+  try {
+    const users = await userServices.getAllEditor();
+    res.status(200).json({ success: true, total: users.length, data: users });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// Get all reviewer
+export const getAllReviewersController = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const users = await userServices.getAllReviewer();
+    res.status(200).json({ success: true, total: users.length, data: users });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 // Create new user (from Auth0 webhook)
 export const createUserController = async (req: Request, res: Response) => {
   try {

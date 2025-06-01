@@ -20,7 +20,7 @@ const changeLog_service_1 = require("./changeLog.service");
  * Create a new Question
  */
 const createQuestion = (data, performedBy) => __awaiter(void 0, void 0, void 0, function* () {
-    const { partitionKey, sortKey, year, month, questionId, questionPaperId, sectionId, topicId, subTopicId, marks, priority, questionType, questionContentPath, questionAnswerPath, attributes, } = data;
+    const { partitionKey, sortKey, year, month, questionId, questionPaperId, sectionId, topicId, subTopicId, marks, priority, questionType, questionContentPath, questionAnswerPath, attributes, boardCode, standardCode, subject, } = data;
     const jsonData = {
         partitionKey,
         sortKey,
@@ -38,10 +38,12 @@ const createQuestion = (data, performedBy) => __awaiter(void 0, void 0, void 0, 
         questionAnswerPath,
         attributes,
     };
+    const newPartitionKey = `Question#${boardCode}#${standardCode}`;
+    const newSortKey = `${subject}#${year}#${month}#${questionId}`;
     const question = yield db_1.default.question.create({
         data: {
-            partitionKey,
-            sortKey,
+            partitionKey: newPartitionKey,
+            sortKey: newSortKey,
             year,
             month,
             questionId,
@@ -231,7 +233,13 @@ const getAllQuestions = (isActive) => __awaiter(void 0, void 0, void 0, function
         where: isActive !== undefined ? { isActive } : {},
         orderBy: { createdAt: "desc" },
         include: {
-            questionPaper: true,
+            questionPaper: {
+                include: {
+                    board: true,
+                    standard: true,
+                    subject: true,
+                },
+            },
         },
     });
     return questions;

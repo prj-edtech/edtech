@@ -17,6 +17,7 @@ const db_1 = __importDefault(require("../config/db"));
 const base62_1 = require("../utils/base62");
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 const createTopic = (data) => __awaiter(void 0, void 0, void 0, function* () {
     // Validate section existence and isActive status
     const section = yield db_1.default.section.findUnique({
@@ -71,6 +72,14 @@ const createTopic = (data) => __awaiter(void 0, void 0, void 0, function* () {
         createdBy: data.createdBy,
         notes: "Topic created by user",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.createdBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: topic.topicId,
+        title: "Topic Created",
+        message: `New topic created`,
+    });
     return topic;
 });
 exports.createTopic = createTopic;
@@ -105,6 +114,14 @@ const updateTopic = (topicId, data) => __awaiter(void 0, void 0, void 0, functio
         submittedBy: data.updatedBy,
         createdBy: data.updatedBy,
         notes: "Topic updated by user",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.updatedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: topic.topicId,
+        title: "Topic Updated",
+        message: `New topic updated`,
     });
     return updatedTopic;
 });
@@ -145,6 +162,14 @@ const softDeleteTopic = (topicId, deletedBy) => __awaiter(void 0, void 0, void 0
         submittedBy: deletedBy,
         createdBy: deletedBy,
         notes: "Topic soft deleted by user",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: deletedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: topic.topicId,
+        title: "Topic Deactivated",
+        message: `New topic deactivated`,
     });
     return deletedTopic;
 });
@@ -189,6 +214,14 @@ const removeTopic = (id, performedBy) => __awaiter(void 0, void 0, void 0, funct
         submittedBy: performedBy,
         createdBy: performedBy,
         notes: "Topic soft deleted by user",
+    });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "TOPIC",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Topic Deleted",
+        message: `New topic deleted`,
     });
     return topic;
 });

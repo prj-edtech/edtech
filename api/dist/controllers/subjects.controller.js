@@ -43,7 +43,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchAllActiveSubjects = exports.fetchAllSubjects = exports.removeSubject = exports.softDeleteSubject = exports.updateSubject = exports.getSubjectsByBoardStandard = exports.createSubject = void 0;
+exports.fetchSubjectsByStandard = exports.fetchAllActiveSubjects = exports.fetchAllSubjects = exports.removeSubject = exports.softDeleteSubject = exports.updateSubject = exports.getSubjectsByBoardStandard = exports.createSubject = void 0;
 const subjectService = __importStar(require("../services/subjects.service"));
 // Create Subject Controller
 const createSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -135,7 +135,7 @@ exports.removeSubject = removeSubject;
 const fetchAllSubjects = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subjects = yield subjectService.getAllSubjects();
-        res.status(200).json({ data: subjects });
+        res.status(200).json({ data: subjects, total: subjects.length });
     }
     catch (error) {
         res.status(400).json({ message: error.message });
@@ -152,3 +152,14 @@ const fetchAllActiveSubjects = (_req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.fetchAllActiveSubjects = fetchAllActiveSubjects;
+const fetchSubjectsByStandard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { standardId } = req.params;
+        const subjects = yield subjectService.getSubjectsByStandard(standardId);
+        res.status(200).json({ data: subjects });
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+exports.fetchSubjectsByStandard = fetchSubjectsByStandard;

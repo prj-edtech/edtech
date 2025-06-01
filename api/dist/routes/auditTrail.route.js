@@ -39,4 +39,5 @@ const auditControllers = __importStar(require("../controllers/auditTrail.control
 const auditRouter = (0, express_1.Router)();
 auditRouter.get("/", auditControllers.getAllAuditLogsController);
 auditRouter.get("/:id", auditControllers.getAuditLogByIdController);
+auditRouter.delete("/", auditControllers.deleteAllAuditLogs);
 exports.default = auditRouter;

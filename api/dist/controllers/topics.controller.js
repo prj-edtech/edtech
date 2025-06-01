@@ -94,7 +94,7 @@ exports.handleSoftDeleteTopic = handleSoftDeleteTopic;
 const fetchAllTopics = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const topics = yield (0, topics_service_1.getAllTopics)();
-        res.status(200).json({ data: topics });
+        res.status(200).json({ data: topics, total: topics.length });
     }
     catch (error) {
         res.status(500).json({ message: error.message });

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAuditLogById = exports.getAllAuditLogs = exports.createAuditLog = void 0;
+exports.deleteAllAuditLogs = exports.getAuditLogById = exports.getAllAuditLogs = exports.createAuditLog = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const base62_1 = require("../utils/base62"); // we'll make this utility
 // Create an Audit Log entry
@@ -48,3 +48,8 @@ const getAuditLogById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getAuditLogById = getAuditLogById;
+// Get all Audit Logs
+const deleteAllAuditLogs = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.auditLog.deleteMany();
+});
+exports.deleteAllAuditLogs = deleteAllAuditLogs;

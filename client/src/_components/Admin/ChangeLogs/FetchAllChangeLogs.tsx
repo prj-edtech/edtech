@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllChangeLogs } from "@/api/changeLogs";
+import { deleteAllChangeLogs, getAllChangeLogs } from "@/api/changeLogs";
 import {
   useReactTable,
   getCoreRowModel,
@@ -37,20 +37,32 @@ const FetchAllChangeLogs = () => {
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  useEffect(() => {
-    const fetchChangeLogs = async () => {
-      try {
-        const response = await getAllChangeLogs();
-        setChangeLogs(response.data.data);
-      } catch (error) {
-        console.error("Error fetching change logs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchChangeLogs = async () => {
+    try {
+      const response = await getAllChangeLogs();
+      setChangeLogs(response.data.data);
+    } catch (error) {
+      console.error("Error fetching change logs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchChangeLogs();
   }, []);
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteAllChangeLogs();
+      fetchChangeLogs();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns: ColumnDef<ChangeLog>[] = [
     {
@@ -127,16 +139,22 @@ const FetchAllChangeLogs = () => {
           />
         </div> */}
 
-        <div className="flex justify-between items-center lg:w-[200px] border lg:mb-10">
-          <input
-            placeholder="Search change logs..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
-          />
+        <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center lg:w-[200px] border lg:mb-10">
+            <input
+              placeholder="Search change logs..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            />
 
-          <Button className="rounded-none" size="sm">
-            Search
+            <Button className="rounded-none" size="sm">
+              Search
+            </Button>
+          </div>
+
+          <Button onClick={handleDelete} className="rounded-none">
+            Delete All
           </Button>
         </div>
 

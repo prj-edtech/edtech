@@ -1,7 +1,9 @@
+import { ReviewStatus } from "@prisma/client";
 import prisma from "../config/db";
 import { base62Encode } from "../utils/base62";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
+import { createNotification } from "./notifications.service";
 
 export const createSubTopic = async ({
   boardCode,
@@ -84,6 +86,15 @@ export const createSubTopic = async ({
     notes: "Subtopic created and waiting to be reviewed",
   });
 
+  await createNotification({
+    userId: createdBy,
+    eventType: "TOPIC",
+    entityType: "SUBMISSION_FOR_REVIEW ",
+    entityId: subTopic.id,
+    title: "Subtopic Created",
+    message: `New subtopic created`,
+  });
+
   return subTopic;
 };
 
@@ -142,6 +153,7 @@ export const updateSubTopic = async ({
       priority,
       updatedBy,
       subTopicJson: updatedJson,
+      review: ReviewStatus.PENDING,
     },
   });
 
@@ -166,6 +178,15 @@ export const updateSubTopic = async ({
     notes: "Subtopic updated",
   });
   console.log("[Service] Change log created");
+
+  await createNotification({
+    userId: updatedBy,
+    eventType: "TOPIC",
+    entityType: "SUBMISSION_FOR_REVIEW ",
+    entityId: existing.id,
+    title: "Review updated subtopic",
+    message: `New subtopic updated`,
+  });
 
   return updatedSubTopic;
 };
@@ -214,6 +235,15 @@ export const softDeleteSubTopic = async (
     createdBy: performedBy,
     notes: "Subtopic deactivated",
   });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: existing.id,
+    title: "Subtopic Deactivated",
+    message: `New subtopic deactivated`,
+  });
 };
 
 export const getAllSubtopics = async () => {
@@ -221,6 +251,30 @@ export const getAllSubtopics = async () => {
     include: {
       topic: true,
       section: true,
+    },
+  });
+};
+
+export const getAllApprovedSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.APPROVED,
+    },
+  });
+};
+
+export const getAllRejectedSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.REJECTED,
+    },
+  });
+};
+
+export const getAllPendingSubtopics = async () => {
+  return await prisma.subTopic.findMany({
+    where: {
+      review: ReviewStatus.PENDING,
     },
   });
 };
@@ -248,6 +302,15 @@ export const removeSubtopic = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Subtopic hard deleted by admin",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subtopic Deleted",
+    message: `New subtopic deleted`,
   });
 
   return deletedSubtopic;
@@ -281,6 +344,15 @@ export const activeSubtopic = async (id: string, performedBy: string) => {
     notes: "Subtopic hard deleted by admin",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subtopic activated",
+    message: `New subtopic Activated`,
+  });
+
   return subtopic;
 };
 
@@ -310,6 +382,15 @@ export const deactiveSubtopic = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Subtopic hard deleted by admin",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "SYSTEM_ANNOUNCEMENT",
+    entityId: id,
+    title: "Subtopic deactivated",
+    message: `New subtopic Deactivated`,
   });
 
   return subtopic;
@@ -352,6 +433,15 @@ export const approveSubtopic = async (id: string, performedBy: string) => {
     notes: "Request was approved",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "REVIEW_FEEDBACK",
+    entityId: id,
+    title: "Subtopic Approved",
+    message: `New subtopic approved`,
+  });
+
   return subtopic;
 };
 
@@ -384,6 +474,15 @@ export const rejectSubtopic = async (id: string, performedBy: string) => {
     notes: "Request was disapproved",
   });
 
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "REVIEW_FEEDBACK",
+    entityId: id,
+    title: "Subtopic Rejected",
+    message: `New subtopic rejected`,
+  });
+
   return subtopic;
 };
 
@@ -414,6 +513,15 @@ export const resetSubtopic = async (id: string, performedBy: string) => {
     submittedBy: performedBy,
     createdBy: performedBy,
     notes: "Waiting for Approval",
+  });
+
+  await createNotification({
+    userId: performedBy,
+    eventType: "TOPIC",
+    entityType: "REVIEW_FEEDBACK",
+    entityId: id,
+    title: "Subtopic Pending to review",
+    message: `New subtopic pending to review`,
   });
 
   return subtopic;

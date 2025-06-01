@@ -52,9 +52,7 @@ const createQuestionController = (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const { performedBy } = req.body;
         const question = yield questionServices.createQuestion(req.body, performedBy);
-        res
-            .status(200)
-            .json({ success: true, message: "Question created", data: question });
+        res.status(200).json({ success: true, data: question });
     }
     catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -146,7 +144,7 @@ const getAllQuestionsController = (req, res) => __awaiter(void 0, void 0, void 0
         const questions = yield questionServices.getAllQuestions(isActive);
         res
             .status(200)
-            .json({ success: true, message: "Questions fetched", data: questions });
+            .json({ success: true, total: questions.length, data: questions });
     }
     catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -180,7 +178,7 @@ const getQuestionsByPaperController = (req, res) => __awaiter(void 0, void 0, vo
         const questions = yield questionServices.getQuestionsByQuestionPaperId(questionPaperId);
         res
             .status(200)
-            .json({ success: true, message: "Questions fetched", data: questions });
+            .json({ success: true, total: questions.length, data: questions });
     }
     catch (error) {
         res.status(400).json({ success: false, message: error.message });

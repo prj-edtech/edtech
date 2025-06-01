@@ -22,6 +22,9 @@ export const createQuestion = async (data: any, performedBy: string) => {
     questionContentPath,
     questionAnswerPath,
     attributes,
+    boardCode,
+    standardCode,
+    subject,
   } = data;
 
   const jsonData = {
@@ -42,10 +45,13 @@ export const createQuestion = async (data: any, performedBy: string) => {
     attributes,
   };
 
+  const newPartitionKey = `Question#${boardCode}#${standardCode}`;
+  const newSortKey = `${subject}#${year}#${month}#${questionId}`;
+
   const question = await prisma.question.create({
     data: {
-      partitionKey,
-      sortKey,
+      partitionKey: newPartitionKey,
+      sortKey: newSortKey,
       year,
       month,
       questionId,
@@ -262,7 +268,13 @@ export const getAllQuestions = async (isActive?: boolean) => {
     where: isActive !== undefined ? { isActive } : {},
     orderBy: { createdAt: "desc" },
     include: {
-      questionPaper: true,
+      questionPaper: {
+        include: {
+          board: true,
+          standard: true,
+          subject: true,
+        },
+      },
     },
   });
   return questions;

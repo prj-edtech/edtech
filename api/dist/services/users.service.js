@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserById = exports.createUser = exports.getUserById = exports.getAllUsers = void 0;
+exports.deleteUserById = exports.createUser = exports.getAllReviewer = exports.getAllEditor = exports.getAllAdmins = exports.getUserById = exports.getAllUsers = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
@@ -28,6 +28,33 @@ const getUserById = (auth0Id) => __awaiter(void 0, void 0, void 0, function* () 
     });
 });
 exports.getUserById = getUserById;
+// Get admin
+const getAllAdmins = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.user.findMany({
+        where: {
+            role: "admin",
+        },
+    });
+});
+exports.getAllAdmins = getAllAdmins;
+// Get editor
+const getAllEditor = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.user.findMany({
+        where: {
+            role: "editor",
+        },
+    });
+});
+exports.getAllEditor = getAllEditor;
+// Get reviewer
+const getAllReviewer = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.user.findMany({
+        where: {
+            role: "reviewer",
+        },
+    });
+});
+exports.getAllReviewer = getAllReviewer;
 // Create a new user (from Auth0 webhook)
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const existingUser = yield db_1.default.user.findUnique({

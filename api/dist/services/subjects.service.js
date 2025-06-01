@@ -13,11 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllActiveSubjects = exports.getAllSubjects = exports.removeSubject = exports.softDeleteSubject = exports.updateSubject = exports.getSubjectsByBoardStandard = exports.createSubject = void 0;
+exports.getSubjectsByStandard = exports.getAllActiveSubjects = exports.getAllSubjects = exports.removeSubject = exports.softDeleteSubject = exports.updateSubject = exports.getSubjectsByBoardStandard = exports.createSubject = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const jsonBuilder_1 = require("../utils/jsonBuilder");
 const auditTrail_service_1 = require("./auditTrail.service");
 const changeLog_service_1 = require("./changeLog.service");
+const notifications_service_1 = require("./notifications.service");
 // Create Subject
 const createSubject = (data) => __awaiter(void 0, void 0, void 0, function* () {
     // Fetch board and standard details
@@ -73,6 +74,14 @@ const createSubject = (data) => __awaiter(void 0, void 0, void 0, function* () {
         createdBy: data.createdBy,
         notes: "Subject created without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.createdBy,
+        eventType: "SUBJECT",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: subject.id,
+        title: "Subject Created",
+        message: `New subject created`,
+    });
     return subject;
 });
 exports.createSubject = createSubject;
@@ -121,6 +130,14 @@ const updateSubject = (id, data) => __awaiter(void 0, void 0, void 0, function* 
         createdBy: data.updatedBy,
         notes: "Subject updated without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: data.updatedBy,
+        eventType: "SUBJECT",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subject Updated",
+        message: `New subject updated`,
+    });
     return updatedSubject;
 });
 exports.updateSubject = updateSubject;
@@ -159,6 +176,14 @@ const softDeleteSubject = (id, performedBy) => __awaiter(void 0, void 0, void 0,
         createdBy: performedBy,
         notes: "Subject soft deleted without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "SUBJECT",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subject Deactivated",
+        message: `New subject deactivated`,
+    });
     return updatedSubject;
 });
 exports.softDeleteSubject = softDeleteSubject;
@@ -186,6 +211,14 @@ const removeSubject = (id, performedBy) => __awaiter(void 0, void 0, void 0, fun
         createdBy: performedBy,
         notes: "Subject hard deleted without needing to be reviewed",
     });
+    yield (0, notifications_service_1.createNotification)({
+        userId: performedBy,
+        eventType: "SUBJECT",
+        entityType: "SYSTEM_ANNOUNCEMENT",
+        entityId: id,
+        title: "Subject Deleted",
+        message: `New subject deleted`,
+    });
     return deletedSubject;
 });
 exports.removeSubject = removeSubject;
@@ -206,3 +239,12 @@ const getAllActiveSubjects = () => __awaiter(void 0, void 0, void 0, function* (
     });
 });
 exports.getAllActiveSubjects = getAllActiveSubjects;
+const getSubjectsByStandard = (standardId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.default.subject.findMany({
+        where: {
+            standardId,
+            isActive: true,
+        },
+    });
+});
+exports.getSubjectsByStandard = getSubjectsByStandard;

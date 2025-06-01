@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rejectSubtopic = exports.resetSubtopic = exports.approveSubtopic = exports.getSingleSubtopic = exports.deactiveSubtopic = exports.activeSubtopic = exports.removeSubtopic = exports.fetchAllSubtopics = exports.softDeleteSubTopic = exports.updateSubTopic = exports.getSubTopicsByTopic = exports.createSubTopic = void 0;
+exports.rejectSubtopic = exports.resetSubtopic = exports.approveSubtopic = exports.getSingleSubtopic = exports.deactiveSubtopic = exports.activeSubtopic = exports.removeSubtopic = exports.fetchAllSubtopicsPending = exports.fetchAllSubtopicsRejected = exports.fetchAllSubtopicsApproved = exports.fetchAllSubtopics = exports.softDeleteSubTopic = exports.updateSubTopic = exports.getSubTopicsByTopic = exports.createSubTopic = void 0;
 const subTopicService = __importStar(require("../services/subtopics.service"));
 // Create SubTopic
 const createSubTopic = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -128,13 +128,46 @@ exports.softDeleteSubTopic = softDeleteSubTopic;
 const fetchAllSubtopics = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subtopics = yield subTopicService.getAllSubtopics();
-        res.status(200).json({ data: subtopics });
+        res.status(200).json({ data: subtopics, total: subtopics.length });
     }
     catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 exports.fetchAllSubtopics = fetchAllSubtopics;
+// Get all subtopics approved
+const fetchAllSubtopicsApproved = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subtopics = yield subTopicService.getAllApprovedSubtopics();
+        res.status(200).json({ data: subtopics, total: subtopics.length });
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+exports.fetchAllSubtopicsApproved = fetchAllSubtopicsApproved;
+// Get all subtopics rejected
+const fetchAllSubtopicsRejected = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subtopics = yield subTopicService.getAllRejectedSubtopics();
+        res.status(200).json({ data: subtopics, total: subtopics.length });
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+exports.fetchAllSubtopicsRejected = fetchAllSubtopicsRejected;
+// Get all subtopics pending
+const fetchAllSubtopicsPending = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subtopics = yield subTopicService.getAllPendingSubtopics();
+        res.status(200).json({ data: subtopics, total: subtopics.length });
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+exports.fetchAllSubtopicsPending = fetchAllSubtopicsPending;
 // Remove  a subtopic
 const removeSubtopic = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllChangeLogs = void 0;
+exports.deleteChangeLogs = exports.getAllChangeLogs = void 0;
 const changeLog_service_1 = require("../services/changeLog.service");
 const getAllChangeLogs = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -21,3 +21,15 @@ const getAllChangeLogs = (_req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getAllChangeLogs = getAllChangeLogs;
+const deleteChangeLogs = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const changeLogs = yield (0, changeLog_service_1.deleteAllChangeLog)();
+        res
+            .status(200)
+            .json({ data: changeLogs, message: "Delete all change-logs" });
+    }
+    catch (error) {
+        res.status(400).json({ message: error });
+    }
+});
+exports.deleteChangeLogs = deleteChangeLogs;

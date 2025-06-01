@@ -38,6 +38,12 @@ const userControllers = __importStar(require("../controllers/users.controller"))
 const userRouter = (0, express_1.Router)();
 // GET /api/users — get all users
 userRouter.get("/", userControllers.getAllUsersController);
+// GET /api/users/admin — get all admins
+userRouter.get("/admin", userControllers.getAllAdminsController);
+// GET /api/users/editor — get all editors
+userRouter.get("/editor", userControllers.getAllEditorsController);
+// GET /api/users/reviewer — get all reviewers
+userRouter.get("/reviewer", userControllers.getAllReviewersController);
 // GET /api/users/:id — get user by ID
 userRouter.get("/:id", userControllers.getUserByIdController);
 // POST /api/users — create a new user (likely via Auth0 webhook)

@@ -41,3 +41,8 @@ export const getAuditLogById = async (id: string) => {
     where: { id },
   });
 };
+
+// Get all Audit Logs
+export const deleteAllAuditLogs = async () => {
+  return await prisma.auditLog.deleteMany();
+};

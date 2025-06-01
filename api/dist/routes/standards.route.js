@@ -47,6 +47,8 @@ standardRouter.get("/", standardController.getAllStandards);
 standardRouter.get("/active", standardController.getAllActiveStandards);
 // Get a Standard by ID
 standardRouter.get("/:id", standardController.getStandardById);
+// Get all Standard by board
+standardRouter.get("/:boardId/board", standardController.getStandardByBoard);
 // Update a Standard
 standardRouter.put("/:id", standardController.updateStandard);
 // Deactivate a Standard

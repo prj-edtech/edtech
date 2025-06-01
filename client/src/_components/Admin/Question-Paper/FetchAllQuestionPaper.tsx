@@ -33,8 +33,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { fetchActiveBoards } from "@/api/boards";
-import { fetchActiveStandards } from "@/api/standards";
-import { getAllActiveSubjects } from "@/api/subjects";
+import { fetchStandardsByBoard } from "@/api/standards";
+import { getSubjectsByStandard } from "@/api/subjects";
 import {
   Select,
   SelectContent,
@@ -180,22 +180,31 @@ const FetchAllQuestionPaper = () => {
     setBoardData(response.data.data);
   };
 
-  const loadStandards = async () => {
-    const response = await fetchActiveStandards();
-    setStandardData(response.data);
+  const loadStandards = async (boardId: string) => {
+    const response = await fetchStandardsByBoard(boardId);
+    console.log(response.data);
+    setStandardData(response.data.data);
   };
 
-  const loadSubjects = async () => {
-    const response = await getAllActiveSubjects();
+  const loadSubjects = async (standardId: string) => {
+    const response = await getSubjectsByStandard(standardId);
     setSubjectData(response.data.data);
   };
 
   useEffect(() => {
     loadQuestionPapers();
     loadBoards();
-    loadStandards();
-    loadSubjects();
   }, []);
+
+  useEffect(() => {
+    if (board.id) {
+      loadStandards(board.id);
+    }
+
+    if (standard.id) {
+      loadSubjects(standard.id);
+    }
+  }, [standard.id, board.id]);
 
   const handleRemove = async (id: string) => {
     setLoading(true);
@@ -257,7 +266,7 @@ const FetchAllQuestionPaper = () => {
       createdBy: user?.sub!,
       updatedBy: user?.sub!,
     };
-
+    setLoading(true);
     try {
       await addQuestionPaper(payload);
       setOpenAddDialog(false);
@@ -273,6 +282,8 @@ const FetchAllQuestionPaper = () => {
       setTotalMarks("");
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -332,8 +343,8 @@ const FetchAllQuestionPaper = () => {
                 <DialogTitle>Add New Question Paper</DialogTitle>
               </DialogHeader>
 
-              <div className="flex flex-col gap-y-6">
-                <div>
+              <div className="flex flex-col gap-y-6 lg:mt-4">
+                <div className="flex flex-col gap-y-2">
                   <Label>Board</Label>
                   <Select
                     value={board.id}
@@ -361,7 +372,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Standard</Label>
                   <Select
                     value={standard.id}
@@ -389,7 +400,7 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Subject</Label>
                   <Select
                     value={subject.id}
@@ -414,35 +425,35 @@ const FetchAllQuestionPaper = () => {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Year</Label>
                   <Input
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Month</Label>
                   <Input
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Total Marks</Label>
                   <Input
                     value={totalMarks}
                     onChange={(e) => setTotalMarks(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Type</Label>
                   <Input
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="flex flex-col gap-y-2">
                   <Label>Difficulty</Label>
                   <Input
                     value={difficulty}
@@ -451,7 +462,11 @@ const FetchAllQuestionPaper = () => {
                 </div>
 
                 <Button onClick={handleAddQuestionPaper} className="mt-4">
-                  Submit
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
                 </Button>
               </div>
             </DialogContent>
@@ -548,7 +563,7 @@ const FetchAllQuestionPaper = () => {
                 <TableHead className="font-bold">Difficulty</TableHead>
                 <TableHead className="font-bold">Status</TableHead>
                 <TableHead className="font-bold">Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="font-bold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -621,7 +636,7 @@ const FetchAllQuestionPaper = () => {
             </TableBody>
           </Table>
         )}
-        {!loading && (
+        {paginatedData.length !== 0 && (
           <Pagination className="mt-6">
             <PaginationContent>
               <PaginationItem>
