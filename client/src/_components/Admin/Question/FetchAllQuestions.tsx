@@ -429,27 +429,28 @@ const FetchAllQuestions = () => {
           }
         }}
       >
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="font-redhat">
+          <DialogHeader className="mb-4">
             <DialogTitle>Review Question</DialogTitle>
           </DialogHeader>
           {selectedQuestion && (
             <div className="space-y-4">
               <div>
                 <Label>Content</Label>
-                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48">
+                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48 mt-2">
                   {JSON.stringify(questionContent, null, 2)}
                 </pre>
               </div>
               <div>
                 <Label>Answer</Label>
-                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48">
+                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48 mt-2">
                   {JSON.stringify(questionAnswer, null, 2)}
                 </pre>
               </div>
               <div>
                 <Label>Review Status</Label>
                 <Select
+                  value={reviewStatus}
                   onValueChange={async (value) => {
                     setReviewStatus(value as "approve" | "reject" | "reset");
 
@@ -468,10 +469,9 @@ const FetchAllQuestions = () => {
                     setOpenReviewDialog(false);
                     loadQuestions();
                   }}
-                  defaultValue={selectedQuestion.review.toLowerCase()}
                 >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Set review status" />
+                  <SelectTrigger className="w-[180px] mt-2 cursor-pointer">
+                    <SelectValue placeholder="Select review status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="approve">Approve</SelectItem>
