@@ -1,3 +1,4 @@
+import { ReviewStatus } from "@prisma/client";
 import prisma from "../config/db";
 import { createAuditLog } from "./auditTrail.service";
 import { createChangeLog } from "./changeLog.service";
@@ -300,4 +301,121 @@ export const getQuestionsByQuestionPaperId = async (
     orderBy: { priority: "asc" },
   });
   return questions;
+};
+
+/**
+ * Approve a Question
+ */
+export const approveQuestion = async (id: string, performedBy: string) => {
+  const previous = await prisma.question.findUnique({ where: { id } });
+  if (!previous) throw new Error("Question not found");
+
+  const question = await prisma.question.update({
+    where: { id },
+    data: {
+      review: ReviewStatus.APPROVED,
+      isActive: true,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    action: "APPROVED",
+    performedBy,
+    details: {
+      previousState: previous,
+      notes: "Approval change state performed",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    changeType: "APPROVED",
+    changeStatus: "REVIEW_FEEDBACK",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Approval change state performed",
+  });
+
+  return question;
+};
+
+/**
+ * Reject a Question
+ */
+export const rejectQuestion = async (id: string, performedBy: string) => {
+  const previous = await prisma.question.findUnique({ where: { id } });
+  if (!previous) throw new Error("Question not found");
+
+  const question = await prisma.question.update({
+    where: { id },
+    data: {
+      review: ReviewStatus.REJECTED,
+      isActive: false,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    action: "REJECTED",
+    performedBy,
+    details: {
+      previousState: previous,
+      notes: "Disapproval change state performed",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    changeType: "REJECTED",
+    changeStatus: "REVIEW_FEEDBACK",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Disapproval change state performed",
+  });
+
+  return question;
+};
+
+/**
+ * Reset a Question
+ */
+export const resetQuestion = async (id: string, performedBy: string) => {
+  const previous = await prisma.question.findUnique({ where: { id } });
+  if (!previous) throw new Error("Question not found");
+
+  const question = await prisma.question.update({
+    where: { id },
+    data: {
+      review: ReviewStatus.PENDING,
+      isActive: false,
+    },
+  });
+
+  await createAuditLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    action: "PENDING",
+    performedBy,
+    details: {
+      previousState: previous,
+      notes: "Reset change state performed",
+    },
+  });
+
+  await createChangeLog({
+    entityType: "QUESTION",
+    entityId: previous.questionId,
+    changeType: "PENDING",
+    changeStatus: "REVIEW_FEEDBACK",
+    submittedBy: performedBy,
+    createdBy: performedBy,
+    notes: "Reset change state performed",
+  });
+
+  return question;
 };
