@@ -39,4 +39,19 @@ questionRouter.get(
   questionControllers.getQuestionsByPaperController
 );
 
+// Approve Question
+questionRouter.patch(
+  "/approve/:id",
+  questionControllers.approveQuestionController
+);
+
+// Reject Question
+questionRouter.patch(
+  "/reject/:id",
+  questionControllers.rejectQuestionController
+);
+
+// Reset Question
+questionRouter.patch("/reset/:id", questionControllers.resetQuestionController);
+
 export default questionRouter;

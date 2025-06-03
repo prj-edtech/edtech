@@ -44,3 +44,15 @@ export const deleteQuestion = async (id: string, performedBy: string) => {
     data: { performedBy },
   });
 };
+
+export const approveQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/approve/${id}`, { performedBy });
+};
+
+export const rejectQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/reject/${id}`, { performedBy });
+};
+
+export const resetQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/reset/${id}`, { performedBy });
+};

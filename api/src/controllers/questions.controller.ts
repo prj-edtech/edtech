@@ -157,3 +157,61 @@ export const getQuestionsByPaperController = async (
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * Approve Question
+ * PATCH /api/questions/approve/:id
+ */
+export const approveQuestionController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+    const question = await questionServices.approveQuestion(id, performedBy);
+    res
+      .status(200)
+      .json({ success: true, message: "Question approved", data: question });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Reject Question
+ * PATCH /api/questions/reject/:id
+ */
+export const rejectQuestionController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+    const question = await questionServices.rejectQuestion(id, performedBy);
+    res
+      .status(200)
+      .json({ success: true, message: "Question disapproved", data: question });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Reset Question
+ * PATCH /api/questions/reset/:id
+ */
+export const resetQuestionController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { performedBy } = req.body;
+    const question = await questionServices.resetQuestion(id, performedBy);
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Question review pending",
+        data: question,
+      });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
