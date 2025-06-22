@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { redirect } from "react-router-dom";
 
 type AddQuestionsType = {
   performedBy: string;
@@ -298,6 +299,7 @@ const AddQuestions = () => {
       await addQuestions(payload);
       toast.success("Question added successfully!");
       // Optional: clear form
+      redirect("/admin/questions");
     } catch (error) {
       console.error(error);
       toast.error("Failed to add question");

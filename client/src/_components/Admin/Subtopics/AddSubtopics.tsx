@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { redirect } from "react-router-dom";
 
 interface Boards {
   id: string;
@@ -158,6 +159,8 @@ const AddSubtopics = () => {
           createdBy: user?.sub || "",
         });
       }
+
+      redirect("/admin/subtopics");
     } catch (err) {
       console.error("Error adding subtopic:", err);
     } finally {
