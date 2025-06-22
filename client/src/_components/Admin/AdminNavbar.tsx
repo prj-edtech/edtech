@@ -42,23 +42,14 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Essentials</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/boards"
-                  >
-                    Boards
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/boards">Boards</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/standards"
-                  >
-                    Standards
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/standards">Standards</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/subjects"
-                  >
-                    Subjects
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/subjects">Subjects</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -72,29 +63,17 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Content Management</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/sections"
-                  >
-                    Sections
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/sections">Sections</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/topics"
-                  >
-                    Topics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/topics">Topics</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/subtopics"
-                  >
-                    Subtopics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/subtopics">Subtopics</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/subtopics/add"
-                  >
-                    Add Subtopics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/subtopics/add">Add Subtopics</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -108,17 +87,11 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Exams Management</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/question-papers"
-                  >
-                    Question Paper
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/question-papers">Question Paper</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/questions"
-                  >
-                    Questions
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/questions">Questions</Link>
                   </NavigationMenuLink>
                   <NavigationMenuLink className="cursor-pointer">
                     <Link to="/admin/questions/add">Add Question</Link>
@@ -135,17 +108,11 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Logs</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/audit-logs"
-                  >
-                    Audit Logs
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/audit-logs">Audit Logs</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/admin/change-logs"
-                  >
-                    Change Logs
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/admin/change-logs">Change Logs</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>

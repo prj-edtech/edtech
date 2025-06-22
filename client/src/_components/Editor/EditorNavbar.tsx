@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Bell, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const EditorNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
@@ -37,29 +38,17 @@ const EditorNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Content Management</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/sections"
-                  >
-                    Sections
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/sections">Sections</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/topics"
-                  >
-                    Topics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/topics">Topics</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/subtopics"
-                  >
-                    Subtopics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/subtopics">Subtopics</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/subtopics/add"
-                  >
-                    Add Subtopics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/subtopics/add">Add Subtopics</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -73,17 +62,11 @@ const EditorNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Exams Management</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/question-paper"
-                  >
-                    Question Paper
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/question-paper">Question Paper</Link>
                   </NavigationMenuLink>
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/editor/questions"
-                  >
-                    Questions
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/editor/questions">Questions</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>

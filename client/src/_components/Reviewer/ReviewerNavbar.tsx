@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Bell, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ReviewerNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const { user, logout } = useAuth0();
@@ -37,11 +38,8 @@ const ReviewerNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Content Review</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/reviewer/subtopics"
-                  >
-                    Subtopics
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/reviewer/subtopics">Subtopics</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -55,11 +53,8 @@ const ReviewerNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                   <li className="cursor-pointer">Exams Review</li>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
-                  <NavigationMenuLink
-                    className="cursor-pointer"
-                    href="/reviewer/questions"
-                  >
-                    Questions
+                  <NavigationMenuLink className="cursor-pointer">
+                    <Link to="/reviewer/questions">Questions</Link>
                   </NavigationMenuLink>
                 </NavigationMenuContent>
               </NavigationMenuItem>
