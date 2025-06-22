@@ -427,17 +427,60 @@ const FetchAllQuestionPaper = () => {
 
                 <div className="flex flex-col gap-y-2">
                   <Label>Year</Label>
-                  <Input
+                  {/* <Input
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                  />
+                  /> */}
+                  <Select value={year} onValueChange={setYear}>
+                    <SelectTrigger className="lg:w-full cursor-pointer">
+                      <SelectValue placeholder="Select year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {["2025", "2026", "2027", "2028", "2029", "2030"].map(
+                          (y) => (
+                            <SelectItem key={y} value={y}>
+                              {y}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Month</Label>
-                  <Input
+                  {/* <Input
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                  />
+                  /> */}
+                  <Select value={month} onValueChange={setMonth}>
+                    <SelectTrigger className="lg:w-full cursor-pointer">
+                      <SelectValue placeholder="Select month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {[
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ].map((m) => (
+                          <SelectItem key={m} value={m}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Total Marks</Label>
