@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import {
   activateQuestion,
+  approveQuestion,
   deactivateQuestion,
   deleteQuestion,
   getAllQuestions,
+  rejectQuestion,
+  resetQuestion,
 } from "@/api/questions";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +43,13 @@ import {
 } from "@/components/ui/pagination";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Question {
   id: string;
@@ -50,6 +60,8 @@ interface Question {
   isActive: boolean;
   createdAt: string;
   review: string;
+  questionContentPath: string;
+  questionAnswerPath: string;
   attributes: {
     notes: string;
     heading: string;
@@ -80,6 +92,15 @@ const FetchAllQuestions = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
   const { user } = useAuth0();
+
+  const [reviewStatus, setReviewStatus] = useState<
+    "approve" | "reject" | "reset" | ""
+  >("");
+
+  const [questionContent, setQuestionContent] = useState<any>(null);
+  const [questionAnswer, setQuestionAnswer] = useState<any>(null);
+
+  const [openReviewDialog, setOpenReviewDialog] = useState(false);
 
   const filteredQuestions = questions.filter(
     (q) =>
@@ -118,6 +139,29 @@ const FetchAllQuestions = () => {
   useEffect(() => {
     loadQuestions();
   }, []);
+
+  useEffect(() => {
+    const fetchJson = async () => {
+      if (!selectedQuestion) return;
+
+      try {
+        const [contentRes, answerRes] = await Promise.all([
+          fetch(selectedQuestion.questionContentPath),
+          fetch(selectedQuestion.questionAnswerPath),
+        ]);
+
+        const contentJson = await contentRes.json();
+        const answerJson = await answerRes.json();
+
+        setQuestionContent(contentJson);
+        setQuestionAnswer(answerJson);
+      } catch (err) {
+        console.error("Failed to fetch question files:", err);
+      }
+    };
+
+    fetchJson();
+  }, [selectedQuestion]);
 
   const handleRemove = async (id: string) => {
     setLoading(true);
@@ -169,6 +213,45 @@ const FetchAllQuestions = () => {
     console.log(id);
     try {
       await deactivateQuestion(id, user?.sub!);
+      loadQuestions();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    setLoading(true);
+    console.log(id);
+    try {
+      await approveQuestion(id, user?.sub!);
+      loadQuestions();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    setLoading(true);
+    console.log(id);
+    try {
+      await rejectQuestion(id, user?.sub!);
+      loadQuestions();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = async (id: string) => {
+    setLoading(true);
+    console.log(id);
+    try {
+      await resetQuestion(id, user?.sub!);
       loadQuestions();
     } catch (err) {
       console.error(err);
@@ -263,7 +346,15 @@ const FetchAllQuestions = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Review</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedQuestion(q);
+                            setOpenReviewDialog(true);
+                          }}
+                        >
+                          Review
+                        </DropdownMenuItem>
+
                         <DropdownMenuItem onClick={() => handleActivate(q.id)}>
                           Activate
                         </DropdownMenuItem>
@@ -324,6 +415,75 @@ const FetchAllQuestions = () => {
           </PaginationContent>
         </Pagination>
       )}
+
+      {/* Review Dialog */}
+      <Dialog
+        open={openReviewDialog}
+        onOpenChange={(open) => {
+          setOpenReviewDialog(open);
+          if (!open) {
+            setSelectedQuestion(null);
+            setQuestionContent(null);
+            setQuestionAnswer(null);
+            setReviewStatus("");
+          }
+        }}
+      >
+        <DialogContent className="font-redhat">
+          <DialogHeader className="mb-4">
+            <DialogTitle>Review Question</DialogTitle>
+          </DialogHeader>
+          {selectedQuestion && (
+            <div className="space-y-4">
+              <div>
+                <Label>Content</Label>
+                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48 mt-2">
+                  {JSON.stringify(questionContent, null, 2)}
+                </pre>
+              </div>
+              <div>
+                <Label>Answer</Label>
+                <pre className="bg-muted p-2 rounded-md text-sm overflow-x-auto max-h-48 mt-2">
+                  {JSON.stringify(questionAnswer, null, 2)}
+                </pre>
+              </div>
+              <div>
+                <Label>Review Status</Label>
+                <Select
+                  value={reviewStatus}
+                  onValueChange={async (value) => {
+                    setReviewStatus(value as "approve" | "reject" | "reset");
+
+                    switch (value) {
+                      case "approve":
+                        await approveQuestion(selectedQuestion.id, user?.sub!);
+                        break;
+                      case "reject":
+                        await rejectQuestion(selectedQuestion.id, user?.sub!);
+                        break;
+                      case "reset":
+                        await resetQuestion(selectedQuestion.id, user?.sub!);
+                        break;
+                    }
+
+                    setOpenReviewDialog(false);
+                    loadQuestions();
+                  }}
+                >
+                  <SelectTrigger className="w-[180px] mt-2 cursor-pointer">
+                    <SelectValue placeholder="Select review status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="approve">Approve</SelectItem>
+                    <SelectItem value="reject">Reject</SelectItem>
+                    <SelectItem value="reset">Reset</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>

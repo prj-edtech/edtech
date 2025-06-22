@@ -35,6 +35,18 @@ export const activateQuestion = async (id: string, performedBy: string) => {
   return axios.patch(`${apiURL}/questions/activate/${id}`, { performedBy });
 };
 
+export const approveQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/approve/${id}`, { performedBy });
+};
+
+export const resetQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/reset/${id}`, { performedBy });
+};
+
+export const rejectQuestion = async (id: string, performedBy: string) => {
+  return axios.patch(`${apiURL}/questions/reject/${id}`, { performedBy });
+};
+
 export const deactivateQuestion = async (id: string, performedBy: string) => {
   return axios.patch(`${apiURL}/questions/deactivate/${id}`, { performedBy });
 };
