@@ -105,7 +105,7 @@ const FetchSections = () => {
   const [boardId, setBoardId] = useState("");
   const [standardId, setStandardId] = useState("");
   const [subjectId, setSubjectId] = useState("");
-  const [priority, setPriority] = useState<number>(0);
+  const [priority, setPriority] = useState<number>(1);
   const [displayName, setDisplayName] = useState("");
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
