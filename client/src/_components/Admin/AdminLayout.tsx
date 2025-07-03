@@ -6,11 +6,11 @@ import AdminSidebar from "./AdminSidebar";
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col lg:min-h-screen">
       <AdminNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className="flex flex-1">
         <AdminSidebar isOpen={isSidebarOpen} />
-        <main className="flex-1 p-6 overflow-y-auto ml-64">
+        <main className="flex-1 lg:p-6 overflow-y-auto lg:ml-64">
           <Outlet />
         </main>
       </div>

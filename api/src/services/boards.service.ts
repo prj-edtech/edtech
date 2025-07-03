@@ -67,7 +67,7 @@ export const createBoard = async (data: {
 // Get All Boards
 export const getAllBoards = async () => {
   return await prisma.board.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 };
 
