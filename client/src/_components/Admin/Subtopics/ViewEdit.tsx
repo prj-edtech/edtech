@@ -138,7 +138,7 @@ const SubtopicViewer = () => {
 
   return (
     <div className="p-6 font-redhat w-full">
-      <div className="flex justify-between items-center w-full lg:mb-4">
+      <div className="flex lg:justify-between justify-start lg:items-center items-start flex-col lg:flex-row gap-y-4 w-full lg:mb-4">
         <Select
           onValueChange={(value) => {
             if (value === "Approve") handleApprove(subtopic.id);
@@ -146,7 +146,7 @@ const SubtopicViewer = () => {
             if (value === "Reset") handleReset(subtopic.id);
           }}
         >
-          <SelectTrigger className="lg:w-[300px] cursor-pointer">
+          <SelectTrigger className="lg:w-[300px] w-full cursor-pointer">
             <SelectValue placeholder="Review this subtopic" />
           </SelectTrigger>
           <SelectContent>
@@ -158,10 +158,10 @@ const SubtopicViewer = () => {
           </SelectContent>
         </Select>
 
-        <div className="flex justify-start items-start flex-col font-redhat">
-          <div className="flex justify-center items-center lg:gap-x-2">
+        <div className="flex justify-start items-start flex-col font-redhat lg:mb-0 mb-6">
+          <div className="flex justify-center items-center gap-x-2">
             <h1 className="font-semibold lg:text-lg">Review Status:</h1>
-            <h3 className="lg:text-xs lg:px-3 lg:py-1 bg-black rounded shadow">
+            <h3 className="text-xs px-3 py-1 bg-black rounded shadow">
               {subtopic.review === "PENDING" && (
                 <span className="text-stone-200">Pending</span>
               )}

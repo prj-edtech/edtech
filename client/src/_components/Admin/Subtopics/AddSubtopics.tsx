@@ -169,9 +169,9 @@ const AddSubtopics = () => {
   };
 
   return (
-    <div className="flex justify-start items-start flex-col font-redhat">
-      <div className="flex justify-start items-start w-full flex-col lg:gap-y-6">
-        <div className="flex justify-start items-start w-full lg:gap-x-6">
+    <div className="flex justify-start items-start flex-col font-redhat lg:p-0 p-4 lg:mt-0 mt-4">
+      <div className="flex justify-start items-start w-full flex-col gap-y-6">
+        <div className="flex justify-start items-start lg:flex-row flex-col gap-y-4 w-full lg:gap-x-6">
           <Select
             value={form.boardCode}
             onValueChange={(value) => handleFieldChange("boardCode", value)}
@@ -227,7 +227,7 @@ const AddSubtopics = () => {
           </Select>
         </div>
 
-        <div className="flex justify-start items-start w-full lg:gap-x-6">
+        <div className="flex justify-start items-start lg:flex-row flex-col gap-y-4 w-full lg:gap-x-6">
           <Select
             value={form.sectionId}
             onValueChange={(value) => handleFieldChange("sectionId", value)}
@@ -270,11 +270,11 @@ const AddSubtopics = () => {
             value={form.displayName}
             onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
             placeholder="Display Name"
-            className="border p-2 w-full"
+            className="border p-2 w-full lg:text-base text-sm"
           />
         </div>
 
-        <div className="flex justify-start items-start w-full lg:gap-x-6">
+        <div className="flex justify-start items-start lg:flex-row flex-col gap-y-4 w-full lg:gap-x-6">
           <Input
             type="number"
             name="priority"
@@ -283,7 +283,7 @@ const AddSubtopics = () => {
               handleFieldChange(e.target.name, Number(e.target.value))
             }
             placeholder="Priority"
-            className="border p-2 lg:w-[520px]"
+            className="border p-2 lg:w-[520px] lg:text-base text-sm"
           />
 
           <div className="flex items-center gap-2 mt-2">
