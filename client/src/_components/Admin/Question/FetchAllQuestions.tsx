@@ -221,44 +221,44 @@ const FetchAllQuestions = () => {
     }
   };
 
-  const handleApprove = async (id: string) => {
-    setLoading(true);
-    console.log(id);
-    try {
-      await approveQuestion(id, user?.sub!);
-      loadQuestions();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleApprove = async (id: string) => {
+  //   setLoading(true);
+  //   console.log(id);
+  //   try {
+  //     await approveQuestion(id, user?.sub!);
+  //     loadQuestions();
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleReject = async (id: string) => {
-    setLoading(true);
-    console.log(id);
-    try {
-      await rejectQuestion(id, user?.sub!);
-      loadQuestions();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleReject = async (id: string) => {
+  //   setLoading(true);
+  //   console.log(id);
+  //   try {
+  //     await rejectQuestion(id, user?.sub!);
+  //     loadQuestions();
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleReset = async (id: string) => {
-    setLoading(true);
-    console.log(id);
-    try {
-      await resetQuestion(id, user?.sub!);
-      loadQuestions();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleReset = async (id: string) => {
+  //   setLoading(true);
+  //   console.log(id);
+  //   try {
+  //     await resetQuestion(id, user?.sub!);
+  //     loadQuestions();
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   if (loading) {
     return (
