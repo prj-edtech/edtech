@@ -139,7 +139,7 @@ const FetchAllLogs = () => {
               placeholder="Search audit logs..."
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+              className="lg:placeholder:text-sm placeholder:text-sm pl-2 focus:outline-none focus:ring-0"
             />
 
             <Button className="rounded-none" size="sm">
@@ -147,12 +147,15 @@ const FetchAllLogs = () => {
             </Button>
           </div>
 
-          <Button onClick={handleDelete} className="rounded-none">
+          <Button
+            onClick={handleDelete}
+            className="rounded-none lg:block hidden"
+          >
             Delete All
           </Button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto lg:mt-0 mt-6">
           <Table className="border border-blue-800/20">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

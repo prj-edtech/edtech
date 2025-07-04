@@ -269,9 +269,9 @@ const FetchAllQuestions = () => {
   }
 
   return (
-    <div className="flex flex-col gap-y-6 w-full">
+    <div className="flex flex-col gap-y-6 w-full p-6 lg:p-0">
       {/* Search & Add */}
-      <div className="flex justify-between items-center border p-4">
+      <div className="flex lg:justify-between justify-start items-start lg:flex-row flex-col gap-y-4 lg:items-center border p-4">
         <div className="flex items-center border">
           <input
             placeholder="Search questions..."
@@ -280,7 +280,7 @@ const FetchAllQuestions = () => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+            className="lg:placeholder:text-sm placeholder:text-xs pl-2 focus:outline-none focus:ring-0"
           />
           <Button className="rounded-none" size="sm">
             Search
@@ -288,7 +288,7 @@ const FetchAllQuestions = () => {
         </div>
         <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
-            <Button className="rounded-none">
+            <Button className="rounded-none" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               <Link to="/admin/questions/add">Add Question</Link>
             </Button>

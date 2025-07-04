@@ -309,9 +309,9 @@ const AddQuestions = () => {
   };
 
   return (
-    <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:px-10">
+    <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:px-10 px-6 lg:mt-0 mt-4">
       {/* Boards, Standards, Subjects */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Board</Label>
           <Select value={boardId} onValueChange={setBoardId}>
@@ -366,7 +366,7 @@ const AddQuestions = () => {
       </div>
 
       {/* Section, Topic, Subtopic */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Section</Label>
           <Select value={sectionId} onValueChange={setSectionId}>
@@ -421,7 +421,7 @@ const AddQuestions = () => {
       </div>
 
       {/* Question Paper, Month, Year */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Question Paper</Label>
           <Select value={qpId} onValueChange={setQpId}>
@@ -491,7 +491,7 @@ const AddQuestions = () => {
       </div>
 
       {/* Question Type, Marks, Priority */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Question Type</Label>
           <Select value={questionType} onValueChange={setQuestionType}>
@@ -584,7 +584,11 @@ const AddQuestions = () => {
       )}
 
       {/* Submit Button */}
-      <Button onClick={handleSubmit} size="lg" className="rounded-none">
+      <Button
+        onClick={handleSubmit}
+        size="lg"
+        className="rounded-none lg:my-0 my-6"
+      >
         Add Question
       </Button>
     </div>
