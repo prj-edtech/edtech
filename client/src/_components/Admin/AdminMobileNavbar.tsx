@@ -16,6 +16,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 
 const AdminMobileNavbar = () => {
   return (
@@ -39,8 +40,14 @@ const AdminMobileNavbar = () => {
 
 const MobileMenu = () => {
   const { logout } = useAuth0();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClick = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger>
         <Menu className="w-4 h-4" />
       </SheetTrigger>
@@ -55,9 +62,15 @@ const MobileMenu = () => {
             <AccordionTrigger>Most Used</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link to="/admin/boards">Boards</Link>
-                <Link to="/admin/standards">Standards</Link>
-                <Link to="/admin/subjects">Subjects</Link>
+                <Link onClick={handleClick} to="/admin/boards">
+                  Boards
+                </Link>
+                <Link onClick={handleClick} to="/admin/standards">
+                  Standards
+                </Link>
+                <Link onClick={handleClick} to="/admin/subjects">
+                  Subjects
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -65,10 +78,18 @@ const MobileMenu = () => {
             <AccordionTrigger>Content Management</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link to="/admin/sections">Sections</Link>
-                <Link to="/admin/topics">Topics</Link>
-                <Link to="/admin/subtopics">Subtopics</Link>
-                <Link to="/admin/subtopics/add">Add Subtopics</Link>
+                <Link onClick={handleClick} to="/admin/sections">
+                  Sections
+                </Link>
+                <Link onClick={handleClick} to="/admin/topics">
+                  Topics
+                </Link>
+                <Link onClick={handleClick} to="/admin/subtopics">
+                  Subtopics
+                </Link>
+                <Link onClick={handleClick} to="/admin/subtopics/add">
+                  Add Subtopics
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -76,9 +97,15 @@ const MobileMenu = () => {
             <AccordionTrigger>Exam Management</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link to="/admin/question-papers">Question Papers</Link>
-                <Link to="/admin/questions">Questions</Link>
-                <Link to="/admin/questions/add">Add Question</Link>
+                <Link onClick={handleClick} to="/admin/question-papers">
+                  Question Papers
+                </Link>
+                <Link onClick={handleClick} to="/admin/questions">
+                  Questions
+                </Link>
+                <Link onClick={handleClick} to="/admin/questions/add">
+                  Add Question
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -86,8 +113,12 @@ const MobileMenu = () => {
             <AccordionTrigger>System Logs</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link to="/admin/change-logs">Change Logs</Link>
-                <Link to="/admin/audit-logs">Audit Trails</Link>
+                <Link onClick={handleClick} to="/admin/change-logs">
+                  Change Logs
+                </Link>
+                <Link onClick={handleClick} to="/admin/audit-logs">
+                  Audit Trails
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -95,7 +126,9 @@ const MobileMenu = () => {
             <AccordionTrigger>Profile</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link to="/admin/settings">Settings</Link>
+                <Link onClick={handleClick} to="/admin/settings">
+                  Settings
+                </Link>
                 <h4 onClick={() => logout()}>Logout</h4>
               </div>
             </AccordionContent>
