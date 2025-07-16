@@ -19,7 +19,7 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   console.log(roles);
   console.log(user);
   return (
-    <div className="flex justify-between items-center w-full lg:px-10 lg:py-6 font-redhat sticky top-0 z-50 bg-white dark:bg-black">
+    <div className="lg:flex hidden justify-between items-center w-full lg:px-10 lg:py-6 font-redhat sticky top-0 z-50 bg-white dark:bg-black">
       <div className="flex justify-center items-center lg:gap-x-16 w-full">
         <div className="flex items-center lg:gap-x-4 justify-center">
           <Menu
@@ -141,12 +141,6 @@ const AdminNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                 </Avatar>
               </NavigationMenuTrigger>
               <NavigationMenuContent className="min-w-[120px]">
-                <NavigationMenuLink className="cursor-pointer">
-                  Profile
-                </NavigationMenuLink>
-                <NavigationMenuLink className="cursor-pointer">
-                  Settings
-                </NavigationMenuLink>
                 <NavigationMenuLink
                   className="cursor-pointer"
                   onClick={() => logout()}

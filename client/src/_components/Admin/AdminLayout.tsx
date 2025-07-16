@@ -2,12 +2,15 @@ import { useState } from "react";
 import AdminNavbar from "./AdminNavbar";
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
+import AdminMobileNavbar from "./AdminMobileNavbar";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <div className="flex flex-col lg:min-h-screen">
       <AdminNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      {/* For mobile only */}
+      <AdminMobileNavbar />
       <div className="flex flex-1">
         <AdminSidebar isOpen={isSidebarOpen} />
         <main className="flex-1 lg:p-6 overflow-y-auto lg:ml-64">
