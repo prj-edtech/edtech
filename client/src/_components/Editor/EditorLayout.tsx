@@ -3,14 +3,16 @@ import { Outlet } from "react-router-dom";
 import EditorNavbar from "./EditorNavbar";
 import EditorSidebar from "./EditorSidebar";
 
-const EditorLayout = () => {
+const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col lg:min-h-screen">
       <EditorNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      {/* For mobile only */}
+      {/* <AdminMobileNavbar /> */}
       <div className="flex flex-1">
         <EditorSidebar isOpen={isSidebarOpen} />
-        <main className="flex-1 p-6 overflow-y-auto ml-64">
+        <main className="flex-1 lg:p-6 overflow-y-auto lg:ml-64">
           <Outlet />
         </main>
       </div>
@@ -18,4 +20,4 @@ const EditorLayout = () => {
   );
 };
 
-export default EditorLayout;
+export default AdminLayout;

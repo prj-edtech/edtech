@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { addTopics, editTopic, fetchAllTopics } from "@/api/topics";
+import {
+  addTopics,
+  editTopic,
+  fetchAllTopics,
+  removeTopic,
+} from "@/api/topics";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -195,6 +200,18 @@ const FetchAllTopics = () => {
     }
   }, [boardId, standardId, subjectId]);
 
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeTopic(id, user?.sub!);
+      loadTopics();
+    } catch (error: any) {
+      console.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   //  Handle Add Topic Submit
   const handleAddTopic = async () => {
     setLoading(true);
@@ -289,7 +306,7 @@ const FetchAllTopics = () => {
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+        <div className="flex lg:justify-between justify-start lg:flex-row flex-col lg:items-center gap-y-2 items-start lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
           <div className="flex justify-between items-center lg:w-[200px] border">
             <input
               placeholder="Search topics..."
@@ -298,7 +315,7 @@ const FetchAllTopics = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1); // reset to first page when search changes
               }}
-              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+              className="lg:placeholder:text-sm placeholder:text-xs pl-2 focus:outline-none focus:ring-0"
             />
 
             <Button className="rounded-none" size="sm">
@@ -307,7 +324,7 @@ const FetchAllTopics = () => {
           </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button className="rounded-none">
+              <Button className="rounded-none" size="sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Topic
               </Button>
             </DialogTrigger>
@@ -507,6 +524,18 @@ const FetchAllTopics = () => {
                           onClick={() => handleEditClick(topic)}
                         >
                           Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemove(topic.id)}
+                          disabled={loading}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash className="w-4 h-4 text-red-700" />
+                          )}
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

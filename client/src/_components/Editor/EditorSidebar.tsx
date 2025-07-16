@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 const EditorSidebar = ({ isOpen }: { isOpen: boolean }) => {
   return (
     <div
-      className={`fixed h-screen flex-col p-4 space-y-6 font-redhat z-20 overflow-y-auto transition-all duration-300
+      className={`lg:fixed hidden h-screen flex-col p-4 space-y-6 font-redhat z-20 overflow-y-auto transition-all duration-300
     ${isOpen ? "w-64" : "w-0"} 
     lg:flex hidden`}
     >

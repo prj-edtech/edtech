@@ -1,7 +1,13 @@
-import { getAllSections, addSection, editSection } from "@/api/sections";
+import {
+  getAllSections,
+  addSection,
+  removeSection,
+  editSection,
+  softDeleteSection,
+} from "@/api/sections";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -99,7 +105,7 @@ const FetchAllSections = () => {
   const [boardId, setBoardId] = useState("");
   const [standardId, setStandardId] = useState("");
   const [subjectId, setSubjectId] = useState("");
-  const [priority, setPriority] = useState<number>(0);
+  const [priority, setPriority] = useState<number>(1);
   const [displayName, setDisplayName] = useState("");
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -214,6 +220,18 @@ const FetchAllSections = () => {
     }
   };
 
+  const handleRemove = async (sectionId: string) => {
+    setLoading(true);
+    try {
+      await removeSection(sectionId, user?.sub!);
+      fetchAllSections();
+    } catch (error: any) {
+      console.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditOpen = (section: any) => {
     setSelectedSection(section);
     setEditDisplayName(section.sectionJson?.attributes?.displayName || "");
@@ -241,6 +259,19 @@ const FetchAllSections = () => {
     }
   };
 
+  const handleDeactive = async (id: string) => {
+    setLoading(true);
+    try {
+      const performedBy = user?.sub;
+      await softDeleteSection(id, performedBy!);
+      fetchAllSections();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center w-full min-h-screen">
@@ -252,7 +283,7 @@ const FetchAllSections = () => {
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+        <div className="flex lg:justify-between justify-start lg:flex-row flex-col lg:items-center gap-y-2 items-start lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
           <div className="flex justify-between items-center lg:w-[200px] border">
             <input
               placeholder="Search sections..."
@@ -261,7 +292,7 @@ const FetchAllSections = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1); // reset to first page when search changes
               }}
-              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+              className="lg:placeholder:text-sm placeholder:text-xs pl-2 focus:outline-none focus:ring-0"
             />
 
             <Button className="rounded-none" size="sm">
@@ -270,7 +301,7 @@ const FetchAllSections = () => {
           </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button className="rounded-none">
+              <Button className="rounded-none" size="sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Section
               </Button>
             </DialogTrigger>
@@ -492,6 +523,28 @@ const FetchAllSections = () => {
                           ) : (
                             "Edit"
                           )}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeactive(section.id)}
+                          className="cursor-pointer"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Deactivate"
+                          )}
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                          onClick={() => handleRemove(section.id)}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash className="w-4 h-4 text-red-700" />
+                          )}
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
