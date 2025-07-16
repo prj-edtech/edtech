@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { redirect } from "react-router-dom";
 
 type AddQuestionsType = {
   performedBy: string;
@@ -298,6 +299,7 @@ const EditorAddQuestions = () => {
       await addQuestions(payload);
       toast.success("Question added successfully!");
       // Optional: clear form
+      redirect("/admin/questions");
     } catch (error) {
       console.error(error);
       toast.error("Failed to add question");
@@ -307,9 +309,9 @@ const EditorAddQuestions = () => {
   };
 
   return (
-    <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:px-10">
+    <div className="flex justify-start items-start w-full flex-col lg:gap-y-6 lg:px-10 px-6 lg:mt-0 mt-4">
       {/* Boards, Standards, Subjects */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Board</Label>
           <Select value={boardId} onValueChange={setBoardId}>
@@ -364,7 +366,7 @@ const EditorAddQuestions = () => {
       </div>
 
       {/* Section, Topic, Subtopic */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Section</Label>
           <Select value={sectionId} onValueChange={setSectionId}>
@@ -419,7 +421,7 @@ const EditorAddQuestions = () => {
       </div>
 
       {/* Question Paper, Month, Year */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Question Paper</Label>
           <Select value={qpId} onValueChange={setQpId}>
@@ -489,7 +491,7 @@ const EditorAddQuestions = () => {
       </div>
 
       {/* Question Type, Marks, Priority */}
-      <div className="flex justify-between items-center w-full">
+      <div className="flex lg:justify-between justify-start items-start flex-col lg:flex-row gap-y-4 lg:items-center w-full">
         <div className="flex flex-col gap-y-4 mt-4">
           <Label className="mb-2">Question Type</Label>
           <Select value={questionType} onValueChange={setQuestionType}>
@@ -582,7 +584,11 @@ const EditorAddQuestions = () => {
       )}
 
       {/* Submit Button */}
-      <Button onClick={handleSubmit} size="lg" className="rounded-none">
+      <Button
+        onClick={handleSubmit}
+        size="lg"
+        className="rounded-none lg:my-0 my-6"
+      >
         Add Question
       </Button>
     </div>

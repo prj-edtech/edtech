@@ -3,7 +3,7 @@ import {
   addSection,
   removeSection,
   editSection,
-  softDeleteSection,
+  // softDeleteSection,
 } from "@/api/sections";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
@@ -259,18 +259,18 @@ const FetchAllSections = () => {
     }
   };
 
-  const handleDeactive = async (id: string) => {
-    setLoading(true);
-    try {
-      const performedBy = user?.sub;
-      await softDeleteSection(id, performedBy!);
-      fetchAllSections();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleDeactive = async (id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     const performedBy = user?.sub;
+  //     await softDeleteSection(id, performedBy!);
+  //     fetchAllSections();
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -522,16 +522,6 @@ const FetchAllSections = () => {
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             "Edit"
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDeactive(section.id)}
-                          className="cursor-pointer"
-                        >
-                          {loading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            "Deactivate"
                           )}
                         </DropdownMenuItem>
 

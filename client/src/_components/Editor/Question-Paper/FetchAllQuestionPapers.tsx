@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import {
   getAllQuestionPaper,
   addQuestionPaper,
+  removeQuestionPaper,
+  // activateQuestionPaper,
+  // deactivateQuestionPaper,
   updateQuestionPaper,
 } from "@/api/questionPapers";
 import { Button } from "@/components/ui/button";
@@ -20,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -203,10 +206,46 @@ const FetchAllQuestionPaper = () => {
     }
   }, [standard.id, board.id]);
 
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeQuestionPaper(id, user?.sub!);
+      loadQuestionPapers();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEdit = (qp: QuestionPapers) => {
     setSelectedQuestionPaper(qp);
     setOpenEditDialog(true);
   };
+
+  // const handleActivate = async (id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     await activateQuestionPaper(id, user?.sub!);
+  //     loadQuestionPapers();
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleDeactivate = async (id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     await deactivateQuestionPaper(id, user?.sub!);
+  //     loadQuestionPapers();
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleAddQuestionPaper = async () => {
     const payload = {
@@ -277,7 +316,7 @@ const FetchAllQuestionPaper = () => {
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+        <div className="flex lg:justify-between justify-start lg:flex-row flex-col lg:items-center gap-y-2 items-start lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
           <div className="flex justify-between items-center lg:w-[200px] border">
             <input
               placeholder="Search question papers..."
@@ -286,7 +325,7 @@ const FetchAllQuestionPaper = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1); // reset to first page when search changes
               }}
-              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+              className="lg:placeholder:text-sm placeholder:text-xs pl-2 focus:outline-none focus:ring-0"
             />
 
             <Button className="rounded-none" size="sm">
@@ -295,7 +334,7 @@ const FetchAllQuestionPaper = () => {
           </div>
           <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
             <DialogTrigger asChild>
-              <Button className="rounded-none">
+              <Button className="rounded-none" size="sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Question Paper
               </Button>
             </DialogTrigger>
@@ -388,17 +427,60 @@ const FetchAllQuestionPaper = () => {
 
                 <div className="flex flex-col gap-y-2">
                   <Label>Year</Label>
-                  <Input
+                  {/* <Input
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                  />
+                  /> */}
+                  <Select value={year} onValueChange={setYear}>
+                    <SelectTrigger className="lg:w-full cursor-pointer">
+                      <SelectValue placeholder="Select year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {["2025", "2026", "2027", "2028", "2029", "2030"].map(
+                          (y) => (
+                            <SelectItem key={y} value={y}>
+                              {y}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Month</Label>
-                  <Input
+                  {/* <Input
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                  />
+                  /> */}
+                  <Select value={month} onValueChange={setMonth}>
+                    <SelectTrigger className="lg:w-full cursor-pointer">
+                      <SelectValue placeholder="Select month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {[
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ].map((m) => (
+                          <SelectItem key={m} value={m}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-y-2">
                   <Label>Total Marks</Label>
@@ -564,6 +646,13 @@ const FetchAllQuestionPaper = () => {
                         >
                           <DropdownMenuItem onClick={() => handleEdit(qP)}>
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRemove(qP.id)}
+                            className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                          >
+                            <Trash className="w-4 h-4 text-red-700" />
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

@@ -63,7 +63,7 @@ const EditorNavbar = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="min-w-[200px]">
                   <NavigationMenuLink className="cursor-pointer">
-                    <Link to="/editor/question-paper">Question Paper</Link>
+                    <Link to="/editor/question-papers">Question Paper</Link>
                   </NavigationMenuLink>
                   <NavigationMenuLink className="cursor-pointer">
                     <Link to="/editor/questions">Questions</Link>

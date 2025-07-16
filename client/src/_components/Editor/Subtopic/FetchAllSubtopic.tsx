@@ -1,4 +1,9 @@
-import { getAllSubtopics } from "@/api/subtopics";
+import {
+  // activateSubtopic,
+  // deactivateSubtopic,
+  getAllSubtopics,
+  removeSubtopic,
+} from "@/api/subtopics";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -55,6 +61,8 @@ interface Subtopics {
 const FetchAllSubtopics = () => {
   const [subtopics, setSubtopics] = useState<Subtopics[]>([]); // Store fetched subtopics
   const [loading, setLoading] = useState(false);
+
+  const { user } = useAuth0();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,6 +108,42 @@ const FetchAllSubtopics = () => {
     loadSubtopics();
   }, []);
 
+  // const handleDeactivate = async (id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     await deactivateSubtopic(id, user?.sub!);
+  //     loadSubtopics();
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleActivate = async (id: string) => {
+  //   setLoading(true);
+  //   try {
+  //     await activateSubtopic(id, user?.sub!);
+  //     loadSubtopics();
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleRemove = async (id: string) => {
+    setLoading(true);
+    try {
+      await removeSubtopic(id, user?.sub!);
+      loadSubtopics();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center w-full min-h-screen">
@@ -111,7 +155,7 @@ const FetchAllSubtopics = () => {
   return (
     <div className="flex justify-start items-center w-full lg:px-32 lg:py-10 font-redhat font-medium">
       <div className="flex justify-start items-center w-full lg:px-10 px-8 py-4 lg:py-8 flex-col lg:gap-y-8 gap-y-4 min-h-screen">
-        <div className="flex justify-between items-center lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
+        <div className="flex lg:justify-between justify-start lg:flex-row flex-col lg:items-center gap-y-2 items-start lg:p-6 p-3 w-full border shadow-xs rounded-sm border-blue-800/20">
           <div className="flex justify-between items-center lg:w-[200px] border">
             <input
               placeholder="Search subtopics..."
@@ -120,14 +164,14 @@ const FetchAllSubtopics = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1); // reset to first page when search changes
               }}
-              className="placeholder:text-sm lg:pl-2 focus:outline-none focus:ring-0"
+              className="lg:placeholder:text-sm placeholder:text-xs pl-2 focus:outline-none focus:ring-0"
             />
 
             <Button className="rounded-none" size="sm">
               Search
             </Button>
           </div>
-          <Button className="rounded-none">
+          <Button className="rounded-none" size="sm">
             <Link
               to="/editor/subtopics/add"
               className="flex items-center gap-x-2"
@@ -197,6 +241,18 @@ const FetchAllSubtopics = () => {
                           <Link to={`/editor/subtopics/edit/${subtopic.id}`}>
                             Edit
                           </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRemove(subtopic.id)}
+                          disabled={loading}
+                          className="cursor-pointer flex items-center gap-x-4 text-red-700"
+                        >
+                          {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash className="w-4 h-4 text-red-700" />
+                          )}
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

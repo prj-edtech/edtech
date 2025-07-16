@@ -81,7 +81,6 @@ function App() {
         <Route path="/editor" element={<EditorLayout />}>
           <Route index element={<EditorDashboard />} />
           <Route path="sections" element={<EditorSections />} />
-          <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="topics" element={<EditorTopics />} />
           <Route path="subtopics" element={<EditorSubtopics />} />
           <Route path="subtopics/add" element={<EditorAddSubtopic />} />

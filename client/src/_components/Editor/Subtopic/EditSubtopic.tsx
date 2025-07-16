@@ -113,7 +113,7 @@ const EditSubtopicEditor = () => {
   }
 
   return (
-    <div className="flex flex-col font-redhat gap-6">
+    <div className="flex flex-col font-redhat gap-6 lg:p-0 p-4">
       <h2 className="text-xl font-bold">Edit Subtopic</h2>
 
       <Input
@@ -121,7 +121,7 @@ const EditSubtopicEditor = () => {
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
         placeholder="Display Name"
-        className="w-64"
+        className="lg:w-64 w-full"
       />
 
       <Input
@@ -129,7 +129,7 @@ const EditSubtopicEditor = () => {
         value={priority}
         onChange={(e) => setPriority(Number(e.target.value))}
         placeholder="Priority"
-        className="w-32"
+        className="lg:w-64 w-full"
       />
 
       <div className="w-full">

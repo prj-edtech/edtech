@@ -10,7 +10,7 @@ const EditorSidebar = ({ isOpen }: { isOpen: boolean }) => {
   return (
     <div
       className={`lg:fixed hidden h-screen flex-col p-4 space-y-6 font-redhat z-20 overflow-y-auto transition-all duration-300
-    ${isOpen ? "w-64" : "w-0"} 
+    ${isOpen ? "w-0" : "w-64"} 
     lg:flex hidden`}
     >
       <nav className="flex flex-col justify-start items-start lg:gap-y-3 text-lg w-full lg:px-6 lg:w-64">
@@ -62,7 +62,7 @@ const EditorSidebar = ({ isOpen }: { isOpen: boolean }) => {
                 Question Paper
               </Link>
               <Link
-                to="/editor/question-papers/questions"
+                to="/editor/questions"
                 className="hover:underline underline-offset-2"
               >
                 Questions

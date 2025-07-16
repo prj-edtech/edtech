@@ -18,7 +18,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 
-const AdminMobileNavbar = () => {
+const EditorMobileNavbar = () => {
   return (
     <div className="lg:hidden flex justify-between items-center w-full px-6 py-4 mb-4">
       <div className="flex justify-center items-center gap-x-4">
@@ -54,82 +54,53 @@ const MobileMenu = () => {
       <SheetContent side="left" className="w-full h-full font-redhat px-6 py-2">
         <SheetHeader>
           <SheetTitle className="font-medium text-xl font-outfit text-blue-600 lowercase">
-            edtech admin
+            edtech editor
           </SheetTitle>
         </SheetHeader>
         <Accordion type="single" collapsible className="w-full font-circular">
           <AccordionItem value="item-1">
-            <AccordionTrigger>Most Used</AccordionTrigger>
-            <AccordionContent>
-              <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link onClick={handleClick} to="/admin/boards">
-                  Boards
-                </Link>
-                <Link onClick={handleClick} to="/admin/standards">
-                  Standards
-                </Link>
-                <Link onClick={handleClick} to="/admin/subjects">
-                  Subjects
-                </Link>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
             <AccordionTrigger>Content Management</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link onClick={handleClick} to="/admin/sections">
+                <Link onClick={handleClick} to="/editor/sections">
                   Sections
                 </Link>
-                <Link onClick={handleClick} to="/admin/topics">
+                <Link onClick={handleClick} to="/editor/topics">
                   Topics
                 </Link>
-                <Link onClick={handleClick} to="/admin/subtopics">
+                <Link onClick={handleClick} to="/editor/subtopics">
                   Subtopics
                 </Link>
-                <Link onClick={handleClick} to="/admin/subtopics/add">
+                <Link onClick={handleClick} to="/editor/subtopics/add">
                   Add Subtopics
                 </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value="item-2">
             <AccordionTrigger>Exam Management</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link onClick={handleClick} to="/admin/question-papers">
+                <Link onClick={handleClick} to="/editor/question-papers">
                   Question Papers
                 </Link>
-                <Link onClick={handleClick} to="/admin/questions">
+                <Link onClick={handleClick} to="/editor/questions">
                   Questions
                 </Link>
-                <Link onClick={handleClick} to="/admin/questions/add">
+                <Link onClick={handleClick} to="/editor/questions/add">
                   Add Question
                 </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-4">
-            <AccordionTrigger>System Logs</AccordionTrigger>
-            <AccordionContent>
-              <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link onClick={handleClick} to="/admin/change-logs">
-                  Change Logs
-                </Link>
-                <Link onClick={handleClick} to="/admin/audit-logs">
-                  Audit Trails
-                </Link>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-5">
+          <AccordionItem value="item-3">
             <AccordionTrigger>Profile</AccordionTrigger>
             <AccordionContent>
               <div className="flex justify-center items-start flex-col gap-y-2 p-6">
-                <Link onClick={handleClick} to="/admin">
+                <Link onClick={handleClick} to="/editor">
                   Dashboard
                 </Link>
-                <Link onClick={handleClick} to="/admin/settings">
+                <Link onClick={handleClick} to="/editor/settings">
                   Settings
                 </Link>
                 <h4 onClick={() => logout()}>Logout</h4>
@@ -142,4 +113,4 @@ const MobileMenu = () => {
   );
 };
 
-export default AdminMobileNavbar;
+export default EditorMobileNavbar;
