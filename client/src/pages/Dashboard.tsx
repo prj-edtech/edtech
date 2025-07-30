@@ -7,7 +7,7 @@ const Dashboard = () => {
 
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
-  const roles = user && user["https://edtechadmin.dev/roles"];
+  const roles = user && user["https://edtechapp.dev/roles"];
   if (!roles || roles.length === 0) return <Unauthorized />;
 
   if (roles.includes("admin")) return <Navigate to="/admin" replace />;
